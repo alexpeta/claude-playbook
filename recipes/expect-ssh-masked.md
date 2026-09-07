@@ -21,6 +21,11 @@ catch { expect eof }
 - The 1 s pause before sending the password matters: sending before the tty drops echo
   garbles it AND echoes a fragment.
 - Mask with `string map`, never `grep -v password` (it let a fragment through once).
+- **`expect_out(buffer)` holds only the last ~2000 bytes** (`match_max` default), so printing it
+  after a long remote command silently drops the head of the output — two NAS rounds came back
+  as their last six lines before anyone noticed (2026-09-07). Capture the whole session with
+  `log_file -a <path>` (the `-a` records what `log_user 0` suppresses), then mask the file with
+  `sed "s/$SSH_PWD/***/g"` before reading it; or raise `match_max -d` before `spawn`.
 - `sudo` on a NAS asks for the user's own password and its secure_path lacks docker; put
   docker on the PATH explicitly (`sudo env PATH=… docker …`).
 - Square brackets inside the spawn string are Tcl command substitution — `grep '[d]ocker'`
