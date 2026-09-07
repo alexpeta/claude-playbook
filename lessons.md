@@ -101,6 +101,10 @@ command lives in that project's `CLAUDE.md`.
 
 ## Writing and briefing
 
+- **A count in a brief is computed with the code's own filter.** `47 files − 6 print masters
+  = 41` forgot the three `.md` and the `.DS_Store` the suffix rule skips; the builder counted
+  with `find` plus the rule and got 37. Never subtract from `ls | wc -l`; run the filter.
+  *(photolab #2, 2026-09-07: the first PR's "Where the brief was wrong".)*
 - **Brief from the repo at dispatch time, not from a summary.** Eight wrong briefs in one day
   shared that cause; the builder who argued with the brief was right every time. Every brief
   lists what to verify first and asks for a "Where the brief was wrong" section.
