@@ -67,7 +67,6 @@ command lives in that project's `CLAUDE.md`.
   the merged sha — the release tool tags its own bump commit on top.
 - **Two builders on one function.** Two PRs modifying the same function in one day compose
   textually and can still be wrong together; the second to land re-reads the first.
-
 - **An agent definition placed this session is not dispatchable this session.** `bin/init`
   drops `.claude/agents/builder.md` into the repo, but the Agent tool's type list is read at
   session start; `subagent_type: "builder"` answers "not found" until the next session.
