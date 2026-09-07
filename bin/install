@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Once per machine: wire Claude Code to this playbook.
+#   <config>/CLAUDE.md      gets a marked block importing llms.txt and ways-of-working.md
+#   <config>/settings.json  gets a SessionStart hook that runs bin/wake
+# <config> is $CLAUDE_CONFIG_DIR, else ~/.claude (%USERPROFILE%\.claude on Windows).
+# Idempotent: rerun after moving the clone. settings.json is backed up before any write to it.
+# Runs under bash on macOS/Linux and under Git Bash on Windows; needs Python 3 for the JSON
+# merge (python3, python, or py -3) and otherwise prints the hook to add by hand.
+set -u
+case "${OSTYPE:-}" in msys*|cygwin*) PATH="/usr/bin:/bin:$PATH" ;; esac
+
+PB="$(cd "$(dirname "$0")/.." && pwd -P)"
+native() { if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else printf '%s\n' "$1"; fi; }  # C:/… on Windows
+PB_N="$(native "$PB")"
+CFG="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+MD="$CFG/CLAUDE.md"
+SETTINGS="$CFG/settings.json"
+WAKE_CMD="bash \"$PB_N/bin/wake\""
+mkdir -p "$CFG"
+
+# --- CLAUDE.md: a marked block. HTML comments are stripped before Claude sees the file.
+BEGIN='<!-- claude-playbook:begin -->'
+END='<!-- claude-playbook:end -->'
+L1="@$PB_N/llms.txt"
+L2="@$PB_N/ways-of-working.md"
+block="$BEGIN
+$L1
+$L2
+$END"
+touch "$MD"
+if grep -qF "$BEGIN" "$MD" && grep -qF "$END" "$MD"; then
+  # one -v per line: BSD awk rejects a -v value containing a newline
+  awk -v begin="$BEGIN" -v end="$END" -v l1="$L1" -v l2="$L2" '
+    $0 == begin { print begin; print l1; print l2; print end; skip = 1; next }
+    $0 == end   { skip = 0; next }
+    !skip       { print }' "$MD" > "$MD.tmp"
+  if cmp -s "$MD" "$MD.tmp"; then rm -f "$MD.tmp"; echo "$MD: block already current"
+  else mv "$MD.tmp" "$MD"; echo "$MD: block updated"; fi
+else
+  [ -s "$MD" ] && [ -n "$(tail -c1 "$MD")" ] && echo >> "$MD"
+  printf '\n%s\n' "$block" >> "$MD"
+  echo "$MD: block appended"
+fi
+
+# --- settings.json: merge one SessionStart hook group; replace ours if the path moved.
+PY=""
+for c in python3 python "py -3"; do
+  if $c -c 'import sys; sys.exit(0 if sys.version_info[0] == 3 else 1)' >/dev/null 2>&1; then PY="$c"; break; fi
+done
+if [ -z "$PY" ]; then
+  cat <<MANUAL
+$SETTINGS: no Python 3 found (tried python3, python, py -3), so the hook was not merged.
+  Install Python 3 and rerun, or add this entry under "hooks" -> "SessionStart" by hand:
+  {"matcher": "startup|resume|clear|compact",
+   "hooks": [{"type": "command", "command": "bash \\"$PB_N/bin/wake\\"", "timeout": 15}]}
+MANUAL
+  exit 1
+fi
+$PY - "$SETTINGS" "$WAKE_CMD" <<'PY'
+import json, os, shutil, sys, time
+path, cmd = sys.argv[1:3]
+exists = os.path.exists(path) and os.path.getsize(path) > 0
+d = json.load(open(path, encoding="utf-8")) if exists else {}
+groups = d.setdefault("hooks", {}).setdefault("SessionStart", [])
+want = {"matcher": "startup|resume|clear|compact",
+        "hooks": [{"type": "command", "command": cmd, "timeout": 15}]}
+def ours(g):
+    return any("/bin/wake" in h.get("command", "") for h in g.get("hooks", []))
+mine = [g for g in groups if ours(g)]
+if not mine:
+    groups.append(want); msg = "hook added"
+elif len(mine) > 1 or mine[0] != want:
+    for g in mine: groups.remove(g)
+    groups.append(want); msg = "hook updated"
+else:
+    print(f"{path}: hook already current ({cmd})"); sys.exit(0)
+if exists:
+    bak = f"{path}.bak-playbook-{time.strftime('%Y%m%d-%H%M%S')}"
+    shutil.copy2(path, bak); print(f"{path}: backed up to {bak}")
+with open(path, "w", encoding="utf-8", newline="\n") as f:
+    json.dump(d, f, indent=2, ensure_ascii=False); f.write("\n")
+print(f"{path}: {msg} ({cmd})")
+PY
+
+echo "install: done. Verify in a new session anywhere: the first context lines begin with '[playbook]'."
+echo "         By hand: bash \"$PB_N/bin/wake\" </dev/null"
+exit 0

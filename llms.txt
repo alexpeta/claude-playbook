@@ -1,0 +1,53 @@
+# claude-playbook
+
+> How Alex and Claude work together: the laws, the chair-and-builders operating model, the
+> lessons that cost real work once, and the templates and scripts that start a new project
+> under them. Every Claude Code session on this machine wakes with this file and
+> `ways-of-working.md` in context; the rest is read on demand from the paths below.
+
+Before anything else:
+
+- The laws in `ways-of-working.md` are already in your context and bind in every repo. A
+  project's own `CLAUDE.md` overrides them on specifics only.
+- The session-start lines beginning `[playbook]` name the playbook's absolute path, its
+  commit, and whether the repo you are in is bootstrapped. Paths below are relative to the
+  playbook.
+- Before the first builder dispatch on a project, read `chair-and-builders.md` end to end.
+- When something feels off, and before any unattended run, skim `lessons.md`.
+- If the repo you are in is not bootstrapped and the work is a real project, run `bin/init`
+  from the repo root, then fill the placeholders it lists. Ask before running it in a repo
+  that is not yours to shape.
+- A lesson minted today that generalizes goes into the playbook the same day, in the file it
+  belongs to, with the incident that earned it. Project specifics stay out (`README.md` has
+  the editing rules).
+
+## Laws and operating model
+
+- [ways-of-working.md](ways-of-working.md): the seven laws; how to think, build, verify, disagree and report. Already in context.
+- [chair-and-builders.md](chair-and-builders.md): one strategy-and-QC seat, Opus builders in worktrees, gates, PRs, the merge line, the board, DACIs. Read before the first dispatch.
+- [lessons.md](lessons.md): mechanics that cost real work once, each with its incident. Read when something feels off.
+
+## Starting a project
+
+- [bin/init](bin/init): bootstraps the current repo: `CLAUDE.md` from the template, the builder agent, `docs/decisions/`, `docs/retros/`. Never overwrites.
+- [templates/CLAUDE.md](templates/CLAUDE.md): the starter; fill the gate command and the mechanics section, delete what is not true of the repo.
+- [agents/builder.md](agents/builder.md): the builder agent definition; set the gate command and the repo's own laws.
+
+## Templates
+
+- [templates/daci.md](templates/daci.md): the decision document; the first real fork gets `docs/decisions/0001-<slug>.md`.
+- [templates/dispatch-brief.md](templates/dispatch-brief.md): the brief a builder is dispatched with, written from `origin/main` at dispatch time.
+- [templates/qc-comment.md](templates/qc-comment.md): the chair's dated QC comment, posted on the PR.
+- [templates/retro.md](templates/retro.md): the end-of-run retrospective.
+
+## Recipes
+
+- [recipes/merge-coordinator.md](recipes/merge-coordinator.md): draining QC-green PRs one release at a time.
+- [recipes/board-via-gh.md](recipes/board-via-gh.md): the project board through `gh` and GraphQL.
+- [recipes/expect-ssh-masked.md](recipes/expect-ssh-masked.md): SSH with a password from `.env`, never printed.
+
+## Optional
+
+- [README.md](README.md): what this repo is, how a machine and a project are wired to it, the rules for editing it.
+- [bin/install](bin/install): once per machine; writes the imports and the session-start hook.
+- [bin/wake](bin/wake): the session-start hook; prints the `[playbook]` lines.
