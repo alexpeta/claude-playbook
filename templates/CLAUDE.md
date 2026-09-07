@@ -15,6 +15,10 @@ unclear, stop and name it.
 PR body and act on the evidence. Being overruled costs a paragraph; complying quietly costs a
 release.
 
+**Quote the read; never narrate from memory.** Before describing state or explaining a
+mechanism, go and read it — `origin/main`, the row, the log. A mechanism that *sounds* right is
+the most expensive failure mode there is.
+
 ## 2. Simplicity first
 
 The minimum that solves the problem. No features beyond the ask, no abstraction for a single
@@ -40,10 +44,9 @@ claimed it and say what misled you.
 
 ## 6. Refuse, don't guess
 
-Refuse, don't clamp. Quote the read; never narrate from memory. No silent skips — anything
-deliberately not done emits a structured line naming what and why. Deterministic trigger →
-semantic decider → deterministic consequence: an LLM may decide; it may not write or compute.
-One-sided state must name itself.
+Refuse, don't clamp. No silent skips — anything deliberately not done emits a structured line
+naming what and why. Deterministic trigger → semantic decider → deterministic consequence: an
+LLM may decide; it may not write or compute. One-sided state must name itself.
 
 ## 7. Mechanics that bite here
 

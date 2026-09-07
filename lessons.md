@@ -79,6 +79,10 @@ command lives in that project's `CLAUDE.md`.
   a sleeping machine stalls without an error. Check the power log before blaming the pipeline.
 - **Prefer the CLI over an MCP for the same service** when the repo's conventions are written
   against the CLI (`gh`, `psql`); ask rather than guess a host or credential.
+- **`git -C <dir> rev-parse --git-path <file>` answers relative to YOUR cwd, not to `<dir>`.**
+  Test that path from another directory and it is a missing file. Use `--absolute-git-dir` and
+  append the name. *(`bin/wake`, 2026-09-07: the "fetching now" note fired on every session
+  from every repo except the playbook itself.)*
 
 ## Writing and briefing
 
@@ -93,3 +97,8 @@ command lives in that project's `CLAUDE.md`.
   system computes Brzycki; two numbers for one lift.)*
 - **Measure before optimizing.** Instrument, read, decide; park low-value work; a rejected
   architecture is not re-proposed casually. Confidence on recommendations, with the `%` sign.
+- **A model's account of its own context is not a witness.** Asked to quote every hook line in
+  its context, a Haiku session quoted one of two; the hook had emitted both. Witness context
+  injection with a `tee` to a file from inside the hook, then read the file. Note that Claude
+  Code prefixes the first stdout line with `SessionStart:<matcher> hook success:`, so test
+  "contains", not "begins with". *(First new-session test of `bin/wake`, 2026-09-07.)*

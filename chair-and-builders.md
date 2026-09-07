@@ -6,7 +6,7 @@ morning without a false green.
 
 ## Seats
 
-- **Approver (the human).** Owns decisions: DACIs, product laws, athlete-facing behaviour,
+- **Approver (the human).** Owns decisions: DACIs, product laws, user-facing behaviour,
   data deletion, prod writes. Merges decision documents by hand — approval *is* ratification.
 - **Chair (the top-tier model, e.g. Fable/Opus-class).** Technical strategy partner. Writes the
   DACIs, slices epics, briefs builders, QC-reads every PR, reruns the unit gate with its own

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# SessionStart hook: two lines of state for the session that is starting.
+# The text that binds arrives through CLAUDE.md imports; this prints only what a file cannot
+# know: where the playbook is and how current it is, and whether this repo is bootstrapped.
+# Never fails the session: every branch exits 0. Never blocks on the network.
+set -u
+
+[ -t 0 ] || cat >/dev/null   # drain the hook's stdin JSON; skipped when run by hand on a tty
+
+PB="$(cd "$(dirname "$0")/.." && pwd -P)"
+REPO="${CLAUDE_PROJECT_DIR:-$PWD}"
+
+# --- line 1: the playbook itself
+line="[playbook] $PB"
+if git -C "$PB" rev-parse --git-dir >/dev/null 2>&1; then
+  head_desc="$(git -C "$PB" log -1 --format='%h (%cs)' 2>/dev/null)"
+  line="$line @ ${head_desc:-unknown}"
+
+  upstream="$(git -C "$PB" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)"
+  if [ -n "$upstream" ]; then
+    behind="$(git -C "$PB" rev-list --count "HEAD..$upstream" 2>/dev/null || echo '?')"
+    ahead="$(git -C "$PB" rev-list --count "$upstream..HEAD" 2>/dev/null || echo '?')"
+    line="$line, $behind behind / $ahead ahead of $upstream"
+    # Refresh in the background when the last fetch is over 6 h old; report on what we have.
+    # --absolute-git-dir, not --git-path: the latter is relative to the caller's cwd, not to -C.
+    fetch_head="$(git -C "$PB" rev-parse --absolute-git-dir 2>/dev/null)/FETCH_HEAD"
+    if [ ! -f "$fetch_head" ] || [ -n "$(find "$fetch_head" -mmin +360 2>/dev/null)" ]; then
+      (cd "$PB" && GIT_TERMINAL_PROMPT=0 nohup git fetch -q origin >/dev/null 2>&1 &)
+      line="$line (fetching now; distance is as of the previous fetch)"
+    fi
+  else
+    line="$line, no upstream"
+  fi
+
+  dirty="$(git -C "$PB" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+  [ "${dirty:-0}" -gt 0 ] && line="$line, $dirty uncommitted path(s)"
+fi
+echo "$line"
+
+# --- line 2: the repo this session is in
+if [ "$REPO" = "$PB" ]; then
+  echo "[playbook] repo $REPO: this is the playbook itself; README.md carries the editing rules"
+  exit 0
+fi
+if ! top="$(git -C "$REPO" rev-parse --show-toplevel 2>/dev/null)"; then
+  echo "[playbook] repo $REPO: not a git repository; bin/init needs one (git init first)"
+  exit 0
+fi
+missing=""
+[ -f "$top/CLAUDE.md" ] || [ -f "$top/.claude/CLAUDE.md" ] || missing="$missing CLAUDE.md"
+[ -d "$top/.claude/agents" ] || missing="$missing .claude/agents/"
+[ -d "$top/docs/decisions" ] || missing="$missing docs/decisions/"
+if [ -z "$missing" ]; then
+  echo "[playbook] repo $top: bootstrapped (CLAUDE.md, .claude/agents/, docs/decisions/ present)"
+else
+  echo "[playbook] repo $top: not bootstrapped, missing:$missing. For a real project run $PB/bin/init from the repo root; ask first if the repo is not yours to shape"
+fi
+exit 0

@@ -3,26 +3,46 @@
 How Alex and Claude work together, written down so a new project — or a fresh session with no
 memory of the last one — starts where the previous one left off instead of re-learning it.
 
-Three kinds of content, kept apart on purpose:
+The index is [`llms.txt`](llms.txt): what each file holds and when to read it. The laws are
+[`ways-of-working.md`](ways-of-working.md); the operating model is
+[`chair-and-builders.md`](chair-and-builders.md); the incidents are [`lessons.md`](lessons.md).
 
-| file | what it holds | when to read it |
-|---|---|---|
-| [`ways-of-working.md`](ways-of-working.md) | the laws: how to think, build, verify, disagree, and report | first, every time |
-| [`chair-and-builders.md`](chair-and-builders.md) | the operating model: one strategy-and-QC seat, Opus builders in worktrees, gates, PRs, a merge line, a board, DACIs | before the first dispatch on a project |
-| [`lessons.md`](lessons.md) | mechanics that cost real work once, each with the incident that earned it | when something feels off; and skim before an unattended run |
-| [`agents/`](agents/) | agent definitions to copy into a project's `.claude/agents/` | when setting up builders |
-| [`templates/`](templates/) | a starter `CLAUDE.md`, the DACI, retro, dispatch-brief and QC-comment shapes | when starting a project, a decision, a brief |
-| [`recipes/`](recipes/) | how-tos that are tool-shaped rather than law-shaped (merge coordinator, board via `gh`, masked SSH) | when you need the mechanism |
+## How a session gets it
+
+Every Claude Code session on the machine wakes with the playbook, without a step Claude has to
+remember to take:
+
+- `~/.claude/CLAUDE.md` imports `llms.txt` and `ways-of-working.md` (one `@path` line each), so
+  the index and the laws are in context before the first prompt. Context is not enforcement,
+  so the laws are the text of the file, not a pointer to it.
+- A `SessionStart` hook runs [`bin/wake`](bin/wake), which prints two `[playbook]` lines: the
+  playbook's path, commit and distance from `origin`, and whether the current repo is
+  bootstrapped. A hook runs whatever Claude decides, so state comes from the hook and text
+  from the import.
+
+Once per machine:
+
+    git clone https://github.com/alexpeta/claude-playbook.git ~/Github/claude-playbook
+    ~/Github/claude-playbook/bin/install
+
+`bin/install` is idempotent: it keeps the two import lines inside a marked block in
+`~/.claude/CLAUDE.md` and merges the hook into `~/.claude/settings.json`, backing the file up
+first. Rerun it after moving the clone. To verify from the terminal, run this in an empty git
+repo; it should return two lines, the second saying the repo is not bootstrapped:
+
+    claude -p "quote every line in your context that contains [playbook]"
 
 ## Starting a new project
 
-1. Copy `templates/CLAUDE.md` to the repo root and fill in the gate command and the repo-specific
-   mechanics section; delete anything that is not true of the new repo. A CLAUDE.md that lies
-   is worse than none.
-2. Copy `agents/builder.md` to `.claude/agents/<name>.md`; set the gate command and the repo's
-   own laws in it.
-3. Create `docs/decisions/` and `docs/retros/`; the first real fork gets `0001-<slug>.md` from
-   `templates/daci.md`.
+From the new repo's root, `~/Github/claude-playbook/bin/init`. It copies `templates/CLAUDE.md`
+to `CLAUDE.md` and `agents/builder.md` to `.claude/agents/builder.md`, creates
+`docs/decisions/` and `docs/retros/`, never overwrites, and lists the placeholders left to
+fill. Then:
+
+1. Fill the gate command and the repo-specific mechanics section of `CLAUDE.md`; delete
+   anything that is not true of the new repo. A CLAUDE.md that lies is worse than none.
+2. Set the gate command and the repo's own laws in `.claude/agents/builder.md`.
+3. The first real fork gets `docs/decisions/0001-<slug>.md` from `templates/daci.md`.
 4. Read `ways-of-working.md` and `lessons.md` once, end to end. They are short on purpose.
 
 ## Origin
