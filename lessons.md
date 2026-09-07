@@ -28,6 +28,11 @@ command lives in that project's `CLAUDE.md`.
 - **Metrics inherit the blind spots of their instrumentation.** A 14-day "clean" clock read
   all-zero while a destructive write went through a path it never instrumented. Prefer
   outcome-shaped denominators (every audit row) over signal-shaped ones (the alarms you installed).
+- **A test with a literal future timestamp is a time bomb.** A fixture hard-coded a proposal's
+  `expires_at` a day ahead; the code under test read the WALL clock for expiry while the test
+  froze a different clock, so at the minute the literal passed, every gate on main went red
+  with no change to blame. Freeze the clock the code actually reads (one injectable clock per
+  module), or key the literal off the real clock; never both clocks in one module.
 - **Never `gh run watch` in an unattended loop** — ~1200 API calls an hour each; four of them
   exhausted the hourly budget and 403'd every chain and builder. Poll every 90–180 s.
 
