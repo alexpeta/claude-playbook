@@ -87,4 +87,5 @@ Strong criteria let the work loop without supervision; "make it work" forces cla
   follow-through.
 - **Delegated rulings.** Parked rulings are the chair's at ≥ 80 % confidence, stated on the
   ticket with the evidence; below that, options plus a lean go to the approver. Decision
-  documents, user-facing behaviour and data deletion stay the approver's regardless.
+  documents, user-facing behaviour and data deletion stay the approver's regardless. Merging
+  execution PRs after QC is a standing grant (`chair-and-builders.md`, Grants).
