@@ -60,7 +60,7 @@ if [ -z "$top" ]; then
   exit 0
 fi
 if [ -n "$pb_top" ] && [ "$top" = "$pb_top" ]; then
-  echo "[playbook] repo $PB_N: this is the playbook itself; README.md carries the editing rules"
+  echo "[playbook] repo $PB_N: this is the playbook itself; see README.md, Adopting it"
   exit 0
 fi
 missing=""

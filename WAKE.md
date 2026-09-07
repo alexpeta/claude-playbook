@@ -18,8 +18,8 @@ Before anything else:
   from the repo root, then fill the placeholders it lists. Ask before running it in a repo
   that is not yours to shape.
 - A lesson minted today that generalizes goes into the playbook the same day, in the file it
-  belongs to, with the incident that earned it. Project specifics stay out (`README.md` has
-  the editing rules).
+  belongs to, with the incident that earned it. Project specifics stay out: what is here must
+  be true of a repo it has never seen.
 
 ## Laws and operating model
 
