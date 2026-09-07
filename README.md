@@ -76,10 +76,3 @@ Fork or clone; nothing here is tied to one machine or one person. What to make y
 - **Project specifics stay out**: gate commands, hosts, schema names, credentials. What is here
   must be true of a repo it has never seen; an incident may carry its ticket number, but the
   lesson must stand without following the link.
-
-## Origin
-
-Distilled on 2026-09-07 from the `fitness-coach-agent` (Coach Apex) project's `CLAUDE.md`, its
-builder definition, 150+ DACIs, and the chair's memory notes — after a run that merged 12 PRs and
-shipped 6 releases in a morning under these rules. Repo-specific details (gate commands, hosts,
-schema names) stay in the project; what is here is the part that transfers.
