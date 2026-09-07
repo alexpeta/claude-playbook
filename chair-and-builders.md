@@ -37,6 +37,9 @@ morning without a false green.
    (never the ticket): what was read, what was verified beyond the builder's tests, each gate
    leg with its numbers, the found-not-fixed items and the tickets they became. Then reruns the
    unit gate on the PR's exact head in the main tree. Re-gate on any new head, always.
+   QC checklist, minted 2026-09-07: any date or time literal in a test must be relative to
+   the clock the code under test reads — a future literal that becomes past mid-day turns
+   every gate red with no change to blame.
 6. **Merge line.** A coordinator (`recipes/merge-coordinator.md`) merges one PR per release:
    greens first; a preview gate of the PR merged onto current main; merge; wait for the release
    tag AND the health endpoint to report it; then the next. Merges faster than the runner's drain
@@ -59,7 +62,8 @@ Before that date each grant was given per project; ops grants still are.
   documents (DACIs) wait for the approver's click; approval *is* ratification.
 - Ruling delegation at ≥ 80 % confidence; below that, options and a lean.
 - Pacing of dispatch is the chair's: to the runner queue and the merge line, not to a fixed
-  count of agents in flight.
+  count of agents in flight. On one laptop, at most two integration tiers run at once; a
+  third waits (load average 18 and a 2× slower CI, 2026-09-07).
 - Ops grants (restart a runner, cancel a wedged run, prune a store) are per project, explicit
   and logged.
 
