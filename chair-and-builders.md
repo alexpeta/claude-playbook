@@ -48,9 +48,10 @@ morning without a false green.
 
 ## Grants
 
-Standing across projects since 2026-09-07 (Alex, in chat: the chair may merge PRs; DACIs wait
-for the user; builder-opened PRs the chair QC-reads and then merges). Before that date each
-grant was given per project; ops grants still are.
+The approver gives grants explicitly and dated; this section records them. The ones below are
+the author's, standing across their projects since 2026-09-07 (Alex, in chat: the chair may
+merge PRs; DACIs wait for the user; builder-opened PRs the chair QC-reads and then merges).
+Before that date each grant was given per project; ops grants still are.
 
 - **Merge grant.** The chair merges execution PRs — its own and builders' — under triple-green
   (builder gate, CI per check, the chair's own unit-gate rerun) plus the dated QC comment on

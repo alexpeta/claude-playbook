@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Once per machine: wire Claude Code to this playbook.
-#   <config>/CLAUDE.md      gets a marked block importing llms.txt and ways-of-working.md
+#   <config>/CLAUDE.md      gets a marked block importing WAKE.md and ways-of-working.md
 #   <config>/settings.json  gets a SessionStart hook that runs bin/wake
 # <config> is $CLAUDE_CONFIG_DIR, else ~/.claude (%USERPROFILE%\.claude on Windows).
 # Idempotent: rerun after moving the clone. settings.json is backed up before any write to it.
@@ -21,7 +21,7 @@ mkdir -p "$CFG"
 # --- CLAUDE.md: a marked block. HTML comments are stripped before Claude sees the file.
 BEGIN='<!-- claude-playbook:begin -->'
 END='<!-- claude-playbook:end -->'
-L1="@$PB_N/llms.txt"
+L1="@$PB_N/WAKE.md"
 L2="@$PB_N/ways-of-working.md"
 block="$BEGIN
 $L1

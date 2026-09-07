@@ -1,9 +1,9 @@
 # claude-playbook
 
-> How Alex and Claude work together: the laws, the chair-and-builders operating model, the
-> lessons that cost real work once, and the templates and scripts that start a new project
-> under them. Every Claude Code session on this machine wakes with this file and
-> `ways-of-working.md` in context; the rest is read on demand from the paths below.
+> How a human approver and Claude work together: the laws, the chair-and-builders operating
+> model, the lessons that cost real work once, and the templates and scripts that start a new
+> project under them. Every Claude Code session on a machine that ran `bin/install` wakes with
+> this file and `ways-of-working.md` in context; the rest is read on demand from the paths below.
 
 Before anything else:
 
