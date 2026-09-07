@@ -32,5 +32,15 @@ builder definition, 150+ DACIs, and the chair's memory notes — after a run tha
 shipped 6 releases in a morning under these rules. Repo-specific details (gate commands, hosts,
 schema names) stay in the project; what is here is the part that transfers.
 
-Rule for editing this repo: a practice earns its line by an incident or a decision, both named.
-Amend freely (decisions are tracer bullets); never delete the incident that minted a rule.
+## Rules for editing this repo (Alex, 2026-09-07)
+
+- **Project specifics stay out.** Gate commands, hosts, schema names, ticket numbers as
+  identifiers, credentials of any kind: none of it. What is here must be true of a repo it
+  has never seen. (Incidents may be named by their ticket number for traceability; the
+  lesson must stand without following the link.)
+- **A lesson learned in a project that can be generalized to benefit future us goes in
+  here** — the same day it is minted, in the file it belongs to, with the incident that
+  earned it. If it cannot be generalized, it belongs in that project's `CLAUDE.md` or
+  memory, not here.
+- A practice earns its line by an incident or a decision, both named. Amend freely
+  (decisions are tracer bullets); never delete the incident that minted a rule.
