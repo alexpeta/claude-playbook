@@ -32,6 +32,20 @@ repo; it should return two lines, the second saying the repo is not bootstrapped
 
     claude -p "quote every line in your context that contains [playbook]"
 
+### Windows
+
+Native Windows works with [Git for Windows](https://git-scm.com/downloads/win) installed:
+Claude Code runs hooks and its Bash tool through Git Bash, and the three scripts are bash.
+`bin/install` needs Python 3 for the JSON merge (`python3`, `python`, or `py -3`); without it,
+install prints the hook entry to paste by hand. From Git Bash:
+
+    git clone https://github.com/alexpeta/claude-playbook.git ~/Github/claude-playbook
+    bash ~/Github/claude-playbook/bin/install
+
+Config lives in `%USERPROFILE%\.claude`, which Git Bash sees as `~/.claude`; the paths written
+into it are Windows-native (`C:/Users/...`). WSL is Linux: follow the instructions above inside
+the distro. Untested on a Windows machine as of 2026-09-07; the first run there is the test.
+
 ## Starting a new project
 
 From the new repo's root, `~/Github/claude-playbook/bin/init`. It copies `templates/CLAUDE.md`

@@ -83,6 +83,10 @@ command lives in that project's `CLAUDE.md`.
   Test that path from another directory and it is a missing file. Use `--absolute-git-dir` and
   append the name. *(`bin/wake`, 2026-09-07: the "fetching now" note fired on every session
   from every repo except the playbook itself.)*
+- **BSD awk rejects a `-v` value that contains a newline** ("newline in string"); GNU awk
+  accepts it, so a script tested on Linux breaks on macOS. Pass one `-v` per line and `print`
+  them in order. *(`bin/install`, 2026-09-07: the marked block in CLAUDE.md was deleted and
+  re-appended on every run instead of replaced in place.)*
 
 ## Writing and briefing
 

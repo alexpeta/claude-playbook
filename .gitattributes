@@ -1,0 +1,4 @@
+* text=auto
+bin/*    text eol=lf
+*.md     text eol=lf
+llms.txt text eol=lf
