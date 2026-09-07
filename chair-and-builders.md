@@ -46,14 +46,21 @@ morning without a false green.
 8. **Retro** at the end of a run (`templates/retro.md`): what worked, what did not, rules
    adopted (saved as memory), tomorrow.
 
-## Grants (each was given explicitly, dated; a new project needs its own)
+## Grants
 
-- Merge grant for execution PRs under triple-green (builder gate, CI per check, the chair's own
-  unit-gate rerun) plus the QC comment. Decision documents wait for the approver's click.
+Standing across projects since 2026-09-07 (Alex, in chat: the chair may merge PRs; DACIs wait
+for the user; builder-opened PRs the chair QC-reads and then merges). Before that date each
+grant was given per project; ops grants still are.
+
+- **Merge grant.** The chair merges execution PRs — its own and builders' — under triple-green
+  (builder gate, CI per check, the chair's own unit-gate rerun) plus the dated QC comment on
+  the PR. Where a repo has no gate or CI (docs-only), the QC read is the condition. Decision
+  documents (DACIs) wait for the approver's click; approval *is* ratification.
 - Ruling delegation at ≥ 80 % confidence; below that, options and a lean.
 - Pacing of dispatch is the chair's: to the runner queue and the merge line, not to a fixed
   count of agents in flight.
-- Ops grants (restart a runner, cancel a wedged run, prune a store) are explicit and logged.
+- Ops grants (restart a runner, cancel a wedged run, prune a store) are per project, explicit
+  and logged.
 
 ## What the builder definition must carry
 
