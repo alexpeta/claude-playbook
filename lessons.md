@@ -68,6 +68,13 @@ command lives in that project's `CLAUDE.md`.
 - **Two builders on one function.** Two PRs modifying the same function in one day compose
   textually and can still be wrong together; the second to land re-reads the first.
 
+- **An agent definition placed this session is not dispatchable this session.** `bin/init`
+  drops `.claude/agents/builder.md` into the repo, but the Agent tool's type list is read at
+  session start; `subagent_type: "builder"` answers "not found" until the next session.
+  Dispatch with `general-purpose`, `model: opus`, `isolation: worktree`, and the definition's
+  body inlined at the top of the brief — same contract, no restart. *(photolab, 2026-09-07:
+  first dispatch on a freshly bootstrapped repo.)*
+
 ## Environments and tooling
 
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
