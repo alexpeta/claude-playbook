@@ -40,7 +40,10 @@ command lives in that project's `CLAUDE.md`.
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
   `isolation: worktree` for agents; a `git worktree add` for the chair's own side work; never
-  `git checkout` in the main tree while a gate chain has it detached (a false red on a real PR).
+  `git checkout` in the main tree while a gate chain has it detached (a false red on a real PR;
+  repeated 2026-09-07 with a `checkout main && pull` under a running gate — recovery: kill that
+  gate, delete its exit artifact, clear the stale lock, relaunch it). Make the check a habit:
+  `ls /tmp/<tree-lock>` before any command that touches the main tree.
 - **Worktrees isolate the repo, not the scratchpad.** Builders overwrote each other's PR body,
   gate script and comment draft mid-run; one victim's first green came from the WRONG worktree.
   Scratch under a run-unique path, always.
