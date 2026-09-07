@@ -53,6 +53,11 @@ command lives in that project's `CLAUDE.md`.
   worktree was deleted in a hygiene sweep on that assumption. Sweep only worktrees whose task
   has reported AND whose PR is merged or closed; skip anything with unexplained uncommitted
   content; harvest the builder's memory notes first (they live inside the worktree).
+- **A session branch or process restart drops subagent transcripts.** Three builders parked on
+  five-minute pollers ("rebase when PR X merges") silently ceased to exist when the chat was
+  branched; their heads never moved and nothing reported it. Never park a builder on a long
+  wait — have it finish and report, and re-dispatch a fresh one when the trigger lands; treat
+  an agent id as unreachable after any session boundary until it answers.
 - **Squash merges break ancestor tests.** `merge-base --is-ancestor` says "unmerged" for
   squash-merged work; test mergedness with the PR state or `git log --grep`.
 - **Serialize merges behind releases.** One release runner plus a "upstream changed" refusal
