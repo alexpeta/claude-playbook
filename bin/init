@@ -44,6 +44,16 @@ place "$PB/agents/builder.md"   "$TOP/.claude/agents/builder.md"
 keep  "$TOP/docs/decisions"
 keep  "$TOP/docs/retros"
 
+# The harness parks builder worktrees and agent memory under .claude/; without these two lines
+# a `git add -A` in the main tree sweeps a live builder's worktree into the commit.
+ignored=""
+for pat in ".claude/worktrees/" ".claude/agent-memory/"; do
+  if ! grep -qxF "$pat" "$TOP/.gitignore" 2>/dev/null; then
+    printf '%s\n' "$pat" >> "$TOP/.gitignore" && ignored="$ignored $pat"
+  fi
+done
+[ -n "$ignored" ] && created="$created\n  $TOP/.gitignore (+$ignored)"
+
 echo "init: $TOP (playbook $PB_N @ $(git -C "$PB" log -1 --format=%h 2>/dev/null || echo '?'))"
 [ -n "$created" ] && printf 'created:%b\n' "$created"
 [ -n "$skipped" ] && printf 'skipped:%b\n' "$skipped"
