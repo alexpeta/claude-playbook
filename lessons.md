@@ -28,6 +28,12 @@ command lives in that project's `CLAUDE.md`.
 - **Metrics inherit the blind spots of their instrumentation.** A 14-day "clean" clock read
   all-zero while a destructive write went through a path it never instrumented. Prefer
   outcome-shaped denominators (every audit row) over signal-shaped ones (the alarms you installed).
+- **A test that derives "today" from a different clock or day function than the code is a
+  time bomb with a calendar fuse.** Two helpers keyed the weekday on the UTC date while the
+  code resolved a 05:00-floored local coaching day; main went red every evening at UTC
+  midnight, with no change to blame. Derive the value from the function the code uses, or
+  freeze the clock the code reads; and run the suite once at a boundary hour before
+  trusting a day-shaped test.
 - **A test with a literal future timestamp is a time bomb.** A fixture hard-coded a proposal's
   `expires_at` a day ahead; the code under test read the WALL clock for expiry while the test
   froze a different clock, so at the minute the literal passed, every gate on main went red
