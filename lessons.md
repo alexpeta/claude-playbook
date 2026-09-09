@@ -130,3 +130,19 @@ command lives in that project's `CLAUDE.md`.
   injection with a `tee` to a file from inside the hook, then read the file. Note that Claude
   Code prefixes the first stdout line with `SessionStart:<matcher> hook success:`, so test
   "contains", not "begins with". *(First new-session test of `bin/wake`, 2026-09-07.)*
+
+## Purge branches by PR record, not by ancestry (2026-09-09)
+
+A repo that squash-merges leaves every PR branch's commits OUTSIDE main's ancestry, so
+`git branch --merged` and `merge-base --is-ancestor` call a merged branch "unique work". And
+if the remote copies are deleted first, the "local equals its remote" test stops seeing them
+too — the coach repo's first local pass kept 427 branches as "unpushed", of which 425 were
+merged-PR heads and the other two had zero unique patches by `git cherry`.
+
+**How to apply:** classify by the PR record first (`gh pr list --state merged/closed --json
+headRefName`, paginated), then by `git cherry <main> <branch>` for the residue (zero `+` lines
+means main already holds every patch), and only then by ancestry. Run the local pass BEFORE
+the remote one, or keep the PR-head list from before the remote deletion. Bulk deletion is the
+approver's hand: the harness classifier refuses mass `push --delete` / `branch -D` from the
+chair, and a script wrapper would be a workaround — write the script, explain each class in
+its header, and hand over the command.
