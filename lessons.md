@@ -76,6 +76,12 @@ command lives in that project's `CLAUDE.md`.
   the merged sha — the release tool tags its own bump commit on top.
 - **Two builders on one function.** Two PRs modifying the same function in one day compose
   textually and can still be wrong together; the second to land re-reads the first.
+- **An agent definition placed this session is not dispatchable this session.** `bin/init`
+  drops `.claude/agents/builder.md` into the repo, but the Agent tool's type list is read at
+  session start; `subagent_type: "builder"` answers "not found" until the next session.
+  Dispatch with `general-purpose`, `model: opus`, `isolation: worktree`, and the definition's
+  body inlined at the top of the brief — same contract, no restart. *(photolab, 2026-09-07:
+  first dispatch on a freshly bootstrapped repo.)*
 
 ## Environments and tooling
 
@@ -104,6 +110,10 @@ command lives in that project's `CLAUDE.md`.
 
 ## Writing and briefing
 
+- **A count in a brief is computed with the code's own filter.** `47 files − 6 print masters
+  = 41` forgot the three `.md` and the `.DS_Store` the suffix rule skips; the builder counted
+  with `find` plus the rule and got 37. Never subtract from `ls | wc -l`; run the filter.
+  *(photolab #2, 2026-09-07: the first PR's "Where the brief was wrong".)*
 - **Brief from the repo at dispatch time, not from a summary.** Eight wrong briefs in one day
   shared that cause; the builder who argued with the brief was right every time. Every brief
   lists what to verify first and asks for a "Where the brief was wrong" section.

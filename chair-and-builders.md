@@ -75,3 +75,33 @@ gate exit from a file, never from stage prose; never `git stash`; never mutate t
 gate runs; scratch under a run-unique path; keyless CI reproduction; `Closes` the slice not the
 epic; surface ambiguity in the PR body instead of resolving it silently; write durable craft to
 memory, not task specifics.
+
+## Where the harness lives
+
+Four layers, one criterion (ratified 2026-09-08 on the coach repo, from a retro item asking
+whether to track builder memory):
+
+| layer | examples | home | versioned |
+|---|---|---|---|
+| code | the package, tests | the repo | yes |
+| record | docs, decisions, RCAs, retros | the repo | yes |
+| repo-bound harness | agent definitions, builder memory, the chair's gate and coordinator scripts, the QC comment template | the repo, under `.claude/` | yes — committed only by the chair |
+| operational state | merge queue, comment files, the run ledger, the chair's own memory, heartbeats | the machine | no, by design |
+| playbook | laws, templates, lessons true of any repo | this repo | yes |
+
+- **The criterion is staleness, not "product vs metadata".** Whatever goes stale when the code
+  moves — a memory file naming a fixture, an agent definition naming the gate command, a
+  coordinator encoding the release mechanics — lives with the code, in the same commit
+  history. CI workflows and the project `CLAUDE.md` were already there for the same reason.
+  A separate harness repo drifts, costs two PRs per change, and breaks the one mechanism
+  that makes tracked memory worth anything: a fresh worktree inherits it.
+- **Draw the product boundary explicitly.** If the image is built with `COPY . .`, add a
+  `.dockerignore` for `.claude/` (and `docs/`) BEFORE tracking anything under it — the coach
+  repo shipped its docs, tests and agent definition in every image until someone read the
+  Dockerfile.
+- **Builders never commit memory in feature PRs.** The chair harvests new files from a
+  worktree before removing it and commits them in a `chore(harness)` PR; a consolidation
+  pass merges duplicate families (a fresh-worktree builder re-learns the same gate mechanics
+  every run until the store is inherited).
+- **Operational state decays on purpose; promote its residue.** Rulings go to tickets and
+  decision documents, repo craft to builder memory, transferable lessons here.
