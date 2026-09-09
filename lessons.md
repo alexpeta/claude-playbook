@@ -130,6 +130,13 @@ if the remote copies are deleted first, the "local equals its remote" test stops
 too — the coach repo's first local pass kept 427 branches as "unpushed", of which 425 were
 merged-PR heads and the other two had zero unique patches by `git cherry`.
 
+**Also:** `git branch -r` counts EVERY `refs/remotes/*` namespace, including leftovers of
+an old pull-request refspec (`refs/remotes/pr/*`) that no `fetch --prune` will ever touch
+because no such remote exists. The coach repo's "1,576 remote branches" were 8 on GitHub
+plus 1,030 of those. Read `git ls-remote --heads origin` before calling anything a remote
+branch, and delete stale local refs with `git update-ref --stdin` (one ref per invocation
+otherwise).
+
 **How to apply:** classify by the PR record first (`gh pr list --state merged/closed --json
 headRefName`, paginated), then by `git cherry <main> <branch>` for the residue (zero `+` lines
 means main already holds every patch), and only then by ancestry. Run the local pass BEFORE
