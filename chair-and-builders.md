@@ -53,7 +53,7 @@ morning without a false green.
 ## Grants
 
 The approver gives grants explicitly and dated; this section records them. The ones below are
-the author's, standing across their projects since 2026-09-07 (Alex, in chat: the chair may
+the author's, standing across their projects since 2026-09-07 (given in chat: the chair may
 merge PRs; DACIs wait for the user; builder-opened PRs the chair QC-reads and then merges).
 Before that date each grant was given per project; ops grants still are.
 
@@ -78,7 +78,7 @@ memory, not task specifics.
 
 ## Where the harness lives
 
-Four layers, one criterion (ratified 2026-09-08 on the coach repo, from a retro item asking
+Five layers, one criterion (ratified 2026-09-08 on a production repo, from a retro item asking
 whether to track builder memory):
 
 | layer | examples | home | versioned |
@@ -96,8 +96,8 @@ whether to track builder memory):
   A separate harness repo drifts, costs two PRs per change, and breaks the one mechanism
   that makes tracked memory worth anything: a fresh worktree inherits it.
 - **Draw the product boundary explicitly.** If the image is built with `COPY . .`, add a
-  `.dockerignore` for `.claude/` (and `docs/`) BEFORE tracking anything under it — the coach
-  repo shipped its docs, tests and agent definition in every image until someone read the
+  `.dockerignore` for `.claude/` (and `docs/`) BEFORE tracking anything under it — one repo
+  shipped its docs, tests and agent definition in every image until someone read the
   Dockerfile.
 - **Builders never commit memory in feature PRs.** The chair harvests new files from a
   worktree before removing it and commits them in a `chore(harness)` PR; a consolidation

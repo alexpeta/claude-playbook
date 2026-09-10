@@ -7,7 +7,7 @@ command lives in that project's `CLAUDE.md`.
 
 - **Capture exit codes directly.** `check | tail` reports the pipe's status. Redirect to a
   file, then read `$?`; trust only the exit file — stage prose ("All checks passed!") has
-  printed before the tests ran. *(PR #63; a builder read "passed" twice while the chain exited 1.)*
+  printed before the tests ran. *(A builder read "passed" twice while the chain exited 1.)*
 - **CI is keyless.** No API keys in CI; a test that reaches a real LLM call passes locally on
   the developer's `.env` and crashes in CI. Stub the LLM constructor on any LLM-touching path;
   reproduce CI with the empty key exported (`KEY= run-the-gate`), not by moving `.env` —
@@ -17,20 +17,20 @@ command lives in that project's `CLAUDE.md`.
   everything you normally watch. Grep the integration tests too; never `head`-truncate a grep.
 - **A conflicting PR gets no CI run at all.** GitHub cannot build the merge ref, so
   `synchronize`, `labeled`, `reopened` and empty commits all produce nothing. Check
-  `mergeable` before chasing a missing run. *(#2359, 2026-09-07: two hours lost.)*
+  `mergeable` before chasing a missing run. *(2026-09-07: two hours lost.)*
 - **A gate that got lucky is not a gate.** Re-gate on any new head, always; a gate keyed to a
   stale head is evidence about a tree that no longer exists. Gate artifacts are per-agent and
   per-head (`<issue>-<worktree-id>`), never a shared `/tmp/g*` that a sibling can pick up.
 - **A test that cannot fail is a finding.** Before trusting a green, ask what input would have
   to exist for it to go red; if nothing in the corpus can, the guard is vacuous. *(A
-  date-keyed readiness fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
+  date-keyed fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
   because two labels folded onto one decision — found by a mutation that did not go red.)*
 - **Metrics inherit the blind spots of their instrumentation.** A 14-day "clean" clock read
   all-zero while a destructive write went through a path it never instrumented. Prefer
   outcome-shaped denominators (every audit row) over signal-shaped ones (the alarms you installed).
 - **A test that derives "today" from a different clock or day function than the code is a
   time bomb with a calendar fuse.** Two helpers keyed the weekday on the UTC date while the
-  code resolved a 05:00-floored local coaching day; main went red every evening at UTC
+  code resolved a local day floored at 05:00; main went red every evening at UTC
   midnight, with no change to blame. Derive the value from the function the code uses, or
   freeze the clock the code reads; and run the suite once at a boundary hour before
   trusting a day-shaped test.
@@ -80,29 +80,35 @@ command lives in that project's `CLAUDE.md`.
   drops `.claude/agents/builder.md` into the repo, but the Agent tool's type list is read at
   session start; `subagent_type: "builder"` answers "not found" until the next session.
   Dispatch with `general-purpose`, `model: opus`, `isolation: worktree`, and the definition's
-  body inlined at the top of the brief — same contract, no restart. *(photolab, 2026-09-07:
-  first dispatch on a freshly bootstrapped repo.)*
+  body inlined at the top of the brief — same contract, no restart. *(2026-09-07: the first
+  dispatch on a freshly bootstrapped repo.)*
 - **A foreign builder in print mode must never wait on a background task.** Two runs of a
   second-vendor CLI (`agy`, Gemini 3.1 Pro and 3.8 Flash) each produced a green fix, then died
   polling their own background gate ("I will wait for it to complete" ×5) until the vendor's
   WEEKLY individual quota ran out — neither reached a PR, and the quota was gone for seven
   days. Put the gate in the foreground inside the brief, read the vendor's quota line before
   dispatch, and keep the chair's finish-by-hand path (read the diff, mutation-check, commit with
-  both bylines, open the PR) as the planned fallback, not an emergency. *(coach repo,
-  2026-09-09: #2657 shipped that way after 51 minutes of Gemini wall time.)*
+  both bylines, open the PR) as the planned fallback, not an emergency. *(2026-09-09: the
+  fix shipped that way after 51 minutes of Gemini wall time.)*
 
 ## Environments and tooling
 
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
   title by one. `set -e` does not stop a failure inside `$(…)`. Check every captured variable.
 - **Environment cleanup is a ledger item.** Per-worktree virtualenvs reached 17 GB and 76
-  environments before anyone looked; two image tags per release filled a NAS to 263 GB of
+  environments before anyone looked; two image tags per release filled a deploy host to 263 GB of
   Docker images. Measure (`du`, `docker system df`), prune by an explicit filter (a label, a
   dead path), never by "the first match" — one sweep that guessed the wrong `.pth` deleted six
   live environments including two running builders'.
 - **Long operations over SSH run detached.** An `expect` session's timeout killed a prune
   mid-way (the daemon kept going, blind). `nohup … &` on the far side, poll a log that ends with
   `DONE`. In Tcl, square brackets inside the spawn string are command substitution.
+- **A captured buffer can silently keep only the tail.** `expect_out(buffer)` holds the last
+  ~2000 bytes (`match_max`); two remote rounds came back as their last six lines before anyone
+  noticed (2026-09-07). Capture the whole session to a file (`log_file -a`) and read that.
+- **Mask a secret by its exact value, never by filtering lines.** `grep -v password` let a
+  fragment through once; substitute the value itself (`string map`, `sed "s/$SECRET/***/g"`)
+  before anything is printed or read.
 - **A laptop sleeps between heartbeats** unless something holds it awake; an unattended run on
   a sleeping machine stalls without an error. Check the power log before blaming the pipeline.
 - **Prefer the CLI over an MCP for the same service** when the repo's conventions are written
@@ -115,19 +121,36 @@ command lives in that project's `CLAUDE.md`.
   accepts it, so a script tested on Linux breaks on macOS. Pass one `-v` per line and `print`
   them in order. *(`bin/install`, 2026-09-07: the marked block in CLAUDE.md was deleted and
   re-appended on every run instead of replaced in place.)*
-- **A branch outlives its squash merge.** `updates` kept the nine commits PR #7 had squashed
-  into one, so the next PR from it conflicted on every file #7 touched, and the classifier
+- **A branch outlives its squash merge.** A docs branch kept the nine commits its PR had squashed
+  into one, so the next PR from it conflicted on every file the first touched, and the classifier
   blocks the force-push that would fix it. After a squash merge, branch fresh from `main` for the
   next change; never keep a long-lived docs branch. Recovery without a force-push: cherry-pick the
   new commits onto a fresh branch, open the replacement PR, close the old one with a pointer.
-  *(playbook #8 → #9, 2026-09-10.)*
+  *(This playbook, 2026-09-10.)*
+- **Purge branches by PR record, not by ancestry.** A repo that squash-merges leaves every PR
+  branch's commits OUTSIDE main's ancestry, so `git branch --merged` and
+  `merge-base --is-ancestor` call a merged branch "unique work"; and if the remote copies are
+  deleted first, the "local equals its remote" test stops seeing them too. Classify by the PR
+  record first (`gh pr list --state merged/closed --json headRefName`, paginated), then by
+  `git cherry <main> <branch>` for the residue (zero `+` lines means main already holds every
+  patch), and only then by ancestry. Run the local pass BEFORE the remote one, or keep the
+  PR-head list from before the remote deletion. Bulk deletion is the approver's hand: the
+  harness classifier refuses mass `push --delete` / `branch -D` from the chair, and a script
+  wrapper would be a workaround — write the script, explain each class in its header, and hand
+  over the command. *(2026-09-09: a first local pass kept 427 branches as "unpushed"; 425 were
+  merged-PR heads and the other two had zero unique patches by `git cherry`.)*
+- **`git branch -r` counts EVERY `refs/remotes/*` namespace**, including leftovers of an old
+  pull-request refspec (`refs/remotes/pr/*`) that no `fetch --prune` will ever touch because no
+  such remote exists. Read `git ls-remote --heads origin` before calling anything a remote
+  branch, and delete stale local refs with `git update-ref --stdin` (one ref per invocation
+  otherwise). *(2026-09-09: "1,576 remote branches" were 8 on GitHub plus 1,030 of those.)*
 
 ## Writing and briefing
 
 - **A count in a brief is computed with the code's own filter.** `47 files − 6 print masters
   = 41` forgot the three `.md` and the `.DS_Store` the suffix rule skips; the builder counted
   with `find` plus the rule and got 37. Never subtract from `ls | wc -l`; run the filter.
-  *(photolab #2, 2026-09-07: the first PR's "Where the brief was wrong".)*
+  *(2026-09-07: a new repo's first PR, under "Where the brief was wrong".)*
 - **Brief from the repo at dispatch time, not from a summary.** Eight wrong briefs in one day
   shared that cause; the builder who argued with the brief was right every time. Every brief
   lists what to verify first and asks for a "Where the brief was wrong" section.
@@ -135,8 +158,8 @@ command lives in that project's `CLAUDE.md`.
 - **Timestamps come from the clock.** Three ledger lines were stamped thirty minutes ahead of
   reality and had to be corrected.
 - **Mirror the producer's formula in a sibling surface** — grep the producing function and
-  quote it — never choose a formula that sounds right. *(A dashboard shipped Epley where the
-  system computes Brzycki; two numbers for one lift.)*
+  quote it — never choose a formula that sounds right. *(A dashboard shipped one estimation
+  formula where the system computes another; two numbers for one metric.)*
 - **Measure before optimizing.** Instrument, read, decide; park low-value work; a rejected
   architecture is not re-proposed casually. Confidence on recommendations, with the `%` sign.
 - **A model's account of its own context is not a witness.** Asked to quote every hook line in
@@ -144,26 +167,3 @@ command lives in that project's `CLAUDE.md`.
   injection with a `tee` to a file from inside the hook, then read the file. Note that Claude
   Code prefixes the first stdout line with `SessionStart:<matcher> hook success:`, so test
   "contains", not "begins with". *(First new-session test of `bin/wake`, 2026-09-07.)*
-
-## Purge branches by PR record, not by ancestry (2026-09-09)
-
-A repo that squash-merges leaves every PR branch's commits OUTSIDE main's ancestry, so
-`git branch --merged` and `merge-base --is-ancestor` call a merged branch "unique work". And
-if the remote copies are deleted first, the "local equals its remote" test stops seeing them
-too — the coach repo's first local pass kept 427 branches as "unpushed", of which 425 were
-merged-PR heads and the other two had zero unique patches by `git cherry`.
-
-**Also:** `git branch -r` counts EVERY `refs/remotes/*` namespace, including leftovers of
-an old pull-request refspec (`refs/remotes/pr/*`) that no `fetch --prune` will ever touch
-because no such remote exists. The coach repo's "1,576 remote branches" were 8 on GitHub
-plus 1,030 of those. Read `git ls-remote --heads origin` before calling anything a remote
-branch, and delete stale local refs with `git update-ref --stdin` (one ref per invocation
-otherwise).
-
-**How to apply:** classify by the PR record first (`gh pr list --state merged/closed --json
-headRefName`, paginated), then by `git cherry <main> <branch>` for the residue (zero `+` lines
-means main already holds every patch), and only then by ancestry. Run the local pass BEFORE
-the remote one, or keep the PR-head list from before the remote deletion. Bulk deletion is the
-approver's hand: the harness classifier refuses mass `push --delete` / `branch -D` from the
-chair, and a script wrapper would be a workaround — write the script, explain each class in
-its header, and hand over the command.

@@ -18,8 +18,9 @@ Before anything else:
   from the repo root, then fill the placeholders it lists. Ask before running it in a repo
   that is not yours to shape.
 - A lesson minted today that generalizes goes into the playbook the same day, in the file it
-  belongs to, with the incident that earned it. Project specifics stay out: what is here must
-  be true of a repo it has never seen.
+  belongs to, with the incident that earned it. Project specifics stay out (no project names,
+  ticket numbers, hosts or credentials; the incident keeps its date and its numbers): what is
+  here must be true of a repo it has never seen.
 
 ## Laws and operating model
 
@@ -44,10 +45,9 @@ Before anything else:
 
 - [recipes/merge-coordinator.md](recipes/merge-coordinator.md): draining QC-green PRs one release at a time.
 - [recipes/board-via-gh.md](recipes/board-via-gh.md): the project board through `gh` and GraphQL.
-- [recipes/expect-ssh-masked.md](recipes/expect-ssh-masked.md): SSH with a password from `.env`, never printed.
 
 ## Optional
 
-- [README.md](README.md): what this repo is, how a machine and a project are wired to it, the rules for editing it.
+- [README.md](README.md): what this repo is, how a machine and a project are wired to it, how to adopt it.
 - [bin/install](bin/install): once per machine; writes the imports and the session-start hook.
 - [bin/wake](bin/wake): the session-start hook; prints the `[playbook]` lines.

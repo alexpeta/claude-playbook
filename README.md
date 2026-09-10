@@ -3,7 +3,7 @@
 How a human approver and Claude work together — the laws, the operating model, the lessons —
 written down so a new project, or a fresh session with no memory of the last one, starts where
 the previous one left off instead of re-learning it. Distilled from one person's projects (see
-Origin) and meant to be adopted by anyone.
+[Origin](#origin)) and meant to be adopted by anyone.
 
 The wake letter is [`WAKE.md`](WAKE.md): what to do before anything else, then what each file
 holds and when to read it. The laws are
@@ -73,6 +73,17 @@ Fork or clone; nothing here is tied to one machine or one person. What to make y
   agents. Swap models freely; keep the separation.
 - **Lessons**: add yours the same day they are minted, with the incident. Amend freely; never
   delete the incident that minted a rule.
-- **Project specifics stay out**: gate commands, hosts, schema names, credentials. What is here
-  must be true of a repo it has never seen; an incident may carry its ticket number, but the
-  lesson must stand without following the link.
+- **Project specifics stay out**: project names, ticket numbers, gate commands, hosts, schema
+  names, credentials. What is here must be true of a repo it has never seen; an incident keeps
+  its date and its numbers, and the lesson stands without following a link.
+
+## Origin
+
+Distilled on 2026-09-07 from a production project's `CLAUDE.md`, its builder definition and the
+chair's memory notes, after a morning that merged 12 PRs and shipped 6 releases under these
+rules. Lessons since then come from that project and others, anonymized. Repo-specific details
+stay in each project; what is here is the part that transfers.
+
+## License
+
+[MIT](LICENSE).
