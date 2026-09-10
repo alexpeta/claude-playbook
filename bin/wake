@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# SessionStart hook: two lines of state for the session that is starting.
+# The text that binds arrives through CLAUDE.md imports; this prints only what a file cannot
+# know: where the playbook is and how current it is, and whether this repo is bootstrapped.
+# Never fails the session: every branch exits 0. Never blocks on the network.
+# Runs under bash on macOS/Linux and under Git Bash on Windows.
+set -u
+case "${OSTYPE:-}" in msys*|cygwin*) PATH="/usr/bin:/bin:$PATH" ;; esac  # Git Bash spawned by Claude Code may lack the Unix tools on PATH
+
+[ -t 0 ] || cat >/dev/null   # drain the hook's stdin JSON; skipped when run by hand on a tty
+
+PB="$(cd "$(dirname "$0")/.." && pwd -P)"
+REPO="${CLAUDE_PROJECT_DIR:-$PWD}"
+native() { if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else printf '%s\n' "$1"; fi; }  # C:/… on Windows
+mtime() { if stat --version >/dev/null 2>&1; then stat -c %Y "$1" 2>/dev/null; else stat -f %m "$1" 2>/dev/null; fi; }  # GNU, else BSD
+PB_N="$(native "$PB")"
+
+# --- line 1: the playbook itself
+line="[playbook] $PB_N"
+pb_top="$(git -C "$PB" rev-parse --show-toplevel 2>/dev/null)"
+if [ -n "$pb_top" ]; then
+  head_desc="$(git -C "$PB" log -1 --format='%h (%cs)' 2>/dev/null)"
+  line="$line @ ${head_desc:-unknown}"
+
+  upstream="$(git -C "$PB" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)"
+  if [ -n "$upstream" ]; then
+    behind="$(git -C "$PB" rev-list --count "HEAD..$upstream" 2>/dev/null || echo '?')"
+    ahead="$(git -C "$PB" rev-list --count "$upstream..HEAD" 2>/dev/null || echo '?')"
+    line="$line, $behind behind / $ahead ahead of $upstream"
+    # --absolute-git-dir, not --git-path: the latter is relative to the caller's cwd, not to -C.
+    fetch_head="$(git -C "$PB" rev-parse --absolute-git-dir 2>/dev/null)/FETCH_HEAD"
+    last="$(mtime "$fetch_head")"
+    if [ -z "$last" ]; then
+      age_txt="never fetched"; stale=1
+    else
+      age=$(( $(date +%s) - last ))
+      if [ "$age" -ge 3600 ]; then age_txt="last fetch $(( age / 3600 )) h ago"; else age_txt="last fetch $(( age / 60 )) min ago"; fi
+      if [ "$age" -ge 21600 ]; then stale=1; else stale=0; fi
+    fi
+    if [ "$stale" = 1 ]; then
+      # Refresh in the background, never waiting on it; the distance above is as of the last fetch.
+      (cd "$PB" && GIT_TERMINAL_PROMPT=0 nohup git fetch -q origin >/dev/null 2>&1 &)
+      line="$line ($age_txt; refreshing in the background)"
+    else
+      line="$line ($age_txt)"
+    fi
+  else
+    line="$line, no upstream"
+  fi
+
+  dirty="$(git -C "$PB" status --porcelain 2>/dev/null | wc -l | tr -d ' ')"
+  [ "${dirty:-0}" -gt 0 ] && line="$line, $dirty uncommitted path(s)"
+fi
+echo "$line"
+
+# --- line 2: the repo this session is in
+top="$(git -C "$REPO" rev-parse --show-toplevel 2>/dev/null)"
+if [ -z "$top" ]; then
+  echo "[playbook] repo $(native "$REPO"): not a git repository; bin/init needs one (git init first)"
+  exit 0
+fi
+if [ -n "$pb_top" ] && [ "$top" = "$pb_top" ]; then
+  echo "[playbook] repo $PB_N: this is the playbook itself; see README.md, Adopting it"
+  exit 0
+fi
+missing=""
+[ -f "$top/CLAUDE.md" ] || [ -f "$top/.claude/CLAUDE.md" ] || missing="$missing CLAUDE.md"
+[ -d "$top/.claude/agents" ] || missing="$missing .claude/agents/"
+[ -d "$top/docs/decisions" ] || missing="$missing docs/decisions/"
+if [ -z "$missing" ]; then
+  echo "[playbook] repo $top: bootstrapped (CLAUDE.md, .claude/agents/, docs/decisions/ present)"
+else
+  echo "[playbook] repo $top: not bootstrapped, missing:$missing. For a real project run $PB_N/bin/init from the repo root; ask first if the repo is not yours to shape"
+fi
+exit 0

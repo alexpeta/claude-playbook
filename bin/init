@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Bootstrap the current repo under the playbook: CLAUDE.md, the builder agent, docs/decisions/,
+# docs/retros/. Copies only; never overwrites; says what it did and what is left to fill.
+# Usage: bin/init [path-inside-the-repo]   (default: the current directory)
+# Runs under bash on macOS/Linux and under Git Bash on Windows.
+set -u
+case "${OSTYPE:-}" in msys*|cygwin*) PATH="/usr/bin:/bin:$PATH" ;; esac
+
+PB="$(cd "$(dirname "$0")/.." && pwd -P)"
+native() { if command -v cygpath >/dev/null 2>&1; then cygpath -m "$1"; else printf '%s\n' "$1"; fi; }  # C:/… on Windows
+PB_N="$(native "$PB")"
+TARGET="${1:-$PWD}"
+
+if ! TOP="$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null)"; then
+  echo "init: $TARGET is not inside a git repository. Run 'git init' there first, then rerun." >&2
+  exit 1
+fi
+if [ "$TOP" = "$(git -C "$PB" rev-parse --show-toplevel 2>/dev/null)" ]; then
+  echo "init: refusing to bootstrap the playbook itself ($PB_N)." >&2
+  exit 1
+fi
+
+created=""
+skipped=""
+place() {  # place <src> <dst>: copy unless dst exists
+  local src="$1" dst="$2"
+  if [ -e "$dst" ]; then
+    skipped="$skipped\n  $dst (exists, left alone)"
+  else
+    mkdir -p "$(dirname "$dst")" && cp "$src" "$dst" && created="$created\n  $dst"
+  fi
+}
+keep() {  # keep <dir>: create with a .gitkeep unless present
+  local d="$1"
+  if [ -d "$d" ]; then
+    skipped="$skipped\n  $d/ (exists, left alone)"
+  else
+    mkdir -p "$d" && : > "$d/.gitkeep" && created="$created\n  $d/ (.gitkeep)"
+  fi
+}
+
+place "$PB/templates/CLAUDE.md" "$TOP/CLAUDE.md"
+place "$PB/agents/builder.md"   "$TOP/.claude/agents/builder.md"
+keep  "$TOP/docs/decisions"
+keep  "$TOP/docs/retros"
+
+# The harness parks builder worktrees under .claude/worktrees/; without this line a
+# `git add -A` in the main tree sweeps a live builder's worktree into the commit.
+ignored=""
+# Worktrees are per-machine scratch; agent MEMORY is repo-bound harness and is TRACKED
+# (chair-only commits) — see chair-and-builders.md, "Where the harness lives" (2026-09-08).
+for pat in ".claude/worktrees/"; do
+  if ! grep -qxF "$pat" "$TOP/.gitignore" 2>/dev/null; then
+    printf '%s\n' "$pat" >> "$TOP/.gitignore" && ignored="$ignored $pat"
+  fi
+done
+[ -n "$ignored" ] && created="$created\n  $TOP/.gitignore (+$ignored)"
+
+echo "init: $TOP (playbook $PB_N @ $(git -C "$PB" log -1 --format=%h 2>/dev/null || echo '?'))"
+[ -n "$created" ] && printf 'created:%b\n' "$created"
+[ -n "$skipped" ] && printf 'skipped:%b\n' "$skipped"
+
+echo "left to fill:"
+grep -n -e '<GATE COMMAND>' -e '<API KEY>' "$TOP/CLAUDE.md" "$TOP/.claude/agents/builder.md" 2>/dev/null | sed 's/^/  /'
+cat <<NEXT
+next:
+  1. CLAUDE.md, section 7: the gate command and this repo's mechanics; delete anything not true of it.
+  2. .claude/agents/builder.md: the gate command and this repo's own laws.
+  3. The first real fork: docs/decisions/0001-<slug>.md from $PB_N/templates/daci.md.
+NEXT
+exit 0
