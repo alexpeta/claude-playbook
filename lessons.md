@@ -115,6 +115,12 @@ command lives in that project's `CLAUDE.md`.
   accepts it, so a script tested on Linux breaks on macOS. Pass one `-v` per line and `print`
   them in order. *(`bin/install`, 2026-09-07: the marked block in CLAUDE.md was deleted and
   re-appended on every run instead of replaced in place.)*
+- **A branch outlives its squash merge.** `updates` kept the nine commits PR #7 had squashed
+  into one, so the next PR from it conflicted on every file #7 touched, and the classifier
+  blocks the force-push that would fix it. After a squash merge, branch fresh from `main` for the
+  next change; never keep a long-lived docs branch. Recovery without a force-push: cherry-pick the
+  new commits onto a fresh branch, open the replacement PR, close the old one with a pointer.
+  *(playbook #8 → #9, 2026-09-10.)*
 
 ## Writing and briefing
 
