@@ -82,6 +82,14 @@ command lives in that project's `CLAUDE.md`.
   Dispatch with `general-purpose`, `model: opus`, `isolation: worktree`, and the definition's
   body inlined at the top of the brief — same contract, no restart. *(photolab, 2026-09-07:
   first dispatch on a freshly bootstrapped repo.)*
+- **A foreign builder in print mode must never wait on a background task.** Two runs of a
+  second-vendor CLI (`agy`, Gemini 3.1 Pro and 3.8 Flash) each produced a green fix, then died
+  polling their own background gate ("I will wait for it to complete" ×5) until the vendor's
+  WEEKLY individual quota ran out — neither reached a PR, and the quota was gone for seven
+  days. Put the gate in the foreground inside the brief, read the vendor's quota line before
+  dispatch, and keep the chair's finish-by-hand path (read the diff, mutation-check, commit with
+  both bylines, open the PR) as the planned fallback, not an emergency. *(coach repo,
+  2026-09-09: #2657 shipped that way after 51 minutes of Gemini wall time.)*
 
 ## Environments and tooling
 
