@@ -82,6 +82,14 @@ command lives in that project's `CLAUDE.md`.
   Dispatch with `general-purpose`, `model: opus`, `isolation: worktree`, and the definition's
   body inlined at the top of the brief — same contract, no restart. *(photolab, 2026-09-07:
   first dispatch on a freshly bootstrapped repo.)*
+- **A foreign builder in print mode must never wait on a background task.** Two runs of a
+  second-vendor CLI (`agy`, Gemini 3.1 Pro and 3.8 Flash) each produced a green fix, then died
+  polling their own background gate ("I will wait for it to complete" ×5) until the vendor's
+  WEEKLY individual quota ran out — neither reached a PR, and the quota was gone for seven
+  days. Put the gate in the foreground inside the brief, read the vendor's quota line before
+  dispatch, and keep the chair's finish-by-hand path (read the diff, mutation-check, commit with
+  both bylines, open the PR) as the planned fallback, not an emergency. *(coach repo,
+  2026-09-09: #2657 shipped that way after 51 minutes of Gemini wall time.)*
 
 ## Environments and tooling
 
@@ -107,6 +115,12 @@ command lives in that project's `CLAUDE.md`.
   accepts it, so a script tested on Linux breaks on macOS. Pass one `-v` per line and `print`
   them in order. *(`bin/install`, 2026-09-07: the marked block in CLAUDE.md was deleted and
   re-appended on every run instead of replaced in place.)*
+- **A branch outlives its squash merge.** `updates` kept the nine commits PR #7 had squashed
+  into one, so the next PR from it conflicted on every file #7 touched, and the classifier
+  blocks the force-push that would fix it. After a squash merge, branch fresh from `main` for the
+  next change; never keep a long-lived docs branch. Recovery without a force-push: cherry-pick the
+  new commits onto a fresh branch, open the replacement PR, close the old one with a pointer.
+  *(playbook #8 → #9, 2026-09-10.)*
 
 ## Writing and briefing
 
@@ -130,3 +144,26 @@ command lives in that project's `CLAUDE.md`.
   injection with a `tee` to a file from inside the hook, then read the file. Note that Claude
   Code prefixes the first stdout line with `SessionStart:<matcher> hook success:`, so test
   "contains", not "begins with". *(First new-session test of `bin/wake`, 2026-09-07.)*
+
+## Purge branches by PR record, not by ancestry (2026-09-09)
+
+A repo that squash-merges leaves every PR branch's commits OUTSIDE main's ancestry, so
+`git branch --merged` and `merge-base --is-ancestor` call a merged branch "unique work". And
+if the remote copies are deleted first, the "local equals its remote" test stops seeing them
+too — the coach repo's first local pass kept 427 branches as "unpushed", of which 425 were
+merged-PR heads and the other two had zero unique patches by `git cherry`.
+
+**Also:** `git branch -r` counts EVERY `refs/remotes/*` namespace, including leftovers of
+an old pull-request refspec (`refs/remotes/pr/*`) that no `fetch --prune` will ever touch
+because no such remote exists. The coach repo's "1,576 remote branches" were 8 on GitHub
+plus 1,030 of those. Read `git ls-remote --heads origin` before calling anything a remote
+branch, and delete stale local refs with `git update-ref --stdin` (one ref per invocation
+otherwise).
+
+**How to apply:** classify by the PR record first (`gh pr list --state merged/closed --json
+headRefName`, paginated), then by `git cherry <main> <branch>` for the residue (zero `+` lines
+means main already holds every patch), and only then by ancestry. Run the local pass BEFORE
+the remote one, or keep the PR-head list from before the remote deletion. Bulk deletion is the
+approver's hand: the harness classifier refuses mass `push --delete` / `branch -D` from the
+chair, and a script wrapper would be a workaround — write the script, explain each class in
+its header, and hand over the command.
