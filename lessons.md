@@ -28,6 +28,13 @@ command lives in that project's `CLAUDE.md`.
 - **Metrics inherit the blind spots of their instrumentation.** A 14-day "clean" clock read
   all-zero while a destructive write went through a path it never instrumented. Prefer
   outcome-shaped denominators (every audit row) over signal-shaped ones (the alarms you installed).
+- **A review artifact that elides is not the review.** A swap table rendered five candidates
+  per neighbourhood and "+45 more"; the approver passed what they saw, and 41 wrong rows and
+  10 rows with no honest home sat in the elided part. Render the whole consequence (or the
+  delta against the last reviewed state), and probe the layer that fails — the legality
+  function on every new row, not the label column — before calling a curation gate satisfied.
+  *(2026-09-12: a 301-row import passed QC on a five-per-row table; the second read, made
+  with the legality function, found 51 rows wrong and the first QC comment was retracted.)*
 - **A test that derives "today" from a different clock or day function than the code is a
   time bomb with a calendar fuse.** Two helpers keyed the weekday on the UTC date while the
   code resolved a local day floored at 05:00; main went red every evening at UTC
