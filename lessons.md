@@ -93,6 +93,14 @@ command lives in that project's `CLAUDE.md`.
   Dispatch with `general-purpose`, `model: opus`, `isolation: worktree`, and the definition's
   body inlined at the top of the brief — same contract, no restart. *(2026-09-07: the first
   dispatch on a freshly bootstrapped repo.)*
+- **A builder that waits in one long loop is killed as stalled.** The harness's stream
+  watchdog ends a subagent's turn after ~600 s with no output; a single tool call that polls
+  with `sleep` for ten minutes looks exactly like a hang, and the builder's own background job
+  may die with it (no exit file, no summary line — unmeasured, not failed). Brief builders to
+  launch gates and tiers with the tool's background option and let the harness wake them on
+  exit, and to keep any poll to its own short call. Recovery is a resume message, not a
+  re-dispatch: the worktree and the edits survive the kill. *(2026-09-13: two builders stalled
+  twice each on the same minute, waiting on 45-minute integration tiers; both resumed in place.)*
 - **A foreign builder in print mode must never wait on a background task.** Two runs of a
   second-vendor CLI (`agy`, Gemini 3.1 Pro and 3.8 Flash) each produced a green fix, then died
   polling their own background gate ("I will wait for it to complete" ×5) until the vendor's
