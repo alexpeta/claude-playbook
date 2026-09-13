@@ -78,7 +78,11 @@ command lives in that project's `CLAUDE.md`.
   squash-merged work; test mergedness with the PR state or `git log --grep`.
 - **Serialize merges behind releases.** One release runner plus a "upstream changed" refusal
   means a merge stream faster than the drain rate releases nothing (six merges, zero deploys
-  in one night). Merge one, wait for the tag AND the health endpoint, then the next.
+  in one night). Merge one, wait for the tag AND the health endpoint, then the next. A docs-only or
+  harness-only PR counts too: it shows zero checks on the PR, yet its push to main runs the
+  release job and trips the refusal on the release already in flight. *(2026-09-13: a memory
+  harvest merged six minutes after a code PR; the code PR's release failed on "upstream branch
+  has changed" and only the harvest's own release shipped both.)*
 - **A release is verified by the newest tag plus the health endpoint**, never by `describe` on
   the merged sha — the release tool tags its own bump commit on top.
 - **Two builders on one function.** Two PRs modifying the same function in one day compose
