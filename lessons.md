@@ -150,6 +150,13 @@ command lives in that project's `CLAUDE.md`.
   next change; never keep a long-lived docs branch. Recovery without a force-push: cherry-pick the
   new commits onto a fresh branch, open the replacement PR, close the old one with a pointer.
   *(This playbook, 2026-09-10.)*
+- **Read the PR state before every push to its branch.** A pushed commit on a merged PR's branch
+  is silent: no error, no CI, and the PR page still shows it. The approver merged a decision PR
+  46 minutes before the chair pushed an amendment to its branch; the amendment never reached
+  `main`, a comment on the merged PR announced it as included, and a second PR stacked on that
+  branch inherited the stale base. Run `gh pr view <n> --json state` right before the push; if it
+  merged, branch fresh from `main`, cherry-pick, open a new PR, and retract the claim where it was
+  made. *(2026-09-13: caught only because the next dispatch brief re-read `origin/main`.)*
 - **Purge branches by PR record, not by ancestry.** A repo that squash-merges leaves every PR
   branch's commits OUTSIDE main's ancestry, so `git branch --merged` and
   `merge-base --is-ancestor` call a merged branch "unique work"; and if the remote copies are
