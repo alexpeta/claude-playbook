@@ -35,6 +35,14 @@ command lives in that project's `CLAUDE.md`.
   function on every new row, not the label column — before calling a curation gate satisfied.
   *(2026-09-12: a 301-row import passed QC on a five-per-row table; the second read, made
   with the legality function, found 51 rows wrong and the first QC comment was retracted.)*
+- **A compiler's library setting is not a determinism guard.** A TypeScript package with
+  `lib: ["ES2022"]` and `types: []` rejects `document`, `setTimeout` and `process`, which made it
+  feel sealed; but ES2022 itself ships `Math.random` and `Date`, so a seeded, replayable engine
+  could read the clock or unseeded randomness and still typecheck. The chair's brief asserted the
+  opposite; a builder's probe file proved it wrong. Guard determinism with a mechanical scan in the
+  gate (source with comments stripped, banned names listed, an empty scan refused), and
+  mutation-check the scan. *(2026-09-13: caught before any nondeterministic code landed; the scan
+  went into the gate the same night.)*
 - **A test that derives "today" from a different clock or day function than the code is a
   time bomb with a calendar fuse.** Two helpers keyed the weekday on the UTC date while the
   code resolved a local day floored at 05:00; main went red every evening at UTC
