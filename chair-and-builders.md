@@ -42,6 +42,11 @@ morning without a false green.
    A slice that needs more is dispatched as phases — read and plan, build, gate and verify —
    each a fresh context, joined by a written handoff (what was decided, what moved, what is
    left) that the next phase's brief quotes.
+   Enforce the cap with a PreToolUse hook that counts calls per `agent_id` for the builder
+   agent type only, warns the model through PostToolUse context near the cap, and past it
+   denies everything but handoff-shaped calls (a write under the scratch path, `git
+   add|commit|push`); a SubagentStop hook that appends one line per build is the free
+   measurement of every build's length. The hook enforces, the instruction explains.
 4. **Build.** Branch `<type>/<issue>-<kebab-title>` off `origin/main`; conventional commit
    `<type>(<scope>): #<issue> <title>` with the harness's attribution trailer; gate with the exit
    code read from a file; integration tier when a DB path moves (label the PR so CI runs it);
