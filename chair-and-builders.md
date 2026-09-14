@@ -47,6 +47,7 @@ morning without a false green.
    denies everything but handoff-shaped calls (a write under the scratch path, `git
    add|commit|push`); a SubagentStop hook that appends one line per build is the free
    measurement of every build's length. The hook enforces, the instruction explains.
+   Shipped: `hooks/call-cap.py` + `templates/settings.json`, placed by `bin/init`.
 4. **Build.** Branch `<type>/<issue>-<kebab-title>` off `origin/main`; conventional commit
    `<type>(<scope>): #<issue> <title>` with the harness's attribution trailer; gate with the exit
    code read from a file; integration tier when a DB path moves (label the PR so CI runs it);

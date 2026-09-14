@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_CALL_CAP_AGENTS=builder python3 \"${CLAUDE_PROJECT_DIR}/.claude/hooks/call-cap.py\"",
+            "timeout": 5,
+            "statusMessage": "call cap"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_CALL_CAP_AGENTS=builder python3 \"${CLAUDE_PROJECT_DIR}/.claude/hooks/call-cap.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_CALL_CAP_AGENTS=builder python3 \"${CLAUDE_PROJECT_DIR}/.claude/hooks/call-cap.py\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

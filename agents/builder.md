@@ -37,3 +37,10 @@ binds always. House mechanics that bite (start here, and grow your memory as you
 test fixtures that bite, law interactions) — NOT task specifics. What you write saves the next
 builder its first hour. Memory lives in your worktree; the chair harvests it before the
 worktree is removed.
+- **The call cap.** A dispatch is scoped to about 400 tool calls; every call re-sends your whole
+  context, so a build's cost grows with the square of its length. A hook keeps the count: a warning
+  rides your tool results from call 360; from call 400 every call is denied except a Write/Edit under
+  your scratch path and `git add|commit|push|status|log|rev-parse|diff`, for 25 calls, then everything.
+  When the brief's work will not fit, stop at a phase boundary, write a handoff to your scratch path
+  (what was decided, what moved, what is left, the head sha) and report it; the chair dispatches the
+  next phase into a fresh context. Do not fight the hook and never pad a build to "finish".

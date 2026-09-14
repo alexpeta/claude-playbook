@@ -52,7 +52,7 @@ the distro. Untested on a Windows machine as of 2026-09-07; the first run there 
 
 ## Starting a new project
 
-From the new repo's root, `<playbook>/bin/init`. It copies `templates/CLAUDE.md`
+From the new repo's root, `<playbook>/bin/init`. It copies `templates/CLAUDE.md`, the call-cap hook and its settings,
 to `CLAUDE.md` and `agents/builder.md` to `.claude/agents/builder.md`, creates
 `docs/decisions/` and `docs/retros/`, never overwrites, and lists the placeholders left to
 fill. Then:

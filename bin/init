@@ -41,6 +41,8 @@ keep() {  # keep <dir>: create with a .gitkeep unless present
 
 place "$PB/templates/CLAUDE.md" "$TOP/CLAUDE.md"
 place "$PB/agents/builder.md"   "$TOP/.claude/agents/builder.md"
+place "$PB/hooks/call-cap.py"   "$TOP/.claude/hooks/call-cap.py"
+place "$PB/templates/settings.json" "$TOP/.claude/settings.json"
 keep  "$TOP/docs/decisions"
 keep  "$TOP/docs/retros"
 

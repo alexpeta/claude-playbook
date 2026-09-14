@@ -33,6 +33,7 @@ Before anything else:
 - [bin/init](bin/init): bootstraps the current repo: `CLAUDE.md` from the template, the builder agent, `docs/decisions/`, `docs/retros/`. Never overwrites.
 - [templates/CLAUDE.md](templates/CLAUDE.md): the starter; fill the gate command and the mechanics section, delete what is not true of the repo.
 - [agents/builder.md](agents/builder.md): the builder agent definition; set the gate command and the repo's own laws.
+- [hooks/call-cap.py](hooks/call-cap.py) + [templates/settings.json](templates/settings.json): the builder call cap as a PreToolUse/PostToolUse/SubagentStop hook — warn at 360, deny all but handoff-shaped calls from 400, one ledger line per build (`~/.claude/builder-calls.jsonl`). `bin/init` places both; `python3 .claude/hooks/call-cap.py --self-test` proves it.
 
 ## Templates
 
