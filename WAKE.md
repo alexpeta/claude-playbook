@@ -45,6 +45,7 @@ Before anything else:
 
 - [recipes/merge-coordinator.md](recipes/merge-coordinator.md): draining QC-green PRs one release at a time.
 - [recipes/board-via-gh.md](recipes/board-via-gh.md): the project board through `gh` and GraphQL.
+- [recipes/reader-tier.md](recipes/reader-tier.md): a Haiku-class reader turns bulk text into structure with locations; the expensive seat reads only what it gates or edits.
 
 ## Optional
 

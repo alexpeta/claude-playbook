@@ -15,6 +15,16 @@ morning without a false green.
 - **Builders (Opus-class, one per slice, `isolation: worktree`, `model` passed explicitly —
   the Agent tool inherits the session model when it is omitted; burned four times).** Verify the
   brief against the repo, build, gate, open the PR, never merge. Keep their own craft memory.
+- **Readers (Haiku-class; or a non-Claude model on the project's own key when the plan bar,
+  not the dollar, is the constraint).** Turn bulk text into STRUCTURE WITH LOCATIONS: a
+  diff index (functions added/removed with line ranges, tests deleted by name, event keys,
+  census pins), a decision digest of a DACI or a held PR for a brief, a log-tail triage, a
+  corpus scan. They never judge, never edit, and never stand in for the read that gates or
+  edits — the chair reads the hunks it gates on and the builder reads the lines it edits
+  ("quote the read", one seat up). Worth it where a read is orientation and its output would
+  otherwise ride the rest of a long context: the chair's PR intake, the first twenty calls
+  of a build. Not a hook on file size: measured 2026-09-14, builders already trim, and 6 of
+  1,306 results were over 350 lines. Recipe: `recipes/reader-tier.md`.
 
 ## The loop for non-trivial work
 
