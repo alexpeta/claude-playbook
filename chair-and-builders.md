@@ -26,7 +26,12 @@ morning without a false green.
 3. **Dispatch** a builder per slice. The brief (`templates/dispatch-brief.md`) is written from
    `origin/main` at dispatch time, names line numbers as of that read, quotes the ticket's ask
    verbatim, lists what to verify before editing, names the witnesses, the gate command, the
-   PR body shape, and the reply shape. Board: In progress.
+   PR body shape, and the reply shape. Board: In progress. **Scope a dispatch to about 400
+   tool calls of work.** A builder re-sends its whole context on every call, so a build's
+   cost grows with the square of its length (`lessons.md` → Builder cost is calls × context).
+   A slice that needs more is dispatched as phases — read and plan, build, gate and verify —
+   each a fresh context, joined by a written handoff (what was decided, what moved, what is
+   left) that the next phase's brief quotes.
 4. **Build.** Branch `<type>/<issue>-<kebab-title>` off `origin/main`; conventional commit
    `<type>(<scope>): #<issue> <title>` with the harness's attribution trailer; gate with the exit
    code read from a file; integration tier when a DB path moves (label the PR so CI runs it);

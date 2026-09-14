@@ -201,6 +201,15 @@ command lives in that project's `CLAUDE.md`.
   formula where the system computes another; two numbers for one metric.)*
 - **Measure before optimizing.** Instrument, read, decide; park low-value work; a rejected
   architecture is not re-proposed casually. Confidence on recommendations, with the `%` sign.
+- **Builder cost is calls × context, not bulk reads.** Five builds measured from their
+  transcripts (2026-09-14): 91 % of each build's price was cache re-reads, because every one
+  of 1,000–1,800 tool calls re-sends the whole conversation, which reaches 600–840k tokens.
+  Only 6 of 1,306 tool results exceeded 350 lines — the builders already trim output — so a
+  "route big reads to a cheap model" hook would have fired on half a percent of calls. The
+  same work capped at 400 calls with a fresh context per phase projects 57–67 % cheaper
+  (the projection model reproduced each actual bill to the dollar); a 362-call build cost a
+  sixth of a 1,300-call one at the same QC bar. Measure the transcript before buying the
+  fashionable fix; the fashionable fix was aimed at the wrong tail.
 - **A model's account of its own context is not a witness.** Asked to quote every hook line in
   its context, a Haiku session quoted one of two; the hook had emitted both. Witness context
   injection with a `tee` to a file from inside the hook, then read the file. Note that Claude
