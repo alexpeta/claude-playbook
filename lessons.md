@@ -15,6 +15,12 @@ command lives in that project's `CLAUDE.md`.
 - **The unit gate is not the whole gate.** An integration tier that runs on a label or nightly
   is a blind spot for every local check; a symbol move that breaks only that tier passes
   everything you normally watch. Grep the integration tests too; never `head`-truncate a grep.
+- **A tag or commit pushed with the workflow's own token starts no workflow.** GitHub does
+  not create a run from an event that `GITHUB_TOKEN` caused (`workflow_dispatch` and
+  `repository_dispatch` excepted), so a release job that tags with it can never fire an
+  `on: push: tags` deploy. Hang the deploy off the release job's outputs in the same
+  workflow; a PAT as a repo secret buys the event back at the price of a credential.
+  *(2026-09-15: caught while briefing, before the dead trigger was written.)*
 - **A conflicting PR gets no CI run at all.** GitHub cannot build the merge ref, so
   `synchronize`, `labeled`, `reopened` and empty commits all produce nothing. Check
   `mergeable` before chasing a missing run. *(2026-09-07: two hours lost.)*

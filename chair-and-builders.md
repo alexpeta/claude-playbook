@@ -82,7 +82,10 @@ Before that date each grant was given per project; ops grants still are.
   the approver's own hand-rolled ones included (extended 2026-09-15: "a PR is a PR, doesn't
   matter who opened it … I expect you to help me gate it and keep me honest, you are the
   gatekeeper") — under triple-green (builder gate, CI per check, the chair's own unit-gate
-  rerun) plus the dated QC comment on the PR. Where a repo has no gate or CI (docs-only), the QC read is the condition. Decision
+  rerun) plus the dated QC comment on the PR. CI green is the second green; the chair's
+  rerun is optional where CI ran the same command on the same sha (2026-09-15, a repo whose
+  CI is the gate command itself on a self-hosted runner), and stays required where CI runs
+  less than the gate does. Where a repo has no gate or CI (docs-only), the QC read is the condition. Decision
   documents (DACIs) wait for the approver's click; approval *is* ratification.
 - Ruling delegation at ≥ 80 % confidence; below that, options and a lean.
 - Pacing of dispatch is the chair's: to the runner queue and the merge line, not to a fixed
