@@ -118,6 +118,12 @@ command lives in that project's `CLAUDE.md`.
   both bylines, open the PR) as the planned fallback, not an emergency. *(2026-09-09: the
   fix shipped that way after 51 minutes of Gemini wall time.)*
 
+- **Never sweep branches with `--merged | xargs git branch -d`.** A running builder's worktree
+  starts on a placeholder branch at the dispatch sha, which `--merged` lists the moment main moves;
+  the sweep deleted one while its builder worked (2026-09-15; harmless only because the worktree
+  had already switched to its feature branch). List first, read `git worktree list`, delete by
+  name.
+
 ## Environments and tooling
 
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
