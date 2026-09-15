@@ -78,9 +78,11 @@ the author's, standing across their projects since 2026-09-07 (given in chat: th
 merge PRs; DACIs wait for the user; builder-opened PRs the chair QC-reads and then merges).
 Before that date each grant was given per project; ops grants still are.
 
-- **Merge grant.** The chair merges execution PRs — its own and builders' — under triple-green
-  (builder gate, CI per check, the chair's own unit-gate rerun) plus the dated QC comment on
-  the PR. Where a repo has no gate or CI (docs-only), the QC read is the condition. Decision
+- **Merge grant.** The chair merges execution PRs — its own, builders', and **any author's**,
+  the approver's own hand-rolled ones included (extended 2026-09-15: "a PR is a PR, doesn't
+  matter who opened it … I expect you to help me gate it and keep me honest, you are the
+  gatekeeper") — under triple-green (builder gate, CI per check, the chair's own unit-gate
+  rerun) plus the dated QC comment on the PR. Where a repo has no gate or CI (docs-only), the QC read is the condition. Decision
   documents (DACIs) wait for the approver's click; approval *is* ratification.
 - Ruling delegation at ≥ 80 % confidence; below that, options and a lean.
 - Pacing of dispatch is the chair's: to the runner queue and the merge line, not to a fixed
