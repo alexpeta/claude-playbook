@@ -126,6 +126,13 @@ command lives in that project's `CLAUDE.md`.
   `$ROOT:r` then `efs/heads/main`, and a force-push failed on a refspec that matched nothing
   (2026-09-10); `:h`, `:t` or `:u` would have rewritten the value with no error. Brace it:
   `"${ROOT}:refs/heads/main"`.
+- **`localhost` is a secure context; the deploy target may not be.** Browser APIs gated on a
+  secure context (`crypto.randomUUID`, `crypto.subtle`, clipboard, service workers) work on
+  `localhost` over plain HTTP and are `undefined` on a LAN host over plain HTTP. A static site
+  passed dev, preview and two browser checks, then rendered a blank page on its first deploy
+  (2026-09-14; `crypto.randomUUID is not a function`). The check that sees it is the deployed
+  URL itself, loaded in a real browser after every first deploy, with the console read. Prefer
+  `crypto.getRandomValues` for seeds and ids; it has no such limit.
 - **Environment cleanup is a ledger item.** Per-worktree virtualenvs reached 17 GB and 76
   environments before anyone looked; two image tags per release filled a deploy host to 263 GB of
   Docker images. Measure (`du`, `docker system df`), prune by an explicit filter (a label, a
