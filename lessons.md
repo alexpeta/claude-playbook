@@ -124,6 +124,13 @@ command lives in that project's `CLAUDE.md`.
   had already switched to its feature branch). List first, read `git worktree list`, delete by
   name.
 
+- **The worktree guard's git check matches on the path, not the command.** A worktree under a
+  directory whose name contains `git` (`~/Github/…`) makes any Bash line that builds a path from a
+  shell variable or chains `cd … && …` fail with "names git in a form too complex to verify",
+  whether or not git is involved (2026-09-15, three refusals in one build). Use literal absolute
+  paths, read several files with one `head -200 a b c`, and keep the gate in a scratch script
+  invoked with literal arguments.
+
 ## Environments and tooling
 
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
