@@ -13,7 +13,10 @@ morning without a false green.
   hands, runs the merge line under a standing grant, keeps the ledger, files the boyscout
   tickets. Does not implement slices itself except chair tooling and docs.
 - **Builders (Opus-class, one per slice, `isolation: worktree`, `model` passed explicitly —
-  the Agent tool inherits the session model when it is omitted; burned four times).** Verify the
+  the Agent tool inherits the session model when it is omitted; burned four times, and a fifth
+  on 2026-09-16 when a reader and a docs lookup went out with no `model` and ran on the chair's
+  tier. The rule is every Agent call, not only builders: name the model, and a project agent
+  definition's `model:` line only binds when that agent type is the one dispatched).** Verify the
   brief against the repo, build, gate, open the PR, never merge. Keep their own craft memory.
 - **Readers (Haiku-class; or a non-Claude model on the project's own key when the plan bar,
   not the dollar, is the constraint).** Turn bulk text into STRUCTURE WITH LOCATIONS: a
