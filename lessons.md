@@ -217,6 +217,13 @@ command lives in that project's `CLAUDE.md`.
   fires; if the tab is hidden, the evidence is the builder's visible-tab pass or the deployed
   URL on a real device, and the QC comment says which. *(2026-09-16: a camera that turns on
   after the board is measured looked unbuilt in a hidden tab at 03:00; the display was off.)*
+- **The browser automation tab group is shared by every session on the machine.** The tab
+  `tabs_context_mcp` hands back may be a builder's, and navigating it mid-check wipes that
+  builder's page state and globals without either side seeing why. The chair creates its own
+  tab (`tabs_create_mcp`) and treats any tab already in the group as someone else's; a builder
+  does the same. *(2026-09-16: the chair navigated the one tab in the group to its own port
+  while a builder was reading a button's rect through it; the builder's `window` helpers
+  vanished and it lost a pass.)*
 
 ## Writing and briefing
 
