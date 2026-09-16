@@ -209,6 +209,14 @@ command lives in that project's `CLAUDE.md`.
   branch, and delete stale local refs with `git update-ref --stdin` (one ref per invocation
   otherwise). *(2026-09-09: of "1,576 remote branches", 8 were on GitHub and 1,030 were those
   leftovers.)*
+- **A browser check needs a tab the browser is painting.** A locked or sleeping display, or
+  an automation window behind another, leaves the tab `document.hidden`: no animation frames,
+  no `ResizeObserver` callbacks, no layout-driven effects — so a component that waits for a
+  measurement renders its fallback and the check reads as a bug in the app. Before judging a
+  rendering result, read `document.visibilityState` and whether one `requestAnimationFrame`
+  fires; if the tab is hidden, the evidence is the builder's visible-tab pass or the deployed
+  URL on a real device, and the QC comment says which. *(2026-09-16: a camera that turns on
+  after the board is measured looked unbuilt in a hidden tab at 03:00; the display was off.)*
 
 ## Writing and briefing
 
