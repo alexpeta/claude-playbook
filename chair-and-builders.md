@@ -74,6 +74,45 @@ morning without a false green.
 8. **Retro** at the end of a run (`templates/retro.md`): what worked, what did not, rules
    adopted (saved as memory), tomorrow.
 
+## Experiments before decisions
+
+A decision record describes the shipped product. It is not a wall: a contributor who wants to
+try something does not need it amended first, and a Claude that refuses a change because "this
+was decided" has mistaken the record for the law. The ladder between an idea and a decision:
+
+1. **Idea.** An issue with the hypothesis in one line and what "worked" would look like. No
+   approval to start.
+2. **POC.** A PR behind a switch, default off. With the switch off the shipped product is the
+   ratified one, byte for byte where a render can be pinned. QC and merge as any execution PR.
+3. **Experiment.** Run on the deployed copy. The verdict, dated, on the experiment's file: keep,
+   change (back to 2) or drop.
+4. **Decision.** Keep → a decision record (an amendment to the one it challenged is enough) and
+   the switch comes out. Drop → the code comes out and the file says why.
+
+Rules that make it hold:
+
+- **An experiment may challenge any ratified decision**, behind its switch, with no amendment
+  until it is kept. Its file names what it challenges in one line, so the reader of that record
+  can find the open challenge.
+- **Laws are not decisions.** The ways of working and the repo's mechanics (the gate, the pure
+  engine, one PR per change) are not up for an experiment; an experiment lives inside them.
+- **One file per experiment**, `docs/experiments/NNNN-<slug>.md`, numbered and never renumbered,
+  on `templates/experiment.md`, started in the POC's PR. The product's living design doc keeps
+  describing the shipped product only.
+- **Tooling is not an experiment.** A testing switch, a cheat, a debug panel stays what it is.
+  A switch that tries a change to the product is an experiment, wherever it is drawn.
+- **Evidence is named up front.** Anything that touches the core names a measurement; anything
+  that touches only the screen names who plays it and for how long. "It feels better" is an
+  allowed verdict, written down as that.
+- **The chair looks at the running list weekly** and nudges any experiment older than a
+  fortnight with no verdict.
+
+*(2026-09-17: four PRs from a contributor shipped rule and look changes to every player with no
+flag, one of them with a decision record written at the idea stage, and the contributor's Claude
+refused a later change on the strength of an older record. The approver's framing: "we assume
+something in the past, now we're trying to challenge that — but we don't need to go ahead and do
+the amendment.")*
+
 ## Grants
 
 The approver gives grants explicitly and dated; this section records them. The ones below are

@@ -25,7 +25,7 @@ Before anything else:
 ## Laws and operating model
 
 - [ways-of-working.md](ways-of-working.md): the seven laws; how to think, build, verify, disagree and report. Already in context.
-- [chair-and-builders.md](chair-and-builders.md): one strategy-and-QC seat, Opus builders in worktrees, gates, PRs, the merge line, the board, DACIs. Read before the first dispatch.
+- [chair-and-builders.md](chair-and-builders.md): one strategy-and-QC seat, Opus builders in worktrees, gates, PRs, the merge line, the board, DACIs, experiments before decisions. Read before the first dispatch.
 - [lessons.md](lessons.md): mechanics that cost real work once, each with its incident. Read when something feels off.
 
 ## Starting a project
@@ -38,6 +38,7 @@ Before anything else:
 ## Templates
 
 - [templates/daci.md](templates/daci.md): the decision document; the first real fork gets `docs/decisions/0001-<slug>.md`.
+- [templates/experiment.md](templates/experiment.md): one file per experiment in `docs/experiments/`, started in the POC's PR; a decision record is written only when it is kept.
 - [templates/dispatch-brief.md](templates/dispatch-brief.md): the brief a builder is dispatched with, written from `origin/main` at dispatch time.
 - [templates/qc-comment.md](templates/qc-comment.md): the chair's dated QC comment, posted on the PR.
 - [templates/retro.md](templates/retro.md): the end-of-run retrospective.
