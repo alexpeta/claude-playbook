@@ -52,6 +52,14 @@ command lives in that project's `CLAUDE.md`.
   to exist for it to go red; if nothing in the corpus can, the guard is vacuous. *(A
   date-keyed fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
   because two labels folded onto one decision — found by a mutation that did not go red.)*
+- **A flag PR gets one mutation per site the flag passes through, not one per behaviour it
+  changes.** The sites are the action's reducer case, every read that decides behaviour, and
+  the read that persists it (the storage fallback for a missing field). A builder's own
+  mutations follow the behaviours and leave the case that nothing dispatches by accident.
+  *(2026-09-17: four switch PRs in one day; the chair's "the reducer ignores the action"
+  mutation stayed green on one of them, "the saved-object write deleted" and "the row opens
+  the overlay without shutting the sheet" on another — all three reported red by the builder's
+  own list, which had mutated the outcomes and never the levers.)*
 - **Metrics inherit the blind spots of their instrumentation.** A 14-day "clean" clock read
   all-zero while a destructive write went through a path it never instrumented. Prefer
   outcome-shaped denominators (every audit row) over signal-shaped ones (the alarms you installed).
