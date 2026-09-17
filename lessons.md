@@ -24,6 +24,17 @@ command lives in that project's `CLAUDE.md`.
 - **A conflicting PR gets no CI run at all.** GitHub cannot build the merge ref, so
   `synchronize`, `labeled`, `reopened` and empty commits all produce nothing. Check
   `mergeable` before chasing a missing run. *(2026-09-07: two hours lost.)*
+- **A stacked PR conflicts the moment its base is squash-merged.** Squashing PR 1 puts its
+  content on main as one new commit; PR 2's branch still carries PR 1's original commits, so
+  the three-way merge sees the same hunks changed on both sides and reports `CONFLICTING`,
+  which also means no CI run. The fix is mechanical and the chair can do it without the
+  author: `git rebase --onto origin/main <old-head-of-PR-1>` in a scratch worktree drops the
+  merged commits, then prove the tree is the author's — `git diff <author's head> HEAD` must
+  show nothing but what main gained meanwhile (a release commit's changelog and version bump)
+  — and force-push with `--force-with-lease=<branch>:<author's head>` so a concurrent push is
+  refused rather than overwritten. Say so on the PR, with both shas. *(2026-09-17: four
+  stacked PRs, each `CONFLICTING` after the one before it merged; three rebases, all
+  tree-identical.)*
 - **`gh pr checks` exits non-zero for the first seconds of a PR's life** ("no checks
   reported"), before CI has registered a run, and a repo without required-status protection
   lets `gh pr merge` through regardless. A chain that echoes the exit code and merges on the
