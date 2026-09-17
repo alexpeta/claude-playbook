@@ -24,6 +24,13 @@ command lives in that project's `CLAUDE.md`.
 - **A conflicting PR gets no CI run at all.** GitHub cannot build the merge ref, so
   `synchronize`, `labeled`, `reopened` and empty commits all produce nothing. Check
   `mergeable` before chasing a missing run. *(2026-09-07: two hours lost.)*
+- **`gh pr checks` exits non-zero for the first seconds of a PR's life** ("no checks
+  reported"), before CI has registered a run, and a repo without required-status protection
+  lets `gh pr merge` through regardless. A chain that echoes the exit code and merges on the
+  next line has therefore merged before CI ran. Wait until the PR's `statusCheckRollup` has
+  at least one entry, then watch, and make the merge conditional on the watch's exit code.
+  *(2026-09-16: a docs-only harvest merged with its gate still `IN_PROGRESS`; the run on main
+  was watched by hand afterwards.)*
 - **A gate that got lucky is not a gate.** Re-gate on any new head, always; a gate keyed to a
   stale head is evidence about a tree that no longer exists. Gate artifacts are per-agent and
   per-head (`<issue>-<worktree-id>`), never a shared `/tmp/g*` that a sibling can pick up.
