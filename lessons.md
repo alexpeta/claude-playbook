@@ -38,6 +38,18 @@ command lives in that project's `CLAUDE.md`.
   get the run. Say so on the PR, with both shas. *(2026-09-17: four stacked PRs, each
   `CONFLICTING` after the one before it merged; three rebases, all tree-identical; the one
   pushed before its retarget sat with no run until reopened.)*
+- **Read the stack off `merge-base`, never off the PR body, and dry-run the second merge
+  before landing the first.** A body that says "built on PR 1, merge after it" describes the
+  branch as the author last saw it; `git merge-base --is-ancestor <PR-1 head> <PR-2 head>`
+  says what it is now. A PR 2 that has since been put back on main is *not* stacked — it is a
+  sibling that edits the same lines — so it merges clean today and conflicts in every shared
+  file the moment PR 1 squashes, with no `--onto` to save it. Before merging PR 1, squash it
+  onto main in a scratch worktree and merge PR 2 on top: the conflict list is the resolution
+  work, priced before anything is irreversible. When it conflicts, merge main into PR 2's
+  branch (a plain push, no force, the author's commits untouched), resolve with the registry
+  or file order as the tie-break, gate, and say on the PR which files and why. *(2026-09-17:
+  a PR body claimed to be stacked on its sibling; `merge-base` showed both on main, sharing 16
+  files; a dry run found 35 hunks in 12 files, resolved by script in one merge commit.)*
 - **`gh pr checks` exits non-zero for the first seconds of a PR's life** ("no checks
   reported"), before CI has registered a run, and a repo without required-status protection
   lets `gh pr merge` through regardless. A chain that echoes the exit code and merges on the
