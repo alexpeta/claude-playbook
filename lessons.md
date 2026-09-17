@@ -32,9 +32,12 @@ command lives in that project's `CLAUDE.md`.
   merged commits, then prove the tree is the author's — `git diff <author's head> HEAD` must
   show nothing but what main gained meanwhile (a release commit's changelog and version bump)
   — and force-push with `--force-with-lease=<branch>:<author's head>` so a concurrent push is
-  refused rather than overwritten. Say so on the PR, with both shas. *(2026-09-17: four
-  stacked PRs, each `CONFLICTING` after the one before it merged; three rebases, all
-  tree-identical.)*
+  refused rather than overwritten. Retarget the PR to main *before* the push: a push that
+  lands while the PR is still conflicting against its old base starts no CI run, and the
+  retarget itself is an `edited` event, which triggers nothing — close and reopen the PR to
+  get the run. Say so on the PR, with both shas. *(2026-09-17: four stacked PRs, each
+  `CONFLICTING` after the one before it merged; three rebases, all tree-identical; the one
+  pushed before its retarget sat with no run until reopened.)*
 - **`gh pr checks` exits non-zero for the first seconds of a PR's life** ("no checks
   reported"), before CI has registered a run, and a repo without required-status protection
   lets `gh pr merge` through regardless. A chain that echoes the exit code and merges on the
