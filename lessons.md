@@ -126,6 +126,16 @@ command lives in that project's `CLAUDE.md`.
   Related craft: one press is three gestures (tap, hold, drag), and the tap window belongs in
   the state machine as a phase whose time is taken *out of* the design's total, not added to
   it. *(2026-09-19.)*
+- **A state machine tested by hand-cranking its clock says nothing about the thing that cranks
+  it.** A reducer owned every phase and a pure `nextTimer(state)` said what was owed; the tests
+  called it in a loop and were thorough. The one `useEffect` that actually armed the timeout was
+  keyed on a hand-written list of four fields; three features added a branch to `nextTimer` and
+  none added its field to that list, so in the browser each sequence played one beat and froze.
+  Three PRs passed builder tests, mutations and chair QC; the approver found it on his first
+  click. Put the dependency list beside the function whose reads it mirrors, export it, and test
+  the property the driver relies on — every beat that leaves a timer owed changes the list.
+  And when QC is diff-and-gates with no browser, ask of each new timed sequence: what, outside
+  this diff, makes it tick? *(2026-09-20.)*
 
 ## Parallel agents and worktrees
 
