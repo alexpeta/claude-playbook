@@ -149,6 +149,32 @@ command lives in that project's `CLAUDE.md`.
   write down why next to the pin. And on a self-hosted runner, learn whether the job can
   install system libraries by reading a failed run's log, not by assuming.
   *(2026-09-20.)*
+- **Match a red run's error TEXT to the mechanism, not only its failing line.** Two different
+  races can fail on the same line and read differently: one times out with the element in the
+  wrong state, the other with no such element at all. A hypothesis that fits the line and not
+  the text is a wrong brief. And keep what the run saw: upload the test runner's failure output
+  as an artefact on failure, with a retention period as its cleanup, or the next red can only be
+  read from a log. *(2026-09-20: a browser smoke reddened twice on a CI runner; the chair briefed
+  a 900 ms race at 70 %, and the builder showed from the same log that the text — "element(s) not
+  found", not "received loaded" — meant a press had missed a moving element inside a 38 ms
+  window. CPU throttling reproduced neither; an injected delay between the two calls reproduced
+  both, 0/5 before and 5/5 after.)*
+- **When a change decouples two values that used to be equal, every existing test is vacuous on
+  the difference.** Grep every reader of the old value, classify each as wanting the one or the
+  other, and write the witness with the two DIFFERING. A required parameter, not an optional
+  one, makes the compiler do the audit. A witness that renders a component directly does not
+  cover the screen that wires it: mutate the wiring too. *(2026-09-20: a label read the player's
+  last pick where it wanted the round's rules; every test passed because every fixture had the
+  two equal. The chair's diff read caught it; reverting the wiring was still green until a
+  whole-screen witness was added.)*
+- **A mutation harness restores in the caller, not in a `finally` a timeout can skip.** Check
+  the mutated files' hashes after every mutation run, killed or not. *(2026-09-20: two mutation
+  runs were backgrounded past a tool timeout and killed; the source sat mutated until the
+  builder compared hashes by hand.)*
+- **A fixed port in the gate makes the gate single-tenant.** Two worktrees gating at once on
+  one machine collide, and the second reads as a broken config, not as contention. Take the
+  port from the environment, or pick a free one. *(2026-09-20: four gate runs lost to "address
+  already in use" while another builder's gate held the preview server's port.)*
 
 ## Parallel agents and worktrees
 
