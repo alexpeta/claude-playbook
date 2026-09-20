@@ -136,6 +136,19 @@ command lives in that project's `CLAUDE.md`.
   the property the driver relies on — every beat that leaves a timer owed changes the list.
   And when QC is diff-and-gates with no browser, ask of each new timed sequence: what, outside
   this diff, makes it tick? *(2026-09-20.)*
+- **A retrying negative assertion waits a transient bug out.** A browser smoke asserted "no
+  error line appears after a tap" with the framework's auto-retrying form
+  (`expect(locator).toHaveCount(0)`); the line in question removes itself after 1.8 s, so with
+  the fix deleted the assertion simply polled until the evidence was gone and passed. "Must not
+  appear" is read once, at a moment inside the thing's lifetime — and every such line gets a
+  mutation, because a negative that cannot fail looks exactly like one that did not.
+  *(2026-09-20; the chair's mutation survived, then went red after the one-line change.)*
+- **Pin the browser-test runner to what the gating machines run.** The newest Playwright
+  installed cleanly and then refused to launch: it had dropped the approver's OS two minor
+  versions earlier. A gate that the local machine cannot run is not a gate there; pin, and
+  write down why next to the pin. And on a self-hosted runner, learn whether the job can
+  install system libraries by reading a failed run's log, not by assuming.
+  *(2026-09-20.)*
 
 ## Parallel agents and worktrees
 
