@@ -175,6 +175,15 @@ command lives in that project's `CLAUDE.md`.
   one machine collide, and the second reads as a broken config, not as contention. Take the
   port from the environment, or pick a free one. *(2026-09-20: four gate runs lost to "address
   already in use" while another builder's gate held the preview server's port.)*
+- **A mutation must USE the value it breaks, or a bundler's module semantics can hide it.**
+  Under a transform that turns imports into property reads on a namespace object (Vite's SSR
+  transform, which is what Vitest runs), a circular import read too early is `undefined`, not
+  a TDZ throw: a bare `const X = IMPORTED` at module top level passes everything. Make the
+  lever call it, index it or format it. And a module with no cycle has no entry-order hazard,
+  so an entry-order test for it can never red — assert what it can hold (identity of the
+  re-export) and say so in the file. *(2026-09-20: the chair's suggested mutation for an
+  import-cycle witness went green 42/42; the builder nearly filed it as a vacuous guard before
+  finding the lever had read `undefined` and thrown nothing.)*
 
 ## Parallel agents and worktrees
 
