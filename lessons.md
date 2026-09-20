@@ -103,6 +103,29 @@ command lives in that project's `CLAUDE.md`.
   module), or key the literal off the real clock; never both clocks in one module.
 - **Never `gh run watch` in an unattended loop** — ~1200 API calls an hour each; four of them
   exhausted the hourly budget and 403'd every chain and builder. Poll every 90–180 s.
+- **Gate the PR merged onto today's main, not the PR alone.** A branch's tests passed and its
+  CI was green, and the merge would still have turned main red: a test asserted that a
+  serialized state did not contain a substring, and a sibling PR that landed in between added
+  a field whose name contained it. Before merging, merge the head onto current main in a
+  scratch worktree and run the gate there; a green run on a head that lacks main's latest
+  commit proves the branch, not the merge. *(2026-09-19; caught by the preview gate, fixed by
+  asserting identity of the object instead of absence of a word.)*
+- **Replacing an assignment with a function call can break a guard that relied on the
+  assignment being repeatable.** A skip handler "made sure the card was seated" by running
+  the same seating code the normal path ran. While seating was `hand = card` that was
+  harmless twice; once it became `grant(hand, card)`, which increments, a skip during the last
+  half second granted two. The builder's tests passed because none skipped inside that window.
+  When a write stops being idempotent, grep every caller that runs it "to be safe" and probe
+  each overlap window with a test. *(2026-09-19; the chair's probe read expected 1, got 2.)*
+- **The builder's "what has no witness" list is the QC map.** A PR honestly listed five
+  pointer-handler behaviours its DOM-less suite could not prove, one of them worded as a fact
+  ("a quick tap flips and never charges"). Reading exactly those handlers found two real bugs
+  in ten minutes: the claim was true of the intent and false of the code — the press fired on
+  pointer-down, and every still release flipped the card, holds included. An unwitnessed
+  sentence in a PR body is a hypothesis; read the code under it before anything else.
+  Related craft: one press is three gestures (tap, hold, drag), and the tap window belongs in
+  the state machine as a phase whose time is taken *out of* the design's total, not added to
+  it. *(2026-09-19.)*
 
 ## Parallel agents and worktrees
 
