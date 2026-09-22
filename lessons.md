@@ -195,7 +195,11 @@ command lives in that project's `CLAUDE.md`.
   `ls /tmp/<tree-lock>` before any command that touches the main tree.
 - **Worktrees isolate the repo, not the scratchpad.** Builders overwrote each other's PR body,
   gate script and comment draft mid-run; one victim's first green came from the WRONG worktree.
-  Scratch under a run-unique path, always.
+  Scratch under a run-unique path, always. The session-uuid scratchpad the harness hands out is
+  NOT that path: every builder a chair dispatches shares the chair's uuid, and two builders
+  gating at once wrote the same `gate.sh` and exit file there — a green exit file over another
+  run's red log. Use `<scratchpad>/<ticket>-<slug>/`, and say so in the brief. *(Five builders
+  in parallel, 2026-09-22.)*
 - **A worktree gate can silently test main.** A shared virtualenv's `.pth` points at the main
   checkout's `src/`. Each worktree installs its own environment and asserts the package
   resolves inside the worktree before trusting any green.
