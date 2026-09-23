@@ -382,3 +382,13 @@ command lives in that project's `CLAUDE.md`.
   injection with a `tee` to a file from inside the hook, then read the file. Note that Claude
   Code prefixes the first stdout line with `SessionStart:<matcher> hook success:`, so test
   "contains", not "begins with". *(First new-session test of `bin/wake`, 2026-09-07.)*
+
+- **Retitling a one-commit PR does not change what lands on main.** Under GitHub's default squash
+  setting (`squash_merge_commit_title: COMMIT_OR_PR_TITLE`) a PR with a single commit squashes to that
+  commit's own title; the PR's title is used only when there are two or more commits. A chair retitled
+  a `fix(...)` PR to `refactor(...)` so an invisible change would cut no release, merged it, and main
+  got `fix(...)` and a patch release anyway (2026-09-23). The cure is one of: pass the title explicitly
+  (`gh pr merge --squash --subject "<type>(<scope>): ..."`), set the repository to `PR_TITLE`, or ask the
+  builder to amend the commit. Check the setting once per repo (`gh api repos/<owner>/<repo> --jq
+  .squash_merge_commit_title`) and write which applies into the repo's `CLAUDE.md` where it says what
+  decides the release.
