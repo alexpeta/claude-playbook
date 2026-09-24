@@ -185,6 +185,18 @@ command lives in that project's `CLAUDE.md`.
   import-cycle witness went green 42/42; the builder nearly filed it as a vacuous guard before
   finding the lever had read `undefined` and thrown nothing.)*
 
+- **Before filtering documentation out of CI, grep the gate for what it reads under the docs tree.**
+  A repo's "docs" folder is where the humans put prose, and also where someone once put a JSON
+  registry the app imports and a test folds over. A `paths` filter of `!docs/**` alone would have
+  skipped the gate on the one docs change that can break the build. The shape that survived: list
+  everything in, take the docs tree, `**.md` and the agent config out, then name the read-by-the-gate
+  subfolder LAST as a positive pattern (GitHub's `paths` is order-sensitive: a later positive
+  pattern re-includes). Two consequences to write down where the trigger lives: a filtered push to
+  the default branch fires no `workflow_run`, so anything chained on CI (a release) does not run for
+  it, and a merge coordinator that waits on "all checks green" must treat "no checks at all" on
+  such a PR as nothing to wait for. Earned when a four-core self-hosted box had every lane full and
+  a docs PR cost as much as a code PR, twice (2026-09-24).
+
 ## Parallel agents and worktrees
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
