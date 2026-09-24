@@ -167,9 +167,16 @@ whether to track builder memory):
   `.dockerignore` for `.claude/` (and `docs/`) BEFORE tracking anything under it — one repo
   shipped its docs, tests and agent definition in every image until someone read the
   Dockerfile.
-- **Builders never commit memory in feature PRs.** The chair harvests new files from a
-  worktree before removing it and commits them in a `chore(harness)` PR; a consolidation
-  pass merges duplicate families (a fresh-worktree builder re-learns the same gate mechanics
-  every run until the store is inherited).
+- **Builders keep no memory; two layers hold what a build learns, and nothing else.** A lesson
+  true of any repo goes to `lessons.md` the same day, with its incident; a mechanic of this repo's
+  tooling that still bites (the gate's exit-file rule, a guard's refused shell shapes, a flag)
+  goes into the builder agent file's short list, which is edited, never appended; a time-bound
+  item (found-not-fixed, a fixture that lied once, a brief that was wrong) lives on its ticket or
+  PR body and is kept nowhere. No `memory:` on the builder, no harvest PRs. *(Retired 2026-09-24:
+  46 harvest PRs, 94 memory files (428 KB) and a 148 KB agent file loaded into every one of 86
+  dispatches, ~37k tokens each, with the worth never measured — the approver: "we harvest rules,
+  general not specific to the project, and … timebound action items … it has become a well of text
+  and sunk cost".)*
 - **Operational state decays on purpose; promote its residue.** Rulings go to tickets and
-  decision documents, repo craft to builder memory, transferable lessons here.
+  decision documents, repo mechanics to the builder agent file's short list, transferable
+  lessons here.

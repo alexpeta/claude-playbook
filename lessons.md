@@ -263,6 +263,17 @@ command lives in that project's `CLAUDE.md`.
   paths, read several files with one `head -200 a b c`, and keep the gate in a scratch script
   invoked with literal arguments.
 
+- **Agent memory that is appended is a cost that compounds and a value that is never measured.**
+  A builder agent given `memory: project` and a "record what you learned" paragraph grew, over
+  86 dispatches, a 148 KB agent file (1,614 lines, 128 incident bullets) loaded into every
+  dispatch — about 37k tokens each — plus 94 memory files (428 KB) and 46 harvest PRs, each a CI
+  run and a rebase when two collided on the index. No build was ever shown to have failed for lack
+  of it; the same facts were in the PR bodies and QC comments. Two layers are enough: general
+  lessons here, the same day, with the incident; repo mechanics in a short agent file that is
+  edited, never appended. Time-bound items stay on their ticket. *(Retired 2026-09-24 on the
+  approver's ruling; the pile was triaged once by a reader-tier pass and deleted with the
+  classification in the PR body.)*
+
 ## Environments and tooling
 
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
