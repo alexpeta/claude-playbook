@@ -274,6 +274,13 @@ command lives in that project's `CLAUDE.md`.
   approver's ruling; the pile was triaged once by a reader-tier pass and deleted with the
   classification in the PR body.)*
 
+- **Parallel gates share one machine's CPU; cap the builders, not the ports.** Once the smoke's
+  fixed port was made free-per-run, nothing stopped six builders gating at once on a 2017 laptop:
+  the load average read 70–120 and three gates went red on 5 s timing tests and a browser wait that
+  pass alone (2026-09-24). The diffs were unrelated; every rerun passed. Dispatch three or four
+  builders at a time and queue the rest; when a builder reports a timing red, read `uptime` before
+  the diff.
+
 ## Environments and tooling
 
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
