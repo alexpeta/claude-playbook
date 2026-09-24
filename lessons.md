@@ -196,6 +196,14 @@ command lives in that project's `CLAUDE.md`.
   it, and a merge coordinator that waits on "all checks green" must treat "no checks at all" on
   such a PR as nothing to wait for. Earned when a four-core self-hosted box had every lane full and
   a docs PR cost as much as a code PR, twice (2026-09-24).
+- **A rename audit that counts readers with `grep` cannot see a hash pin over rendered markup.** A
+  test that pins `sha256(render(component))` carries every inline string the component writes —
+  an animation name, an easing curve, a duration — without spelling any of them, so `git grep
+  <oldName>` reports zero test readers and the gate goes red on the pin. Before a rename that
+  reaches an inline style, list the byte-pinned tests over the components that write it and
+  budget the re-pins (each with the old→new mapping in its comment and the statement that nothing
+  else in the markup moved). Earned twice in one afternoon: a keyframe dedupe and an easing-token
+  rename each turned two hash pins red that the grep had called clean (2026-09-24).
 
 ## Parallel agents and worktrees
 
