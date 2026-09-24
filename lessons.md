@@ -281,6 +281,14 @@ command lives in that project's `CLAUDE.md`.
   builders at a time and queue the rest; when a builder reports a timing red, read `uptime` before
   the diff.
 
+- **`import { type A } from './x'` still imports `x` at run time under `verbatimModuleSyntax`.**
+  Only `import type { A } from './x'` is erased. A cycle checker over the module graph (madge and
+  the like) reads the inline-`type` form as a plain import and reports a cycle that is real, or —
+  worse — a move that looks clean on the checker still keeps the runtime edge when the inline form
+  slipped in. Write `import type` for type-only imports whenever a cycle matters, and grep for
+  `{ type ` across the two files after a move (2026-09-24, a controller split where the first
+  rewrite of the importer would have kept the cycle the PR claimed to break).
+
 ## Environments and tooling
 
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
