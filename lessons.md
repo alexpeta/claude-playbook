@@ -203,7 +203,21 @@ command lives in that project's `CLAUDE.md`.
   reaches an inline style, list the byte-pinned tests over the components that write it and
   budget the re-pins (each with the old→new mapping in its comment and the statement that nothing
   else in the markup moved). Earned twice in one afternoon: a keyframe dedupe and an easing-token
-  rename each turned two hash pins red that the grep had called clean (2026-09-24).
+  rename each turned two hash pins red that the grep had called clean (2026-09-24). The same
+  blindness in another shape: a test that `readFileSync`s a reference file and pins a line of its
+  text. `grep <path>` finds it and a path rewrite lands cleanly — onto a *different file*, and the
+  pin goes red on the file's own words. Before rewriting a path, separate the readers that cite the
+  file from the readers that read it, and re-quote the pins from the file the path now names
+  (2026-09-24, evening: fifteen tests read three design exports from disk; one pin broke).
+
+- **A design export's frame is the artboard, not a spec.** A handoff that says "everything is
+  designed on a W × H frame; scale it to the window" is describing the designer's canvas. Writing
+  that frame into a decision record as the product's resolution is reading the tool's constraint as
+  the approver's intent. What the motion actually needs is one unit both ends of a movement share,
+  and an app that already measures its drawn tile has it; the frame's pixels read as tiles. Before
+  proposing a layout law from a design file, ask what the drawings *require* and check whether the
+  code already supplies it. The approver's words on the draft: "locking down … a fixed resolution
+  because that's what design came up with … I cannot rule on this randomly" (2026-09-24).
 
 ## Parallel agents and worktrees
 
