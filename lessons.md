@@ -472,3 +472,11 @@ command lives in that project's `CLAUDE.md`.
   landed 10–40 minutes ahead of the clock; the merge record is the comment, so a wrong stamp is a wrong
   record. `date -u` in the same command as the comment body, and when one is found wrong, correct it
   in place from the comment's own `created_at`, saying what it read before.
+- **A one-property change to shared markup moves every byte-for-byte pin of a screen that draws it;
+  grep the tests for the string before claiming green.** A chair's hand-fix added one inline style
+  property to the board's SVG, reran the five files that name the board and posted a green QC; CI found
+  two more tests pinning the exact style string, and the whole suite then found four more pinning a
+  sha of whole-screen markup (2026-09-25). A partial rerun is a spot check on the files you thought of;
+  the pins live where the screen is rendered, not where the component is tested. Before the claim,
+  `git grep` the old string and the old sha across the tests, and run the package's whole suite once;
+  when a pin moves, move it with a comment naming the change as the one move.
