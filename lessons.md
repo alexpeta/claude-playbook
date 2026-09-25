@@ -322,6 +322,14 @@ command lives in that project's `CLAUDE.md`.
   slipped in. Write `import type` for type-only imports whenever a cycle matters, and grep for
   `{ type ` across the two files after a move (2026-09-24, a controller split where the first
   rewrite of the importer would have kept the cycle the PR claimed to break).
+- **Parallel slices that each append a section to one shared table test collide at the same line
+  every time.** Five arcade slices ran in parallel on one night (2026-09-25); each extended the same
+  `arcade-css.test.ts` and `arcade-tokens.test.ts` by appending a section at the end, and every second
+  PR to land needed a hand rebase for exactly that hunk — three in one night, the same shape each time
+  (both sides kept, one constant renamed). Give each slice its own test file from the start, or make
+  the shared table a folder of per-slice files the runner globs; a shared readers list or coverage
+  set is fine because it is one line that changes, not a section.
+
 
 ## Environments and tooling
 
@@ -452,3 +460,15 @@ command lives in that project's `CLAUDE.md`.
   builder to amend the commit. Check the setting once per repo (`gh api repos/<owner>/<repo> --jq
   .squash_merge_commit_title`) and write which applies into the repo's `CLAUDE.md` where it says what
   decides the release.
+- **Brief the constraint, not the mechanism, when the mechanism is a guess.** In one night three
+  briefs prescribed a mechanism the chair had reasoned out from a partial read (an exit length keyed on
+  a flag; a wipe's out ended by local state; a "dims 40 %" read as brightness left), and in all three the
+  builder's override — read off the code or the design's own source — was right and cheaper. The
+  brief's job is the invariant (one clock, no layer left up, byte-identical off) and the evidence to
+  check; when the chair states a mechanism at under about 80 %, say so and ask the builder to verify
+  it first, so an override costs a paragraph and not a rebase.
+- **A timestamp in a dated comment is read off the clock in the same call that writes the comment.**
+  Four QC and dispatch stamps in one evening (2026-09-24) were extrapolated from an earlier read and
+  landed 10–40 minutes ahead of the clock; the merge record is the comment, so a wrong stamp is a wrong
+  record. `date -u` in the same command as the comment body, and when one is found wrong, correct it
+  in place from the comment's own `created_at`, saying what it read before.
