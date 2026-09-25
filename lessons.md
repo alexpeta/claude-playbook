@@ -480,3 +480,9 @@ command lives in that project's `CLAUDE.md`.
   the pins live where the screen is rendered, not where the component is tested. Before the claim,
   `git grep` the old string and the old sha across the tests, and run the package's whole suite once;
   when a pin moves, move it with a comment naming the change as the one move.
+- **A list of test paths in one shell variable reaches the runner as one argument; read the log's first
+  line before reading a non-zero exit as a red.** Twice in one afternoon (2026-09-25) a chair ran a
+  mutation check as `vitest run $FILES` with several paths in `$FILES`; the runner saw one filename with
+  spaces in it, found no test files and exited 1, and the chair posted "red" — once on a PR, corrected in
+  place. A mutation's red is a named failing row, never an exit code. Spell the paths out as separate
+  arguments (or use a shell array), and grep the log for the failing rows' names before claiming.
