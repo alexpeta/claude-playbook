@@ -493,3 +493,11 @@ command lives in that project's `CLAUDE.md`.
   copies through the API by comment id. When more than one of your comments on a thread is live, read
   the ids once (`gh api .../issues/<n>/comments --jq '.[] | select(.body | startswith("**Ledger")) | .id'`),
   PATCH by id, and keep the body of every running comment as a file so a wrong edit is one PATCH to undo.
+- **A hand-fix runs the whole package's suite before it pushes, not the files you think it touches.** A
+  chair changed two words of a HUD label (2026-09-26), ran the three test files that named the label and
+  a typecheck, pushed, and CI went red on three whole-screen byte-identity pins in a fourth file that hash
+  every screen — a re-pin, a second push and a second gate for a two-word change. The gate exists because
+  nobody knows every pin a change reaches; skipping it on a "tiny" fix is exactly where it bites. The
+  rule for a chair's hand-fix is the builder's: the package's full test run (or the gate) green locally,
+  then push. Grepping for the words you changed finds the pins that quote them, never the ones that hash
+  them.
