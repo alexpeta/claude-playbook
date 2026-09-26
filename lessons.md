@@ -501,3 +501,12 @@ command lives in that project's `CLAUDE.md`.
   rule for a chair's hand-fix is the builder's: the package's full test run (or the gate) green locally,
   then push. Grepping for the words you changed finds the pins that quote them, never the ones that hash
   them.
+- **Hold docs-only merges while a code merge's CI is running on the trunk.** A release gate that
+  requires "the commit CI tested is still the trunk's head" is right when two code merges land in a row:
+  the later one's CI carries both. It is wrong when the later merge is docs-only and, by the repo's own
+  saving, runs no CI at all. A chair merged a `fix` at 17:24 and a docs-only PR at 17:27 (2026-09-26);
+  the fix's CI went green at 17:31, the gate said "the trunk has moved, the next green head carries
+  this", and no next head ever came — the fix sat merged and unreleased until a code-touching PR was
+  found to push. On a merge line, either merge the docs PR first, or wait for the code merge's trunk CI
+  and release to finish before it. The gate itself should learn to see a docs-only move as "nothing
+  changed"; until it does, the ordering is the chair's to keep.
