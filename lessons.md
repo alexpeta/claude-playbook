@@ -486,3 +486,10 @@ command lives in that project's `CLAUDE.md`.
   spaces in it, found no test files and exited 1, and the chair posted "red" — once on a PR, corrected in
   place. A mutation's red is a named failing row, never an exit code. Spell the paths out as separate
   arguments (or use a shell array), and grep the log for the failing rows' names before claiming.
+- **Edit a thread comment by its id, never by "the last one I wrote".** A chair keeping two running
+  comments on one epic — a ledger and a "for the morning" note — used `gh issue comment --edit-last` to
+  update the ledger and overwrote the morning note with it instead (2026-09-26): `--edit-last` means the
+  author's most recent comment on the thread, whichever that is. Both were restored from the local
+  copies through the API by comment id. When more than one of your comments on a thread is live, read
+  the ids once (`gh api .../issues/<n>/comments --jq '.[] | select(.body | startswith("**Ledger")) | .id'`),
+  PATCH by id, and keep the body of every running comment as a file so a wrong edit is one PATCH to undo.
