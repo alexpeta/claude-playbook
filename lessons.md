@@ -510,3 +510,13 @@ command lives in that project's `CLAUDE.md`.
   found to push. On a merge line, either merge the docs PR first, or wait for the code merge's trunk CI
   and release to finish before it. The gate itself should learn to see a docs-only move as "nothing
   changed"; until it does, the ordering is the chair's to keep.
+- **A slice that goes straight to a PR still gets its sub-issue first.** The playbook's step 2 says
+  slices are native sub-issues of their epic, and a chair that reads it still skips it when a slice
+  needs no ticket of its own — the brief is written, the builder dispatched, the PR opened with
+  "Part of #epic" in its body, and the parent reads 0/0 while five slices ship (2026-09-26, seven PRs
+  on one epic, not one sub-issue; the approver had asked for exactly this on 2026-09-22 after two
+  earlier epics). The at-a-glance progress the approver wants lives only in `sub_issues_summary`, and
+  a PR is not an issue. Make the sub-issue in the same call that writes the brief:
+  `gh issue create … ; gh api -X POST repos/<r>/issues/<epic>/sub_issues -F sub_issue_id=<database id>`
+  — the database `id`, not the number. Retro tickets closed against their PRs repair the count, and
+  cost more than doing it first.
