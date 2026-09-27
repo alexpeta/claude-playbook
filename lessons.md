@@ -509,7 +509,12 @@ command lives in that project's `CLAUDE.md`.
   this", and no next head ever came — the fix sat merged and unreleased until a code-touching PR was
   found to push. On a merge line, either merge the docs PR first, or wait for the code merge's trunk CI
   and release to finish before it. The gate itself should learn to see a docs-only move as "nothing
-  changed"; until it does, the ordering is the chair's to keep.
+  changed"; until it does, the ordering is the chair's to keep. **Read the trunk at the moment of the docs
+  merge, not a few minutes before, and with your own merge loops in mind:** a background loop that merges a
+  code PR on its CI green can land between the check and the docs merge. *(2026-09-27: the chair read the
+  trunk idle at 17:44, a loop merged a `fix` at 17:46, the docs PR merged at 17:48 on top of its running
+  CI; the fix waited for the next code head.)* Cheapest guard: stop or finish the loops first, or make the
+  docs merge itself check `gh run list --branch main --limit 1` for an in-progress run and refuse.
 - **A slice that goes straight to a PR still gets its sub-issue first.** The playbook's step 2 says
   slices are native sub-issues of their epic, and a chair that reads it still skips it when a slice
   needs no ticket of its own — the brief is written, the builder dispatched, the PR opened with
