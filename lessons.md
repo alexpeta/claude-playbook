@@ -72,6 +72,14 @@ command lives in that project's `CLAUDE.md`.
   mutation stayed green on one of them, "the saved-object write deleted" and "the row opens
   the overlay without shutting the sheet" on another — all three reported red by the builder's
   own list, which had mutated the outcomes and never the levers.)*
+- **Commit the fix before you mutate it.** A mutation is restored with a checkout, and a checkout of
+  a file restores the whole file: every uncommitted edit in it goes with the mutation, and the
+  builder re-applies its own fix from memory and gates a tree it has to reconstruct. Commit the
+  fix (a WIP commit is fine, squash later), mutate, `git checkout -- <file>` or `git stash` never —
+  `git diff` against the commit must be exactly the mutation and nothing else. *(2026-09-28: two
+  builders in one afternoon, on two different files, each lost its uncommitted fix to the restore
+  of its first mutation and rebuilt it by hand; both said so in the PR body, both gates were then
+  run on the rebuilt tree.)*
 - **Metrics inherit the blind spots of their instrumentation.** A 14-day "clean" clock read
   all-zero while a destructive write went through a path it never instrumented. Prefer
   outcome-shaped denominators (every audit row) over signal-shaped ones (the alarms you installed).
