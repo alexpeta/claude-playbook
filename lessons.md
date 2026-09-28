@@ -64,6 +64,16 @@ command lives in that project's `CLAUDE.md`.
   to exist for it to go red; if nothing in the corpus can, the guard is vacuous. *(A
   date-keyed fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
   because two labels folded onto one decision — found by a mutation that did not go red.)*
+- **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
+  config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
+  a template step can rewrite it, and the dev server that every builder and reviewer runs skips
+  that step. Put the built output under the test (run the same minifier the build uses over the
+  sheet, then read the computed style), or the pin stays green on a bug only production draws.
+  *(2026-09-28: `transform: none; translate: -50% 0` read right in the dev server and in every
+  stylesheet pin; the build's CSS minifier folded it into `transform: translate(-50%)` and dropped
+  the `translate`, so a full-screen crossfade drew over half the window on the deployed build. The
+  approver found it playing; three hypotheses from the code were all wrong; the builder
+  reproduced in a real browser over the built preview before guessing.)*
 - **A flag PR gets one mutation per site the flag passes through, not one per behaviour it
   changes.** The sites are the action's reducer case, every read that decides behaviour, and
   the read that persists it (the storage fallback for a missing field). A builder's own
