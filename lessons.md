@@ -515,6 +515,7 @@ command lives in that project's `CLAUDE.md`.
   trunk idle at 17:44, a loop merged a `fix` at 17:46, the docs PR merged at 17:48 on top of its running
   CI; the fix waited for the next code head.)* Cheapest guard: stop or finish the loops first, or make the
   docs merge itself check `gh run list --branch main --limit 1` for an in-progress run and refuse.
+  *(2026-09-28, third trip, and not the chair's: the approver merged a docs PR from the web UI at 00:47 on top of a `feat` whose CI had been running since 00:39; the feat waited for the next code head.)* Three trips by two people is no longer an ordering lesson: a rule that must be kept by everyone with a merge button is a mechanism that is missing. File the gate change the same day (a docs push to the trunk still runs CI when the trunk carries unreleased code, or the gate compares against the last tag) and stop relying on the humans.
 - **A slice that goes straight to a PR still gets its sub-issue first.** The playbook's step 2 says
   slices are native sub-issues of their epic, and a chair that reads it still skips it when a slice
   needs no ticket of its own — the brief is written, the builder dispatched, the PR opened with
