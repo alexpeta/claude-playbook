@@ -133,6 +133,14 @@ command lives in that project's `CLAUDE.md`.
   stepping between sessions; the spec and the engine's clock both say a game day is minutes of
   stepping while present, and stepping between sessions would have made a real day 180 game days.
   The builder read the spec and followed the code, which was right. *(2026-10-01, the lab batch.)*
+- **Before pinning a seeded control, check per configuration that removing the input reds it; and
+  a `>`→`>=` mutation on a predicate over continuous values cannot red a run-shaped test.** A
+  control meant to pin HUD keep-out rectangles was first written at the seed every other control
+  uses; at one of its two sizes the run never came near a rectangle, so dropping the input stayed
+  green there. A scan of 40 seeds found one where the input mattered at both sizes (22 of 40 at one
+  size, 39 of 40 at the other; a 1 px shift mattered in 6 of 80). Strictness of the predicate is a
+  grid test's job, one that lands on the edges exactly; the control's header says which test
+  covers it. *(2026-10-01, the keep-out control.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
