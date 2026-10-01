@@ -171,6 +171,15 @@ command lives in that project's `CLAUDE.md`.
   appear" is read once, at a moment inside the thing's lifetime — and every such line gets a
   mutation, because a negative that cannot fail looks exactly like one that did not.
   *(2026-09-20; the chair's mutation survived, then went red after the one-line change.)*
+- **A screenshot baseline that is missing must fail, never be written as a side effect; and a
+  workflow can only be dispatched once it is on the default branch.** A suite that silently writes a
+  baseline on first run turns every fresh machine into a re-pin; make the write an explicit
+  `--update-snapshots` and fail the compare when the file is absent. To bootstrap a set on the CI
+  platform before the workflow exists on `main`, give it a path-filtered `pull_request` trigger on
+  the baselines folder, let the first run upload the PNGs as an artifact and fail on purpose, commit
+  them in the same PR, and let the next run compare. Name the set by platform and runtime version,
+  and bill the platform that matters (a 2× Windows job runs daily and on demand, not per push).
+  *(2026-10-01, the first pixel baselines of a migration.)*
 - **Pin the browser-test runner to what the gating machines run.** The newest Playwright
   installed cleanly and then refused to launch: it had dropped the approver's OS two minor
   versions earlier. A gate that the local machine cannot run is not a gate there; pin, and
