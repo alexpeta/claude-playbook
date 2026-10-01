@@ -275,6 +275,12 @@ command lives in that project's `CLAUDE.md`.
 - **A worktree gate can silently test main.** A shared virtualenv's `.pth` points at the main
   checkout's `src/`. Each worktree installs its own environment and asserts the package
   resolves inside the worktree before trusting any green.
+- **A fresh worktree resolves packages to the main checkout's `node_modules` until it installs its
+  own.** Node walks up the directory tree, and a worktree under `<repo>/.claude/worktrees/` finds the
+  parent checkout's modules first — so a builder's tests and typecheck ran against the main tree's
+  dependency versions, not the lockfile it was about to change. `pnpm install --frozen-lockfile` in
+  the worktree before any gate, and the builder definition says so. *(2026-10-01, caught by the
+  builder; the same mechanism as the shared-virtualenv `.pth` entry above.)*
 - **Never `git stash` in a shared repo.** Stash refs are repo-global; one agent's red-first
   stash-pop captured a sibling's in-progress edits. Copy files aside instead.
 - **PR-state is not liveness.** "No pushed branch" means "hasn't pushed yet"; a live builder's
