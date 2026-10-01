@@ -68,6 +68,14 @@ command lives in that project's `CLAUDE.md`.
   to exist for it to go red; if nothing in the corpus can, the guard is vacuous. *(A
   date-keyed fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
   because two labels folded onto one decision — found by a mutation that did not go red.)*
+- **A mutation that changes nothing the system can observe cannot red, and that is a fact about
+  the mutation, not the test.** Two in one day (2026-10-01): dropping `PRAGMA synchronous=FULL`
+  stayed green because both SQLite drivers already default to FULL in WAL mode; moving the
+  `PRAGMA user_version` write earlier inside a transaction stayed green because the pragma is
+  rolled back with the transaction. Before calling a guard vacuous, check whether the mutated line
+  was ever load-bearing (read the default, read the transaction semantics); then mutate something
+  the behaviour depends on (set the version outside the transaction → red). Record both in the PR:
+  the mutation that could not red and why, and the one that did.
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
