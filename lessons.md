@@ -341,6 +341,7 @@ command lives in that project's `CLAUDE.md`.
   rounding edge (30× margin here) and write it in the PR, and keep the exact parts as run-to-run
   assertions on one machine. Pin pixel baselines per platform. Diagnose by splitting the hash into
   parts and printing the first diverging checkpoint's values into the CI log; do not reach for a
+  per-platform pin first. *(2026-10-01; two builders, one handoff; the second measured it in 60 calls.)*
 - **Before deleting "dead" code, grep it for clock and rng reads, then run the controls with it
   removed.** A render path that paints nothing can still be load-bearing: a draw function whose
   every canvas branch was unreachable still read the injected clock once per frame, and the replay
@@ -350,7 +351,6 @@ command lives in that project's `CLAUDE.md`.
   seam owner removes the read, then the function goes. Same for state fields: a key the deleted code
   wrote stays while any control hashes the whole object. *(2026-10-01, the dead-code drop after a
   domain split: 21 deletions, one kept for its clock read, 16 World fields kept for the hash.)*
-  per-platform pin first. *(2026-10-01; two builders, one handoff; the second measured it in 60 calls.)*
 
 ## Parallel agents and worktrees
 
