@@ -245,6 +245,18 @@ command lives in that project's `CLAUDE.md`.
   probe requested the file by hand (with its SRI) and read its version. *(2026-09-30, an offline
   vendoring slice; both witnesses were strengthened before the PR.)*
 
+- **A formatter-only commit is proven by its fixed point and an AST comparison, not by "one pass
+  reproduces it".** Prettier 3.9 needed two passes over a 290 KB dense file (a member chain moved on
+  the second), so "run Prettier on the previous commit and `cmp`" would have called a correct commit
+  wrong. Prove it twice: run the formatter on the result until it is a no-op, and compare the parse
+  trees of before and after (espree or the TypeScript parser) for equality. *(2026-10-01, the
+  first move-then-format slice of a migration.)*
+- **"Did not throw" is vacuous for code that catches its own errors, and a canvas under jsdom has no
+  size.** A game loop that wraps every frame in try/catch and pushes errors to a ring never throws
+  from `mount`; and jsdom reports `clientWidth` 0, so the loop skipped every frame and the test
+  passed having drawn nothing. Assert the error ring is empty, give the canvas a size through the
+  stub, and assert something was drawn (a counted `fill`) and the state export fired. *(2026-10-01.)*
+
 ## Parallel agents and worktrees
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
