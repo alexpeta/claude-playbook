@@ -435,6 +435,12 @@ command lives in that project's `CLAUDE.md`.
   slipped in. Write `import type` for type-only imports whenever a cycle matters, and grep for
   `{ type ` across the two files after a move (2026-09-24, a controller split where the first
   rewrite of the importer would have kept the cycle the PR claimed to break).
+- **An env object a move introduces must be declared before the first code that can reach it.**
+  A legacy `function` declaration is hoisted, so a caller that runs early never noticed the
+  ordering; the moved function's arrow wrapper `(f) => info(w, f)` and its `const env = { … }`
+  are not, and the first early caller meets `undefined`. Declare the env at the top of the
+  closure, right after the state it closes over, not "next to the previous env" (2026-10-01, a
+  journal move whose `remember` is called from a visitor machine that runs before the env line).
 - **Parallel slices that each append a section to one shared table test collide at the same line
   every time.** Five arcade slices ran in parallel on one night (2026-09-25); each extended the same
   `arcade-css.test.ts` and `arcade-tokens.test.ts` by appending a section at the end, and every second
@@ -467,6 +473,12 @@ command lives in that project's `CLAUDE.md`.
   (2026-09-14; `crypto.randomUUID is not a function`). The check that sees it is the deployed
   URL itself, loaded in a real browser after every first deploy, with the console read. Prefer
   `crypto.getRandomValues` for seeds and ids; it has no such limit.
+- **Measure on the artifact that ships before minting a perf ticket.** A first-paint ticket was
+  written from a dev-server measurement (450–600 ms against the reference's 210 ms); the built
+  app already painted at 131–185 ms, under the reference on the same machine, and the proposed
+  preload could not even match the font request's CORS mode under both hosts (2026-10-01). Dev
+  servers pay for module graphs and HMR that the build does not. State the host next to every
+  timing number; a number without its host is not a measurement.
 - **Environment cleanup is a ledger item.** Per-worktree virtualenvs reached 17 GB and 76
   environments before anyone looked; two image tags per release filled a deploy host to 263 GB of
   Docker images. Measure (`du`, `docker system df`), prune by an explicit filter (a label, a
