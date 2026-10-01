@@ -188,6 +188,16 @@ command lives in that project's `CLAUDE.md`.
   "cannot be witnessed by pixels yet". A "use the design token" change on a value that another
   test quotes verbatim from the reference is two contracts in conflict: try it against that test
   first and raise the choice, do not pick one silently. *(2026-10-01.)*
+- **A gate that drives a real on-screen window has an input channel open to the operator.** The
+  Playwright-driven Electron window opened on screen, held keyboard focus and sat under the real
+  cursor; a trusted `pointermove` that landed after the engine mounted set the pointer state and the
+  simulation diverged from there, compounding frame by frame. The unstable set above was this: the
+  runs went red when someone was at the machine and green when nobody was. Swallow trusted input
+  at the window capture phase before the first page script, count and print what was swallowed,
+  refuse a run whose world saw input before the swallow was installed, and pin a state hash next
+  to each pixel frame: the renderer was deterministic, so a 0-pixel frame can sit on a diverged
+  world and never show it. *(2026-10-01, found by splitting the world hash from the PNG hash at
+  every capture point across eleven launches, three under CPU stress.)*
 - **Pin the browser-test runner to what the gating machines run.** The newest Playwright
   installed cleanly and then refused to launch: it had dropped the approver's OS two minor
   versions earlier. A gate that the local machine cannot run is not a gate there; pin, and
