@@ -60,6 +60,10 @@ command lives in that project's `CLAUDE.md`.
 - **A gate that got lucky is not a gate.** Re-gate on any new head, always; a gate keyed to a
   stale head is evidence about a tree that no longer exists. Gate artifacts are per-agent and
   per-head (`<issue>-<worktree-id>`), never a shared `/tmp/g*` that a sibling can pick up.
+- **When a known-red `it.fails` is fixed, hunt the `try/catch` blocks in nearby tests that tolerate the
+  same bug.** A ten-minute winter run had wrapped the weather step in a `try/catch` whose comment said
+  it absorbed the very `RangeError` the fix removed; left in place it would have passed on a
+  regression. The fixing PR removed it and the run became a second witness. *(2026-10-01.)*
 - **A test that cannot fail is a finding.** Before trusting a green, ask what input would have
   to exist for it to go red; if nothing in the corpus can, the guard is vacuous. *(A
   date-keyed fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
