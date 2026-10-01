@@ -141,6 +141,17 @@ command lives in that project's `CLAUDE.md`.
   size, 39 of 40 at the other; a 1 px shift mattered in 6 of 80). Strictness of the predicate is a
   grid test's job, one that lands on the edges exactly; the control's header says which test
   covers it. *(2026-10-01, the keep-out control.)*
+- **When a refactor removes reads that a positional replay queue serves, map old recordings with a
+  getter that consumes one read per access, and bump the recording version.** Input handlers read
+  the injected clock one to three times per event, and the recordings replay those reads by
+  position with the read count as part of the pinned hash. Moving the timing onto an event stamp
+  carried by the command removed the reads; a replay that simply dropped them would have shifted
+  every later read in the step. A `t` getter that consumes one recorded read per access reproduced
+  the old values in the old order, the old controls held unchanged, and new recordings got a new
+  version so nothing replays misaligned. The chair's brief had claimed "the drain-time read and
+  `t` agree in the controls"; the raw recording showed reads within one event differing by 0.1 ms.
+  Check a claim about the controls against the raw recording before building on it.
+  *(2026-10-01, commands carry their event time.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
