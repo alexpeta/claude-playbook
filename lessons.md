@@ -107,6 +107,16 @@ command lives in that project's `CLAUDE.md`.
   byte-for-byte with `git show`; the alternative order reds 38 of them. Before predicting that
   controls move, probe the controls' own seeds. *(2026-10-01, the floor field and the first pond's
   algae; the approver ruled prototype-faithful.)*
+- **Removing a canvas read-back can change pixels of draws it never touched; compare with GPU
+  acceleration on and off before calling a change pixel-identical.** A Chromium `getImageData`
+  moves the canvas it reads to CPU raster; a refactor that replaced the read-back with a pure
+  model left the same draw calls on a canvas that now stayed on the GPU, and the anti-aliasing
+  differed by up to 16 alpha levels on a quarter of the pixels while every draw call, every random
+  draw and every input was proven equal. With 2D acceleration off all variants were 0 px apart,
+  which located the cause. The ruling was to accept (the read-back was the accident), but the
+  measurement is what made it a ruling and not a guess. Related: `git checkout -- <file>` to undo
+  a mutation also discards uncommitted work in that file; commit a WIP before mutation checks.
+  *(2026-10-01, algae coverage off the canvas.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
