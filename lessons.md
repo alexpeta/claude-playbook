@@ -269,6 +269,17 @@ command lives in that project's `CLAUDE.md`.
   the deadline and the next frame; check the deadline on every input handler too, and test both
   windows. The builder found all four; the brief had asserted the opposite.
 
+- **Vitest empties CSS imports, and jsdom has no layout.** A test that reads a stylesheet through
+  `import x from './a.css?raw'` gets `''` unless `test.css.include` matches the file, and a
+  "the pill does not shift when the number grows" assertion under jsdom measures nothing because
+  nothing is laid out. Pin the rule the layout depends on (`min-width`, `tabular-nums`) in the
+  unit test and witness the pixels in a real browser; say which is which in the PR.
+  *(2026-10-01, a HUD port.)*
+- **A background watcher started inside a scratch worktree dies when the worktree is removed.** Its
+  cwd is gone, `git`/`gh` fail with "Unable to read current working directory", and the wait
+  reports nothing. Start waits from the main checkout, or remove the worktree after the wait
+  returns. *(2026-10-01.)*
+
 ## Parallel agents and worktrees
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
