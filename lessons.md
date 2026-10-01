@@ -313,7 +313,11 @@ command lives in that project's `CLAUDE.md`.
   shell variable or chains `cd … && …` fail with "names git in a form too complex to verify",
   whether or not git is involved (2026-09-15, three refusals in one build). Use literal absolute
   paths, read several files with one `head -200 a b c`, and keep the gate in a scratch script
-  invoked with literal arguments.
+  invoked with literal arguments. **The refused set is wider than paths:** on such a machine the
+  guard also refused every line containing `$?`, process substitution, `python3 <script>`, `diff`,
+  and `sed -f`, even with literal absolute paths — plain `cmp`, `shasum`, `cut`, `sort` and
+  `sed -e` pass (2026-09-30, two builders on a fresh repo). Brief builders to prove things with
+  inline shell, and to read exit codes from a file the gate writes, never from `$?`.
 
 - **Agent memory that is appended is a cost that compounds and a value that is never measured.**
   A builder agent given `memory: project` and a "record what you learned" paragraph grew, over
@@ -351,6 +355,14 @@ command lives in that project's `CLAUDE.md`.
 
 ## Environments and tooling
 
+- **Electron 44 and later do not download their binary on install.** The first `pnpm dev` dies
+  with electron-vite's "Electron uninstall" error. Run `install-electron` inside the `dev` script,
+  not as a `postinstall`, so the gate (typecheck, lint, unit, bundle) never pulls the ~100 MB
+  binary on a CI runner. *(2026-09-30, the first toolchain slice of a fresh repo.)*
+- **Pin `packageManager` in `package.json`, or corepack runs the newest pnpm it can find.** A
+  brief stated the machine's pnpm version from an earlier `pnpm --version`; the shim had since
+  downloaded a newer major and the builder's lockfile was written by it. Pin the exact version and
+  quote it from `package.json`, not from the shell. *(2026-09-30.)*
 - **The shell is zsh.** Arrays are 1-indexed; a bash-idiom loop silently shifted every issue
   title by one. `set -e` does not stop a failure inside `$(…)`. Check every captured variable.
   An unbraced variable before a colon takes a modifier: `"$ROOT:refs/heads/main"` expanded as
