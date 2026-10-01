@@ -461,6 +461,15 @@ command lives in that project's `CLAUDE.md`.
   wrote stays while any control hashes the whole object. *(2026-10-01, the dead-code drop after a
   domain split: 21 deletions, one kept for its clock read, 16 World fields kept for the hash.)*
 
+- **A release job can fail after it has released; the deploy must read what landed, not the step's
+  exit.** semantic-release pushed the tag and the version commit, then its GitHub plugin's
+  create-release request succeeded on GitHub's side, the client never saw the answer, the retry was
+  refused with `already_exists`, and the job went red — so every deploy job that `needs` it was
+  skipped with a real tag and no deployment behind it. Gate a deploy on the tag's existence (or on
+  the release object), and keep a dispatch lever that takes an existing tag; the lever is what
+  recovered it, by the approver's hand. *(2026-10-01, the fourth release of a night.)*
+
+
 ## Parallel agents and worktrees
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
