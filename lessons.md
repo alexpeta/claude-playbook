@@ -290,6 +290,11 @@ command lives in that project's `CLAUDE.md`.
   reports nothing. Start waits from the main checkout, or remove the worktree after the wait
   returns. *(2026-10-01.)*
 
+- **When measuring a rounding margin, count typed-array contents apart from doubles.** A Float32Array
+  value is already quantised, so its distance from a 1e-6 edge says nothing about drift risk; a
+  margin computed over all 78,000 numbers of a world looked wide, while the 12,900 doubles alone
+  gave a 7× margin. Report the doubles' nearest-edge distance, and have the failing assertion print
+  one hash per top-level key so the diverging part is named. *(2026-10-01, the second replay control.)*
 - **A control hash recorded on one CPU can fail on another from floating-point noise alone; commit
   the portable part and measure the margin.** A 60 s replay control hashed the exported state, the
   entity positions and the full canvas trace; it held run-to-run on the developer's arm64 Mac and
