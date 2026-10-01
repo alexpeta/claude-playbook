@@ -317,6 +317,11 @@ command lives in that project's `CLAUDE.md`.
   dependency versions, not the lockfile it was about to change. `pnpm install --frozen-lockfile` in
   the worktree before any gate, and the builder definition says so. *(2026-10-01, caught by the
   builder; the same mechanism as the shared-virtualenv `.pth` entry above.)*
+- **`git reset --soft origin/main` to squash stages a revert of everything main gained since you
+  branched.** A builder squashing its slice after a sibling PR had merged saw the sibling's whole
+  change staged as deletions; `git status` caught it before the commit. Squash onto the merge base
+  (`git merge-base origin/main HEAD`, read first and passed literally), then rebase onto `origin/main`.
+  *(2026-10-01.)*
 - **Never `git stash` in a shared repo.** Stash refs are repo-global; one agent's red-first
   stash-pop captured a sibling's in-progress edits. Copy files aside instead.
 - **PR-state is not liveness.** "No pushed branch" means "hasn't pushed yet"; a live builder's
