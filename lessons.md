@@ -180,6 +180,14 @@ command lives in that project's `CLAUDE.md`.
   them in the same PR, and let the next run compare. Name the set by platform and runtime version,
   and bill the platform that matters (a 2× Windows job runs daily and on demand, not per push).
   *(2026-10-01, the first pixel baselines of a migration.)*
+- **A pixel baseline is a guard only once the unchanged tree has passed it twice in a row.** Two
+  slices reported "0 diff pixels" on a local set; the third ran the control on the unchanged tree
+  three times and got 13 frames red, then 1, then 0 — the set was not stable, and the two earlier
+  zeros proved nothing. Before trusting a 0-pixel run, bootstrap and compare the untouched tree at
+  least twice; if those differ, the finding is the nondeterminism, and the slice's result is
+  "cannot be witnessed by pixels yet". A "use the design token" change on a value that another
+  test quotes verbatim from the reference is two contracts in conflict: try it against that test
+  first and raise the choice, do not pick one silently. *(2026-10-01.)*
 - **Pin the browser-test runner to what the gating machines run.** The newest Playwright
   installed cleanly and then refused to launch: it had dropped the approver's OS two minor
   versions earlier. A gate that the local machine cannot run is not a gate there; pin, and
