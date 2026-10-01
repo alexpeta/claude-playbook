@@ -257,6 +257,18 @@ command lives in that project's `CLAUDE.md`.
   passed having drawn nothing. Assert the error ring is empty, give the canvas a size through the
   stub, and assert something was drawn (a counted `fill`) and the state export fired. *(2026-10-01.)*
 
+- **A "no behaviour change" control run sees only what it exercises and what its snapshot carries.**
+  Three ways one went vacuous in a single refactor (2026-10-01, a loop split with an injected clock):
+  a control driven at a fixed 1/60 s never engages the dt clamp, so a clamp mutation stays green —
+  add hitches (a 120 ms and a 45 ms frame) so the clamp has work; a control that fakes the global
+  clock to the injected clock's value cannot see a site the injection missed, because both read
+  the same number — pin time differently on the two sides (fake timers before, the injected clock
+  after, the real clock left live); and a hash of a coarse state export cannot see render-only or
+  position-level sites at all — say which sites the control covers and witness the rest by name.
+  Also: a `setTimeout` replaced by a deadline checked in the step loop changes behaviour between
+  the deadline and the next frame; check the deadline on every input handler too, and test both
+  windows. The builder found all four; the brief had asserted the opposite.
+
 ## Parallel agents and worktrees
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
