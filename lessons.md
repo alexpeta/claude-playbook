@@ -459,6 +459,15 @@ command lives in that project's `CLAUDE.md`.
   are not, and the first early caller meets `undefined`. Declare the env at the top of the
   closure, right after the state it closes over, not "next to the previous env" (2026-10-01, a
   journal move whose `remember` is called from a visitor machine that runs before the env line).
+- **Never push `HEAD:` at the end of a chain; push the sha you gated.** A rebase-gate-push chain
+  opened with `cd <worktree>`, but the shell was running in the main checkout (the harness had just
+  reset its cwd after an earlier command moved it) — the gate silently ran on the stale checkout
+  and `git push --force-with-lease … HEAD:<branch>` pushed that checkout's old main onto the PR
+  branch, which GitHub then closed as having no commits (2026-10-01; restored from the worktree's
+  detached HEAD within minutes). A `cd` at the head of a chain is not proof of where the chain
+  ran: print `pwd` and `git rev-parse HEAD` in the same command as any push, push an explicit sha
+  (`origin <sha>:<branch>`), lease on the sha you expect to replace, and never put a push in the
+  same command as the gate whose result it depends on.
 - **Parallel slices that each append a section to one shared table test collide at the same line
   every time.** Five arcade slices ran in parallel on one night (2026-09-25); each extended the same
   `arcade-css.test.ts` and `arcade-tokens.test.ts` by appending a section at the end, and every second
