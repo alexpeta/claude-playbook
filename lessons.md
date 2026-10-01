@@ -177,6 +177,14 @@ command lives in that project's `CLAUDE.md`.
   and only baking on copies kept the hydrated pond stepping as the live one. Before writing a
   serializer's brief, run a one-off walk of the object graph and list every place a value is
   reached twice. *(2026-10-01, serialize and hydrate.)*
+- **Mocking a barrel `index.ts` does not reach a sibling module that imports the file directly;
+  a trace-based test must also assert it saw the calls it compares.** A mutation that should have
+  made a postcard's put-back bake fail stayed green: the test mocked the render package's index
+  to trace bake calls, but the postcard module imported `./bg` directly, so its bakes were never
+  traced and "zero differences" was "zero observations". Mocking the module itself and asserting
+  the expected number of traced calls made the mutation red. Any test that compares traces, draw
+  calls or events must first assert the count it expected to see. *(2026-10-01, the bake's own
+  seeded streams.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
