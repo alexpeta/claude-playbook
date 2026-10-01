@@ -76,6 +76,14 @@ command lives in that project's `CLAUDE.md`.
   was ever load-bearing (read the default, read the transaction semantics); then mutate something
   the behaviour depends on (set the version outside the transaction → red). Record both in the PR:
   the mutation that could not red and why, and the one that did.
+- **A witness that compares only the end state cannot see a rate error; compare along the run.** A
+  render-independence witness stepped two worlds, one drawn and one not, and compared their hashes
+  at the end; a timer that the draw also decremented ran down twice as fast in the drawn world and
+  ended at the same clamped value, so the mutation stayed green. Hashing at checkpoints along the
+  run (every N steps, and in the frames where the thing being tested is alive) made it red. The
+  rule generalises: anything that converges, saturates or clamps hides its rate at the end; the
+  evidence is the trajectory. Mutation-check a witness with a rate bug, not only a value bug.
+  *(2026-10-01, moving state writes out of draw: eight writers, the timer found the gap.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
