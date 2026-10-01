@@ -160,6 +160,14 @@ command lives in that project's `CLAUDE.md`.
   portable pin followed. The round trip is avoidable: start from the kit's helpers, print per key,
   assert softly. And when reading a failure, the first failing assertion is not the first
   assertion: the ones above it passed. *(2026-10-01, the keep-out control, one CI round trip.)*
+- **Before promising "this hash will not move", grep the state for bookkeeping fields.** A brief
+  said the whole-World hash and the platform sidecars would hold unless a listed row moved a field;
+  the engine's change detection kept the JSON of the last snapshot on the World itself, so
+  replacing the detection (the slice's purpose) moved every World hash, four controls and sixteen
+  sidecars, by that one key. The map-back was clean, but the brief had promised the opposite. A
+  change-detection, a cache, a signature, a "last sent" value: anything the engine keeps for its
+  own bookkeeping on the state object is inside every hash's reach. List those fields first.
+  *(2026-10-01, the engine contract.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
