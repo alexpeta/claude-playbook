@@ -152,6 +152,14 @@ command lives in that project's `CLAUDE.md`.
   `t` agree in the controls"; the raw recording showed reads within one event differing by 0.1 ms.
   Check a claim about the controls against the raw recording before building on it.
   *(2026-10-01, commands carry their event time.)*
+- **A new control that hashes a stepped World uses the rounding, the margin, per-key hashes and
+  soft assertions from its first commit.** The cross-CPU lesson above was in the playbook and the
+  support kit had `roundTo` and `roundMargin`; a new control still hashed the raw World, passed on
+  the developer's arm64 Mac and failed on the x64 runner, and the first failing assertion hid which
+  key moved. One diagnostic push with per-key lines named three keys (all within 1e-6), and the
+  portable pin followed. The round trip is avoidable: start from the kit's helpers, print per key,
+  assert softly. And when reading a failure, the first failing assertion is not the first
+  assertion: the ones above it passed. *(2026-10-01, the keep-out control, one CI round trip.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
