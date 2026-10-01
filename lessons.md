@@ -515,6 +515,11 @@ command lives in that project's `CLAUDE.md`.
   branch, and delete stale local refs with `git update-ref --stdin` (one ref per invocation
   otherwise). *(2026-09-09: of "1,576 remote branches", 8 were on GitHub and 1,030 were those
   leftovers.)*
+- **A capture named by a time lands at the next drawn frame, so prove the observer sees the failure
+  by running it on the unfixed tree first.** A "300 ms" screenshot waits for the next paint and can
+  land later; a first-frame fix judged only on the fixed tree can pass because the capture missed the
+  frame, not because the frame is right. Record the before/after/reference triple with mean colour or
+  the text's font, and keep the "before" run as the control. *(2026-10-01, an intro first-frame fix.)*
 - **A browser check needs a tab the browser is painting.** A locked or sleeping display, or
   an automation window behind another, leaves the tab `document.hidden`: no animation frames,
   no `ResizeObserver` callbacks, no layout-driven effects — so a component that waits for a
