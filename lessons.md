@@ -125,6 +125,12 @@ command lives in that project's `CLAUDE.md`.
   module), or key the literal off the real clock; never both clocks in one module.
 - **Never `gh run watch` in an unattended loop** — ~1200 API calls an hour each; four of them
   exhausted the hourly budget and 403'd every chain and builder. Poll every 90–180 s.
+- **A release PR is a code PR: preview-gate it like one.** A release tool's PR edits the manifest,
+  the package version and a generated changelog, and it opens with the workflow token, so it carries
+  no CI run of its own. The chair read the changelog and merged; the trunk went red at the gate's
+  formatter stage on the generated file, and the next builder's rebase went red with it. Merge a
+  release PR only after the gate on its preview merge, and put every generated file in the
+  formatter's ignore list the day the generator is installed. *(2026-10-01, the first release.)*
 - **Gate the PR merged onto today's main, not the PR alone.** A branch's tests passed and its
   CI was green, and the merge would still have turned main red: a test asserted that a
   serialized state did not contain a substring, and a sibling PR that landed in between added
