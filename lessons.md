@@ -95,6 +95,18 @@ command lives in that project's `CLAUDE.md`.
   value from the stream in the committed test. *(2026-10-01, the last draw-time writers: three
   call sites, one blind spot; the order measured against the pre-#50 commit, and the edge that had
   been judged unreachable was reached by two purchases before one step.)*
+- **Each control watches one seed; when a fix can change the opening state, pin many seeds, and
+  write a stop condition as the mechanism it guards, not as an invariant.** A one-line fix moved
+  the opening layout for 166 of 300 seeds, and the four seeds the replay and screenshot controls
+  pinned were all among the unaffected ones, so every control stayed green by luck. The chair had
+  also written "the generation stream's order must not change" as a stop condition when the
+  mechanism to guard was "the first pond must look as the prototype's"; the builder could show the
+  invariant was unsatisfiable by any ordering and proceeded, which was right, but a condition
+  that named the mechanism would have sent it to the approver before the work. The faithful
+  version then got a 60-seed pinned witness recorded against the parent's source taken
+  byte-for-byte with `git show`; the alternative order reds 38 of them. Before predicting that
+  controls move, probe the controls' own seeds. *(2026-10-01, the floor field and the first pond's
+  algae; the approver ruled prototype-faithful.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
