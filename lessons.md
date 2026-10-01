@@ -84,6 +84,17 @@ command lives in that project's `CLAUDE.md`.
   rule generalises: anything that converges, saturates or clamps hides its rate at the end; the
   evidence is the trajectory. Mutation-check a witness with a rate bug, not only a value bug.
   *(2026-10-01, moving state writes out of draw: eight writers, the timer found the gap.)*
+- **A two-sided witness is blind to a fault both sides share; check each value against its
+  inputs too, and mutation-check every call site on its own.** A witness that compared a world
+  stepped with rendering against one stepped without stayed green when one of three call sites of a
+  moved builder was dropped: both sides lost the same rebuild, so they still agreed. Adding an
+  assertion that the built field matches its inputs (null when the feature is off, the right size
+  otherwise) made that mutation red. And when a writer moves, measure its order on the random
+  stream against the commit before the **first** move of the pair, not the immediate parent: the
+  parent already carries the swap you are undoing, and the two agree for the wrong reason. Pin one
+  value from the stream in the committed test. *(2026-10-01, the last draw-time writers: three
+  call sites, one blind spot; the order measured against the pre-#50 commit, and the edge that had
+  been judged unreachable was reached by two purchases before one step.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
