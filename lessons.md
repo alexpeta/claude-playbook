@@ -804,11 +804,12 @@ command lives in that project's `CLAUDE.md`.
   read `serialize(world) and hydrate(save) …` merged green, the trunk CI passed, the release
   workflow ran and reported success, and no release PR appeared: release-please logged "commit
   could not be parsed … unexpected token '('" and "Considering: 0 commits". Nothing was red. The
-  block naming the feat without parentheses, placed where the squash takes its body from: in this repo the **PR description**, not the commit (the first try put it in the commit body and the release skipped it again);
-  block naming the feat without parentheses (a one-commit squash keeps the commit body), and the
-  rule went into the repo's mechanics. When a release step says success and produces nothing,
-  read its log for "could not be parsed" before assuming it had nothing to do. *(2026-10-01, the
-  serializer's release.)*
+  repair is a one-commit docs PR carrying a `BEGIN_COMMIT_OVERRIDE … END_COMMIT_OVERRIDE` block
+  that names the feat without parentheses, placed where the squash takes its body from: in that
+  repo the **PR description**, not the commit message (the first try put it in the commit body
+  and the release skipped it again). The rule went into the repo's mechanics. When a release step
+  says success and produces nothing, read its log for "could not be parsed" before assuming it
+  had nothing to do. *(2026-10-01, the serializer's release, two tries.)*
 - **A slice that goes straight to a PR still gets its sub-issue first.** The playbook's step 2 says
   slices are native sub-issues of their epic, and a chair that reads it still skips it when a slice
   needs no ticket of its own — the brief is written, the builder dispatched, the PR opened with
