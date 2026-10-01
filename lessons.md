@@ -117,6 +117,22 @@ command lives in that project's `CLAUDE.md`.
   measurement is what made it a ruling and not a guess. Related: `git checkout -- <file>` to undo
   a mutation also discards uncommitted work in that file; commit a WIP before mutation checks.
   *(2026-10-01, algae coverage off the canvas.)*
+- **When a poll leaves the engine, put its replacement on the method every driver calls, not in
+  the app's loop; and "equal by construction" must cover every point the callers test.** A canvas
+  size poll became a command dispatched from the app's frame loop; every harness that steps the
+  engine directly (the screenshot baselines, the replay, the lab batch) then stepped a 300×150
+  canvas with zero steps of sizing, and the baselines caught it. The sync moved to the façade's
+  own `step`. In the same slice, keep-out rectangles "equal to the old predicate" were clipped to
+  the canvas while the placement code tests points off it; the rectangles had to run a full
+  canvas past each edge before equality held on a grid that runs past every edge. *(2026-10-01,
+  DOM inputs out of the sim.)*
+- **Do one real `node` import of the graph before promising "no build step"; and read the spec's
+  line and the engine's clock before a brief states how time passes.** Node 24's type stripping
+  refuses `<T>expr` assertions and extensionless imports; a module hook that calls the repo's own
+  `typescript.transpileModule` runs the source unchanged. The same brief said the pond keeps
+  stepping between sessions; the spec and the engine's clock both say a game day is minutes of
+  stepping while present, and stepping between sessions would have made a real day 180 game days.
+  The builder read the spec and followed the code, which was right. *(2026-10-01, the lab batch.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
