@@ -168,6 +168,15 @@ command lives in that project's `CLAUDE.md`.
   change-detection, a cache, a signature, a "last sent" value: anything the engine keeps for its
   own bookkeeping on the state object is inside every hash's reach. List those fields first.
   *(2026-10-01, the engine contract.)*
+- **Count the object references by probing the live graph, not by reading the engine map; and a
+  bake that draws from the random streams must bake on copies when restoring.** A brief listed
+  five reference sites from the documentation; a probe of a running World found eighteen, and most
+  of the objects they pointed to carried no id, so an id scheme could not have worked and a path
+  scheme (`{ $ref: <first place> }`) did. The same slice found that the background bake draws from
+  both random streams; restoring a save by baking on the real streams broke continuation at once,
+  and only baking on copies kept the hydrated pond stepping as the live one. Before writing a
+  serializer's brief, run a one-off walk of the object graph and list every place a value is
+  reached twice. *(2026-10-01, serialize and hydrate.)*
 - **Witness the built artefact for anything the build transforms.** A pin on source CSS, source
   config or source markup proves what the author wrote, not what ships: a minifier, a bundler or
   a template step can rewrite it, and the dev server that every builder and reviewer runs skips
