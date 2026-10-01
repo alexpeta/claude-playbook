@@ -237,6 +237,14 @@ command lives in that project's `CLAUDE.md`.
   code already supplies it. The approver's words on the draft: "locking down … a fixed resolution
   because that's what design came up with … I cannot rule on this randomly" (2026-09-24).
 
+- **`document.fonts.check()` is a vacuous font witness, and an on-demand dependency has to be
+  forced before it can be called working.** Per spec `check()` returns true when *no* face in the
+  family needs loading, so it reads true on a page with the font missing. Read the entries of
+  `document.fonts` and assert each face's `status === 'loaded'`. In the same build a vendored
+  compiler was only ever loaded lazily, so the page's offline load proved nothing about it until a
+  probe requested the file by hand (with its SRI) and read its version. *(2026-09-30, an offline
+  vendoring slice; both witnesses were strengthened before the PR.)*
+
 ## Parallel agents and worktrees
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
