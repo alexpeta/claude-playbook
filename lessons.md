@@ -280,6 +280,19 @@ command lives in that project's `CLAUDE.md`.
   reports nothing. Start waits from the main checkout, or remove the worktree after the wait
   returns. *(2026-10-01.)*
 
+- **A control hash recorded on one CPU can fail on another from floating-point noise alone; commit
+  the portable part and measure the margin.** A 60 s replay control hashed the exported state, the
+  entity positions and the full canvas trace; it held run-to-run on the developer's arm64 Mac and
+  failed on the x64 CI runner. The exported (rounded) state and the clock-read shape were identical
+  on both; positions drifted by 1e-16 to 3e-12 relative in one integrator (`Math.pow` with a
+  non-integer exponent, `Math.sin`, `Math.hypot`), zero numbers through 1,000 steps, eleven by
+  3,600; the draw trace carried the raw numbers and diverged first. Commit a hash of the rounded
+  state plus positions rounded to a stated precision, measure how close the nearest value sits to a
+  rounding edge (30× margin here) and write it in the PR, and keep the exact parts as run-to-run
+  assertions on one machine. Pin pixel baselines per platform. Diagnose by splitting the hash into
+  parts and printing the first diverging checkpoint's values into the CI log; do not reach for a
+  per-platform pin first. *(2026-10-01; two builders, one handoff; the second measured it in 60 calls.)*
+
 ## Parallel agents and worktrees
 
 - **One tree per mutating agent.** Two agents in one checkout corrupted each other's HEAD.
