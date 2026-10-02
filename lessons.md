@@ -160,6 +160,15 @@ command lives in that project's `CLAUDE.md`.
   portable pin followed. The round trip is avoidable: start from the kit's helpers, print per key,
   assert softly. And when reading a failure, the first failing assertion is not the first
   assertion: the ones above it passed. *(2026-10-01, the keep-out control, one CI round trip.)*
+- **Before rounding a cross-CPU comparison, check whether whole-number columns differ; past a
+  horizon the two machines are different ponds, and no rounding helps.** A 180-frame control had
+  stayed within 1e-6 across arm64 and x64, so the chair diagnosed a later red the same way; the
+  builder read the failing rows and found integer counts differing on the first day of a
+  three-game-day run (about 86,000 frames): last-bit float differences had grown into a different
+  world. The fix was to confine the long comparison to the CPU the sample was made on and keep the
+  short, portable checks on every CPU, and to say in the data's README which CPU's ponds the
+  committed samples are. The horizon decides: short runs round, long runs diverge. *(2026-10-01,
+  the light-feeder sample; the chair retracted on the PR.)*
 - **Before promising "this hash will not move", grep the state for bookkeeping fields.** A brief
   said the whole-World hash and the platform sidecars would hold unless a listed row moved a field;
   the engine's change detection kept the JSON of the last snapshot on the World itself, so
