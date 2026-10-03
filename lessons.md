@@ -374,6 +374,13 @@ command lives in that project's `CLAUDE.md`.
   re-export) and say so in the file. *(2026-09-20: the chair's suggested mutation for an
   import-cycle witness went green 42/42; the builder nearly filed it as a vacuous guard before
   finding the lever had read `undefined` and thrown nothing.)*
+- **The typechecker cannot see two same-typed functions swapped; a behavioural control must.**
+  When a refactor rewires dependency objects (envs, ports, injected helpers), every slot whose
+  type admits two candidates is a wiring the compiler signs off either way. Keep a behavioural
+  control (a replay hash, a pinned end state) in the gate of every such change. Mutate one slot
+  to its same-typed sibling: the control must go red and typecheck will stay green. *(2026-10-03:
+  a move of eleven env objects out of a legacy mount; a mutation wiring `pondN` where `pondG`
+  belonged passed typecheck and was caught only by eight replay and control tests.)*
 
 - **Before filtering documentation out of CI, grep the gate for what it reads under the docs tree.**
   A repo's "docs" folder is where the humans put prose, and also where someone once put a JSON
