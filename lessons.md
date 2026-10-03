@@ -864,6 +864,15 @@ command lives in that project's `CLAUDE.md`.
   overrides from the merged PR's description (fetched from the forge), not from the commit
   message, so a repair edits the PR's description and re-runs the release workflow (retracted
   the same night: the merge-time body was tried first and ignored).
+- **A build tool can behave differently on a tag than on a branch; pass its publish switch
+  explicitly, and treat the first real release as the release path's only witness.** A packaging
+  job passed on every branch and pull-request run, then failed on the first release: on a tag
+  checkout the packager detected CI and tried to publish to the forge by itself, asking for a token
+  the job did not have, so the upload job after it never ran and the release shipped with no files.
+  Nothing on a branch could have shown it. Pass the tool's publish setting explicitly (`never` when
+  another job uploads), and plan the first release as a witness: watch its run to the end and check
+  the release page for the files, with a patch release ready if it fails. *(2026-10-03, the first
+  release meant to carry the Windows installers.)*
 - **A slice that goes straight to a PR still gets its sub-issue first.** The playbook's step 2 says
   slices are native sub-issues of their epic, and a chair that reads it still skips it when a slice
   needs no ticket of its own — the brief is written, the builder dispatched, the PR opened with
