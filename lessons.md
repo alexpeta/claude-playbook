@@ -326,7 +326,15 @@ command lives in that project's `CLAUDE.md`.
   least twice; if those differ, the finding is the nondeterminism, and the slice's result is
   "cannot be witnessed by pixels yet". A "use the design token" change on a value that another
   test quotes verbatim from the reference is two contracts in conflict: try it against that test
-  first and raise the choice, do not pick one silently. *(2026-10-01.)*
+  first and raise the choice, do not pick one silently. *(2026-10-01.)* Twice is a floor, not
+  proof. A flake that hits a third of runs passes two in a row about half the time, so take six
+  to ten runs before calling a new frame stable. First check that two shots of one unchanged page
+  match each other. On a GPU compositing path they may not (1 LSB along rotated or slid-in edges,
+  more inside canvases), and then no pin is stable. Render the page in software
+  (`--disable-gpu`, asserted from the app's GPU status, not assumed) and turn CSS transitions off,
+  so each panel is shot at its end state. *(2026-10-03: eight new panel frames passed two darwin
+  and two Windows runs for the builder, then failed 3 of 6 for the chair; the fix was software
+  rendering and no transitions, then 10 of 10.)*
 - **A gate that drives a real on-screen window has an input channel open to the operator.** The
   Playwright-driven Electron window opened on screen, held keyboard focus and sat under the real
   cursor; a trusted `pointermove` that landed after the engine mounted set the pointer state and the
