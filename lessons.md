@@ -56,7 +56,11 @@ command lives in that project's `CLAUDE.md`.
   next line has therefore merged before CI ran. Wait until the PR's `statusCheckRollup` has
   at least one entry, then watch, and make the merge conditional on the watch's exit code.
   *(2026-09-16: a docs-only harvest merged with its gate still `IN_PROGRESS`; the run on main
-  was watched by hand afterwards.)*
+  was watched by hand afterwards.)* Printing the checks line in the same command as the merge
+  is the same mistake: the merge runs before anyone reads the line. The only safe form is
+  `gh pr checks N --watch --fail-fast && gh pr merge …`. *(2026-10-03: a chair printed
+  `gate IN_PROGRESS` and merged in one command, writing "CI green" in the QC comment; the run
+  finished green, and the comment was corrected on the PR.)*
 - **A gate that got lucky is not a gate.** Re-gate on any new head, always; a gate keyed to a
   stale head is evidence about a tree that no longer exists. Gate artifacts are per-agent and
   per-head (`<issue>-<worktree-id>`), never a shared `/tmp/g*` that a sibling can pick up.
