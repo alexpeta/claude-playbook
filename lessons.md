@@ -117,6 +117,15 @@ command lives in that project's `CLAUDE.md`.
   measurement is what made it a ruling and not a guess. Related: `git checkout -- <file>` to undo
   a mutation also discards uncommitted work in that file; commit a WIP before mutation checks.
   *(2026-10-01, algae coverage off the canvas.)*
+- **Look up which class owns an event in the vendor's typings before wiring it; a typed emitter
+  still accepts any string.** A ticket said to handle Windows' logout on the app object; in the
+  framework's typings every mention of that event is on the window classes and none on the app,
+  but the app's `on()` takes any event name, so the wrong wiring type-checked, would have passed a
+  unit test with a fake emitter, and would never have fired. The builder grepped the typings, wired
+  it on the window, and proved it on the built app by firing the event and killing the process.
+  The same reading found that the event cannot be held: the OS may end the process once handlers
+  return, so the save races it and only a real sign-out shows whether it lands. *(2026-10-03, the
+  logout save.)*
 - **When a poll leaves the engine, put its replacement on the method every driver calls, not in
   the app's loop; and "equal by construction" must cover every point the callers test.** A canvas
   size poll became a command dispatched from the app's frame loop; every harness that steps the
