@@ -846,6 +846,12 @@ command lives in that project's `CLAUDE.md`.
   and the release skipped it again). The rule went into the repo's mechanics. When a release step
   says success and produces nothing, read its log for "could not be parsed" before assuming it
   had nothing to do. *(2026-10-01, the serializer's release, two tries.)*
+  **The parser reads the squash body as well** (2026-10-03, two more commits skipped): a body line
+  that starts with a call inside a code span (`` `wrap(inner.world())` ``) is read as a footer and
+  fails on the nested parenthesis. Builders' PR descriptions will always contain such lines, so
+  the durable fix is at merge time, not in prose: the merger passes `--body "<Closes lines only>"`
+  to `gh pr merge --squash`, the long description stays on the PR, and the parser only ever sees a
+  title and a few plain lines. The same flag carries an override block when one is needed.
 - **A slice that goes straight to a PR still gets its sub-issue first.** The playbook's step 2 says
   slices are native sub-issues of their epic, and a chair that reads it still skips it when a slice
   needs no ticket of its own — the brief is written, the builder dispatched, the PR opened with
