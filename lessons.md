@@ -669,6 +669,16 @@ command lives in that project's `CLAUDE.md`.
 
 ## Environments and tooling
 
+- **An app that must keep working while minimized can't ask its page whether it is hidden.** With
+  Electron's `backgroundThrottling: false`, needed so a hidden page's timers aren't throttled, the
+  page's visibility API reports "visible" and its animation frames keep firing while minimized: it
+  draws at full cost and can't tell. Take "hidden" from the main process's window events
+  (`minimize`, `restore`, `hide`, `show`), re-read on a timer for the transitions that fire no
+  event (macOS's unhide after Cmd+H fires no `show`). Also, Chromium never throttles a page that is
+  playing sound, so a throttling test on an audible app passes with the setting on or off. Prove
+  the setting on a silent probe page. *(2026-10-04: a game's minimized clock; with the default
+  setting, a minimized, audible app ticked 1,600 times in 400 s at full rate, while a silent probe
+  dropped to once a minute after 5 minutes.)*
 - **Electron 44 and later do not download their binary on install.** The first `pnpm dev` dies
   with electron-vite's "Electron uninstall" error. Run `install-electron` inside the `dev` script,
   not as a `postinstall`, so the gate (typecheck, lint, unit, bundle) never pulls the ~100 MB
