@@ -718,6 +718,12 @@ command lives in that project's `CLAUDE.md`.
   Docker images. Measure (`du`, `docker system df`), prune by an explicit filter (a label, a
   dead path), never by "the first match" — one sweep that guessed the wrong `.pth` deleted six
   live environments including two running builders'.
+- **Prune a builder's worktree when its PR merges, not in a sweep weeks later.** Each Node
+  worktree carries its own `node_modules` and Electron binary (0.6–1.3 GB). 51 of them held 32 GB,
+  and with them the disk's last 118 MB; a QC baseline run died mid-install on "No space left on
+  device" (2026-10-04). The safe filter: HEAD contained in a remote ref (`git branch -r
+  --contains`) and a clean `git status --porcelain`. That removed 53 at once and lost nothing. A
+  worktree with local-only commits goes on a list for the approver; it is not deleted.
 - **Long operations over SSH run detached.** An `expect` session's timeout killed a prune
   mid-way (the daemon kept going, blind). `nohup … &` on the far side, poll a log that ends with
   `DONE`. In Tcl, square brackets inside the spawn string are command substitution.
