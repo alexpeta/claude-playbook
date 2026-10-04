@@ -63,6 +63,18 @@ fill. Then:
 3. The first real fork gets `docs/decisions/0001-<slug>.md` from `templates/daci.md`.
 4. Read `ways-of-working.md` and `lessons.md` once, end to end. They are short on purpose.
 
+## Mods
+
+[`mods/`](mods) holds mods, plugins of function hooks that run inside Claude Code, and the
+repo root is their marketplace. Once per machine, after the clone:
+
+    claude plugin marketplace add ~/Github/claude-playbook
+    claude plugin install cockpit@claude-playbook
+
+- [`cockpit`](mods/cockpit/README.md): a band above the prompt with the context window, the
+  rate limits, the cost, and each live subagent with its model and its calls against the
+  builder cap.
+
 ## Adopting it
 
 Fork or clone; nothing here is tied to one machine or one person. What to make your own:

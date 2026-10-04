@@ -49,6 +49,10 @@ Before anything else:
 - [recipes/board-via-gh.md](recipes/board-via-gh.md): the project board through `gh` and GraphQL.
 - [recipes/reader-tier.md](recipes/reader-tier.md): a Haiku-class reader turns bulk text into structure with locations; the expensive seat reads only what it gates or edits.
 
+## Mods
+
+- [mods/cockpit](mods/cockpit/README.md): a band above the prompt — context, rate limits, cost, and each live subagent with its model and its calls against the builder cap. Installed from this repo as a marketplace (README → Mods).
+
 ## Optional
 
 - [README.md](README.md): what this repo is, how a machine and a project are wired to it, how to adopt it.

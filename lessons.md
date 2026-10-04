@@ -815,6 +815,11 @@ command lives in that project's `CLAUDE.md`.
   does the same. *(2026-09-16: the chair navigated the one tab in the group to its own port
   while a builder was reading a button's rect through it; the builder's `window` helpers
   vanished and it lost a pass.)*
+- **A mod's hot-reload question takes a pick from its list, not typed text.** Answering "Enable
+  hot reloading for this session?" with "yes" in its free-text option declined it, and two
+  attempts to raise it again in the same session showed nothing. What loaded the mod into the
+  same conversation, reloading on save: exit and start `claude --continue --plugin-dir <mod>`.
+  *(2026-10-04: a band written and tested waited three turns and a restart to be seen.)*
 
 ## Writing and briefing
 
