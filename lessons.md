@@ -72,6 +72,12 @@ command lives in that project's `CLAUDE.md`.
   to exist for it to go red; if nothing in the corpus can, the guard is vacuous. *(A
   date-keyed fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
   because two labels folded onto one decision — found by a mutation that did not go red.)*
+- **A test that reads the constant it guards cannot see that constant change.** Twice in one day
+  (2026-10-04) a chair's mutation of a design value stayed green: a "×3 in bloom" test asserted
+  `ODDS * BLOOM_X`, and a "5.2 s loop" test was written in terms of `FLY_S`. The mechanics were
+  guarded, the design's number was not. Write each design constant once as a literal, with its
+  source (`expect(FLY_S).toBe(5.2) // d_damsel D = 5.2`), and let the behavioural tests read it by
+  name after that.
 - **A mutation must go red at the guard it targets, not at a precondition in front of it.** A
   screenshot test checked the DOM (cards, count, seal) before each shot. As hard assertions, a
   mutation reds the check, the test stops, and the frame (the guard the mutation was for) is never
