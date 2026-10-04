@@ -385,6 +385,13 @@ command lives in that project's `CLAUDE.md`.
   one machine collide, and the second reads as a broken config, not as contention. Take the
   port from the environment, or pick a free one. *(2026-09-20: four gate runs lost to "address
   already in use" while another builder's gate held the preview server's port.)*
+- **A state change sent through a queueing façade doesn't exist until the next step.** If the
+  app's commands are queued for the next tick (a recorder, a command bus), a check that flips a
+  setting through that façade and then compares two renders, with no step in between, compares a
+  state with itself and can never fail. Write the state where the check reads it, put it back,
+  and prove it was put back (a hash compare). Mutation-check every such check. *(2026-10-05: a
+  "0 px at decay 0 with the switch on" guard flipped the switch through the recording façade; the
+  draw mutation stayed green until the switch was written on the live state between the renders.)*
 - **A mutation must USE the value it breaks, or a bundler's module semantics can hide it.**
   Under a transform that turns imports into property reads on a namespace object (Vite's SSR
   transform, which is what Vitest runs), a circular import read too early is `undefined`, not
