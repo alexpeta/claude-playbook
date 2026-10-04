@@ -1,0 +1,7 @@
+{
+  "name": "cockpit",
+  "version": "0.1.0",
+  "description": "A band above the prompt: context, rate limits, cost, and each live subagent with its model and its calls against the builder cap.",
+  "author": { "name": "Alex Peta" },
+  "types": "./types/index.d.ts"
+}

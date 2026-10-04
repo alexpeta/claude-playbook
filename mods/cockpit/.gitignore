@@ -1,0 +1,3 @@
+# Written by Claude Code each time it loads the mod: the tsconfig extends the types it lays
+# under .claude-plugin/types/, which carries its own .gitignore.
+/tsconfig.json

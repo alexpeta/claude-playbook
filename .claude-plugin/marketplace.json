@@ -1,0 +1,12 @@
+{
+  "name": "claude-playbook",
+  "description": "Mods that go with the playbook: plugins of function hooks that run inside Claude Code.",
+  "owner": { "name": "Alex Peta" },
+  "plugins": [
+    {
+      "name": "cockpit",
+      "source": "./mods/cockpit",
+      "description": "A band above the prompt: context, rate limits, cost, and each live subagent with its model and its calls against the builder cap."
+    }
+  ]
+}
