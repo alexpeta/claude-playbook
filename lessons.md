@@ -373,6 +373,14 @@ command lives in that project's `CLAUDE.md`.
   the mutated files' hashes after every mutation run, killed or not. *(2026-09-20: two mutation
   runs were backgrounded past a tool timeout and killed; the source sat mutated until the
   builder compared hashes by hand.)*
+- **A mutation harness reports a timeout as its own verdict, never as a red.** A timeout is the
+  machine, not the guard: a laptop that sleeps on battery mid-run turns every slow swap "red",
+  and the table claims guards that don't exist. Retry a timeout once, report what is still
+  timing out apart from the reds, and keep the machine awake for long runs (`caffeinate -i` on
+  macOS). Also, pins taken only at checkpoints cannot see a change that appears and heals between
+  them: fold the state into a running hash every few steps when transients matter. *(2026-10-03: an
+  adjacent-swap harness over a 52-statement frame function; the first tables' reds were sleep
+  timeouts, and one swap reddened only through the running trace.)*
 - **A fixed port in the gate makes the gate single-tenant.** Two worktrees gating at once on
   one machine collide, and the second reads as a broken config, not as contention. Take the
   port from the environment, or pick a free one. *(2026-09-20: four gate runs lost to "address
