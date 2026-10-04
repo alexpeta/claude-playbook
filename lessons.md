@@ -325,6 +325,13 @@ command lives in that project's `CLAUDE.md`.
   them in the same PR, and let the next run compare. Name the set by platform and runtime version,
   and bill the platform that matters (a 2× Windows job runs daily and on demand, not per push).
   *(2026-10-01, the first pixel baselines of a migration.)*
+- **A window size is not a page size; frames at the nominal size cannot see what players see.**
+  A desktop app opened its window at 1280×800, and every screenshot frame rendered a 1280×800
+  page. But the window's size was its outer size (title bar included), so the real page was about
+  1280×768, and a tab column that "fit at 1280×800" hid most of its last tab in the shipped game
+  (2026-10-04). Measure the real page of the default window before believing "it fits at W×H",
+  pin at least one frame at that real size, and pin a layout rule's threshold in a unit test that
+  sets the measured numbers, since a frame at one size cannot cross the threshold.
 - **A pixel baseline is a guard only once the unchanged tree has passed it twice in a row.** Two
   slices reported "0 diff pixels" on a local set; the third ran the control on the unchanged tree
   three times and got 13 frames red, then 1, then 0 — the set was not stable, and the two earlier
