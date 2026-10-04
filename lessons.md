@@ -73,11 +73,11 @@ command lives in that project's `CLAUDE.md`.
   date-keyed fixture graded INSUFFICIENT_DATA whatever the readings said, and passed
   because two labels folded onto one decision — found by a mutation that did not go red.)*
 - **A mutation must go red at the guard it targets, not at a precondition in front of it.** A
-  screenshot test first asserted in the DOM that a locked slot had no portrait, then compared the
-  frame. Drawing the portrait in a locked slot turned the test red at that DOM check, and the
-  frame (the guard the mutation was for) never compared. Make the precondition soft (record it,
-  assert it after the guard) when the guard is the thing under test, and read *which* assertion
-  went red, not only that one did (2026-10-04).
+  screenshot test checked the DOM (cards, count, seal) before each shot. As hard assertions, a
+  mutation reds the check, the test stops, and the frame (the guard the mutation was for) is never
+  compared. With the checks as `expect.soft`, a locked slot drawn with its portrait reached the
+  frame and turned it red (242,935 px). Make the precondition soft when the guard is the thing
+  under test, and read *which* assertion went red, not only that one did (2026-10-04).
 - **A mutation that changes nothing the system can observe cannot red, and that is a fact about
   the mutation, not the test.** Two in one day (2026-10-01): dropping `PRAGMA synchronous=FULL`
   stayed green because both SQLite drivers already default to FULL in WAL mode; moving the
