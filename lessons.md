@@ -300,6 +300,15 @@ command lives in that project's `CLAUDE.md`.
   formatter stage on the generated file, and the next builder's rebase went red with it. Merge a
   release PR only after the gate on its preview merge, and put every generated file in the
   formatter's ignore list the day the generator is installed. *(2026-10-01, the first release.)*
+- **A pending patch release is cut before the next feature merges.** A release tool keeps one
+  release PR open and rewrites it from everything on the trunk, so the version it proposes is a
+  function of what has merged, not of what was approved. The approver said "ship the patch" for
+  three fixes; the release PR read the patch version and was gated, but the CI service was in an
+  outage, so the chair held the release merge and, meanwhile, merged an approved feature slice.
+  The next run of the release tool turned the patch PR into a minor that carried the half-built
+  feature, and the trunk could no longer produce the fixes-only release without a hand-made
+  branch and tag. When a release is approved, it is the next thing merged: hold every other
+  merge behind it, or say before merging that the release will change shape. *(2026-10-05.)*
 - **Gate the PR merged onto today's main, not the PR alone.** A branch's tests passed and its
   CI was green, and the merge would still have turned main red: a test asserted that a
   serialized state did not contain a substring, and a sibling PR that landed in between added
