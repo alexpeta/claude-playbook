@@ -257,7 +257,7 @@ test("a subagent's push with no path is let through with a note that it was not 
   await gate($, MAIN)
   const res = (await bash($, 'git push -u origin feat/b1', 'a1')) as { context?: readonly string[] }
   expect(refused(res)).toBe(false)
-  expect(res.context?.[0]).toContain('could not tell which checkout')
+  expect(res.context?.[0]).toContain("this push's gate was not checked: the line names no checkout")
 })
 
 test('while a gate runs, its checkout refuses edits and tree moves; other checkouts do not', async ($, on) => {
@@ -309,4 +309,68 @@ test('the gate command and exit variable come from the environment', async ($, o
   expect(text).toContain('exit=3 · failed')
   expect(refused(await bash($, `cd ${TREE} && make check | tail`))).toBe(true)
   expect(refused(await bash($, `cd ${TREE} && make check > /s/log 2>&1`))).toBe(false)
+})
+
+const vitest = (summary: string) => ['== gate: test\n', ' Test Files  142 passed (142)\n', `      Tests  ${summary}\n`, '== gate: all stages passed\n']
+
+test("the test count: the runner's summary, skips, failures, and a fall since the last green", async ($, on) => {
+  const { w } = world(on)
+  await start($)
+  w.out = vitest('1631 passed (1631)')
+  expect(textOf(await gate($, TREE))).toContain('exit=0 · 1 stages passed · 1631 tests · 0s')
+  w.out = vitest('1625 passed | 6 skipped (1631)')
+  expect(textOf(await gate($, TREE))).toContain('· 1631 tests, 6 skipped ·')
+  w.out = vitest('1620 passed (1620)')
+  expect(textOf(await gate($, TREE))).toContain('· 1620 tests (was 1631) ·')
+  w.out = ['== gate: test\n', '      Tests  3 failed | 1617 passed (1620)\n', '== gate: test failed (exit 1); later stages not run\n']
+  w.code = 1
+  w.exitFile = 'exit=1\n'
+  expect(textOf(await gate($, TREE))).toContain('failed at test (stage 1 of 1) · 3 of 1620 tests failed ·')
+  const last = JSON.parse(w.ledger.at(-1) ?? '{}') as { tests?: unknown }
+  expect(last.tests).toEqual({ passed: 1617, failed: 3, skipped: 0, total: 1620 })
+})
+
+test('jest and pytest summaries count too; a log with none shows no count', async ($, on) => {
+  const { w } = world(on)
+  await start($)
+  w.out = ['Tests:       1 failed, 5 passed, 6 total\n']
+  w.code = 1
+  w.exitFile = 'exit=1\n'
+  expect(textOf(await gate($, TREE))).toContain('· 1 of 6 tests failed ·')
+  w.out = ['===== 5 passed, 1 skipped in 0.12s =====\n']
+  w.code = 0
+  w.exitFile = 'exit=0\n'
+  expect(textOf(await gate($, TREE))).toContain('· 6 tests, 1 skipped ·')
+  w.out = GREEN
+  expect(textOf(await gate($, TREE))).not.toContain('tests')
+})
+
+test('a checkout named through a shell variable is unknown, never the session’s, and the note says how to name it', async ($, on) => {
+  world(on)
+  await start($)
+  await gate($, MAIN) // MAIN, the session's checkout, is green: a wrong fallback would pass silently
+  const main = (await bash($, `H=${TREE}; cd "$H" && git push`)) as { context?: readonly string[] }
+  expect(refused(main)).toBe(false)
+  expect(main.context?.[0]).toContain('through a shell variable ($H), which the mod cannot read')
+  expect(main.context?.[0]).toContain('`git -C /abs/checkout …`')
+  const sub = (await bash($, 'git -C "$H" push', 'a1')) as { context?: readonly string[] }
+  expect(sub.context?.[0]).toContain('through a shell variable ($H)')
+})
+
+// The person's own /gate, typed at a terminal 120 columns wide.
+function slash($: Engine, args: string) {
+  return $.command.run({ command: 'gate', args, origin: { kind: 'composer' }, presentation: { isFullscreen: false, columns: 120 } } as Parameters<Engine['command']['run']>[0])
+}
+
+test('/gate answers at once with no prefix of its own, and the run goes on after the answer', async ($, on) => {
+  const { w, clock } = world(on)
+  await start($)
+  const res = await slash($, '')
+  expect(res.text).toBe(`started in ${MAIN} @ aaa1111. The status line follows it; the verdict lands in the conversation when it ends.`)
+  await clock.advance(0)
+  expect(w.spawned.length).toBe(1)
+  expect(w.status.at(-1)).toBe('gate ✓ app @ aaa1111 · 0s')
+  // The verdict's note to the model ($.session.append) has no answer in the test kit; it was seen
+  // live on 2026-10-05, the person's /gate landing its verdict in the conversation.
+  expect((await slash($, '/nowhere')).text).toBe('/nowhere is not a git checkout.')
 })

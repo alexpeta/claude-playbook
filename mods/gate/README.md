@@ -3,8 +3,14 @@
 The CI gate, run by Claude Code itself instead of through a shell line the model writes. The
 model calls one tool with a checkout's path; the mod runs the gate there with no shell and no
 pipe, reads the verdict from the exit code held to the exit file, and answers in a few lines:
-the stages and their times, and for a red gate the failing stage's last 60 lines. The person
-runs the same with `/gate` and keeps the prompt.
+the stages and their times, the test count, and for a red gate the failing stage's last 60
+lines. The person runs the same with `/gate` and keeps the prompt.
+
+```
+exit=0 · 7 stages passed · 1620 tests (was 1631) · 1m21s · main @ 71ec66d, tree clean
+typecheck 6s · lint 4s · check:reference 0s · check:determinism 0s · format:check 5s · test 1m04s · build 1s
+log: <repo>/.git/gate.log
+```
 
 ```
 exit=1 · failed at lint (stage 2 of 7) · 12s · feat/b1 @ 55bd4e0, with uncommitted changes
@@ -53,12 +59,19 @@ A gate that prints `== gate: <stage>` lines (one per stage, then `<stage> failed
     a gate under the mod is guarded, so a repo with no gate never is. A green gate on an older
     commit lets the push through with a note naming both commits: builders rebase right before
     they push, and CI checks the difference.
+- **The test count** comes from the runner's own summary line (vitest's `Tests  1631 passed
+  (1631)`, jest's `Tests: … total`, pytest's `== 5 passed in 0.12s ==`; summed when a gate runs
+  several): `1631 tests`, `, 6 skipped`, `3 of 1631 tests failed`, and `(was 1640)` when the count
+  fell since the last green gate in the repo, so deleted or skipped tests show at once. It sits
+  beside the verdict and is never it; a log with no summary this mod reads shows no count.
 - **A command, not a mention.** The guards read the line the shell runs: a heredoc's body is
   dropped, each quoted string is one word, and a gate or a push counts only where a command
   starts. A commit message, an echo, a grep or a file written that names them is left alone.
-- **What it cannot see, it says.** A shell line names its checkout by `cd <abs>` or `git -C
-  <abs>`; a subagent's line with neither may run in a worktree no event reports, so its push goes
-  through with a note that it was not checked, and its gate is not recorded.
+- **What it cannot see, it says.** A shell line names its checkout by a literal absolute path,
+  `cd /abs/checkout` or `git -C /abs/checkout`. A shell variable (`cd "$H"`) or a relative path
+  needs the shell's own state, and a subagent's line with neither may run in a worktree no event
+  reports: such a push goes through with a note that it was not checked and why, and such a gate
+  is not recorded. The note names the literal forms, so the next line gets it right.
 - **A gate run correctly through Bash still counts:** the mod reads the exit file the command
   names and records it.
 - **The ledger:** one line per run in `~/.claude/gate-runs.jsonl` (the repo, the checkout, the
@@ -72,11 +85,13 @@ A gate that prints `== gate: <stage>` lines (one per stage, then `<stage> failed
 
     claude --plugin-dir mods/gate          # loads it for one session, reloads on save
     claude plugin validate mods/gate
-    claude plugin test mods/gate           # 13 tests
+    claude plugin test mods/gate           # 17 tests
     tsc -p mods/gate                       # once Claude Code has loaded it: it writes the tsconfig
 
-The tests were mutation-checked on 2026-10-05: twenty-three deliberate breaks (the exit file's
+The tests were mutation-checked on 2026-10-05: thirty-three deliberate breaks (the exit file's
 say, each guard, the push guard's arming, record, red, unread and moved-commit cases, the
 subagent note, the stage tail, the stage count, staleness, the live stage, the environment, the
-Bash record, the ledger, and each of the three rules that tell a command from a mention) each
-turned a test red.
+Bash record, the ledger, each of the three rules that tell a command from a mention, each test
+runner's summary, skips, failures and the fall since the last green, the shell-variable note
+and its fallback, and the command's own prefix) each turned a test red. `/gate`'s note to the
+model has no answer in the test kit; it was seen live the same day.
