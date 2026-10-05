@@ -16,9 +16,12 @@ const STALE_EVERY = 40 // ticks: the shown checkout's HEAD and tree are read eve
 const TAIL_LINES = 60
 const MARK = /^== gate: (.+)$/
 const FAILED = /^(\S+) failed \(exit (\d+)\)/
-const PUSH = /\bgit\s+(?:-C\s+\S+\s+)?push\b/
+// Where a shell line starts a command: its start, after `;`, `&`, `|`, `(`, `$(` or a newline,
+// past any `VAR=value` assignments. The guards match there alone, on the line `commandsOf` leaves.
+const AT_COMMAND = String.raw`(?:^|[;&|(\n]|\$\()[ \t]*(?:[A-Za-z_]\w*=\S*[ \t]+)*`
+const PUSH = new RegExp(String.raw`${AT_COMMAND}git\s+(?:-C\s+\S+\s+)?push\b`)
 const PUSH_EXEMPT = /\s(?:--dry-run|-n|--delete|-d)(?=\s|$)/
-const MUTATES = /\bgit\s+(?:-C\s+\S+\s+)?(?:switch|checkout|stash|rebase|reset|merge|pull|commit|cherry-pick|am|restore|clean)\b/
+const MUTATES = new RegExp(String.raw`${AT_COMMAND}git\s+(?:-C\s+\S+\s+)?(?:switch|checkout|stash|rebase|reset|merge|pull|commit|cherry-pick|am|restore|clean)\b`)
 
 type Checkout = { top: string; repo: string; gitDir: string; sha: string; branch: string; isClean: boolean }
 
@@ -59,7 +62,15 @@ const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 function gatePattern(command: string) {
   const [head = '', ...rest] = command.split(/\s+/)
   const tail = rest.length === 0 ? '' : `\\s+(?:run\\s+)?${rest.map(esc).join('\\s+')}`
-  return new RegExp(`(?:^|[\\s;&|(])${esc(head)}${tail}(?=$|[\\s;&|)])`)
+  return new RegExp(`${AT_COMMAND}${esc(head)}${tail}(?=$|[\\s;&|)])`)
+}
+
+// What the shell runs, not what it mentions: a heredoc's body goes and each quoted string becomes
+// one word, so a commit message, an echo, a grep or a file written that names the gate is no gate.
+function commandsOf(command: string) {
+  return command
+    .replace(/<<-?[ \t]*(['"]?)(\w+)\1([^\n]*)\n[\s\S]*?\n[ \t]*\2(?=[ \t]*(?:\n|$))/g, '<<H$3')
+    .replace(/'[^']*'|"(?:[^"\\]|\\.)*"/g, 'Q')
 }
 
 // Piped: a `|` (not `||`) after the gate, before the next `;`, `&` or newline. `2>&1` is a
@@ -383,15 +394,16 @@ export const register: Register = on => {
 
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
     const command = e.command
+    const runs = commandsOf(command)
     const cfg = await configOf($)
     const gate = gatePattern(cfg.command)
-    if (gate.test(command)) {
+    if (gate.test(runs)) {
       const how = `Call ${TOOL} with the checkout's absolute path, or run \`${cfg.exitVar === '' ? '' : `${cfg.exitVar}=<scratch>/gate.exit `}${cfg.command} > <scratch>/gate.log 2>&1\` and read the ${cfg.exitVar === '' ? 'exit code' : 'exit file'}.`
-      if (isPiped(command, gate)) return { deny: `gate: \`${cfg.command}\` piped into another command reports that command's exit status, not the gate's. ${how}` }
-      if (cfg.exitVar !== '' && !new RegExp(`(?:^|[\\s;&(])${esc(cfg.exitVar)}=\\S`).test(command)) {
+      if (isPiped(runs, gate)) return { deny: `gate: \`${cfg.command}\` piped into another command reports that command's exit status, not the gate's. ${how}` }
+      if (cfg.exitVar !== '' && !new RegExp(`(?:^|[\\s;&(])${esc(cfg.exitVar)}=\\S`).test(runs)) {
         return { deny: `gate: \`${cfg.command}\` without ${cfg.exitVar} leaves no verdict but its prose. ${how}` }
       }
-      if (PUSH.test(command)) return { deny: 'gate: a gate and a push in one command push whatever the gate says. Gate, read the verdict, then push.' }
+      if (PUSH.test(runs)) return { deny: 'gate: a gate and a push in one command push whatever the gate says. Gate, read the verdict, then push.' }
       if (e.run_in_background === true) {
         return withNote(await next(e), `gate: a gate run in the background is not recorded, so the push guard will not count it. Call ${TOOL} instead.`)
       }
@@ -417,7 +429,7 @@ export const register: Register = on => {
       return res
     }
 
-    if (PUSH.test(command) && !PUSH_EXEMPT.test(command)) {
+    if (PUSH.test(runs) && !PUSH_EXEMPT.test(runs)) {
       const dir = await dirFor($, command, e.agentId)
       if (dir === null) {
         return withNote(await next(e), 'gate: could not tell which checkout this push is from, so its gate was not checked. Start the command with `cd <checkout> &&` to have it checked.')
@@ -441,7 +453,7 @@ export const register: Register = on => {
       return res
     }
 
-    if (running.size > 0 && MUTATES.test(command)) {
+    if (running.size > 0 && MUTATES.test(runs)) {
       const dir = await dirFor($, command, e.agentId)
       const top = dir === null ? null : await git($, dir, 'rev-parse', '--show-toplevel')
       const busy = top === null ? undefined : running.get(top)
