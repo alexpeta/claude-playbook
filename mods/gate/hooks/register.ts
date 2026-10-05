@@ -40,7 +40,13 @@ type Run = Checkout & {
   reason: string | null
   tail: string
   logFile: string | null
+  tests: Tests | null
+  testsBefore: number | null
 }
+
+// The test runner's own summary line, where the log has one this mod reads (vitest, jest,
+// pytest): information beside the verdict, never the verdict, and left out rather than guessed.
+type Tests = { passed: number; failed: number; skipped: number; total: number }
 
 // Session-local, never persisted: the gates running now (a reload kills their children with the
 // module) and the run the status line shows. The durable record is $.store (`last:<checkout>`,
@@ -83,18 +89,30 @@ function isPiped(command: string, gate: RegExp) {
   return segment.replace(/\|\|/g, '').includes('|')
 }
 
-// The directory a shell line names for itself: a `cd <abs>` or `git -C <abs>`. A relative path
-// needs the shell's own cwd, which no event carries, so it names nothing.
-function dirOf(command: string) {
+// The directory a shell line names for itself, as written: a `cd <dir>` or `git -C <dir>`.
+function namedDir(command: string) {
   const m = /(?:^\s*|[;&|(]\s*)cd\s+("[^"]+"|'[^']+'|[^\s;&|)]+)/.exec(command) ?? /\bgit\s+-C\s+("[^"]+"|'[^']+'|\S+)/.exec(command)
-  const path = m?.[1]?.replace(/^["']|["']$/g, '')
-  return path !== undefined && path.startsWith('/') ? path : null
+  return m?.[1]?.replace(/^["']|["']$/g, '') ?? null
 }
 
-// Where a Bash call runs: the directory it names, else the session's for the main loop. A
-// subagent's shell may sit in a worktree no event reports, so without a named path it is unknown.
+// Where a Bash call runs: the absolute path it names; with none named, the session's directory
+// for the main loop. A relative path or a shell variable needs the shell's own state, and a
+// subagent's shell may sit in a worktree no event reports: those are unknown, never the session's.
 async function dirFor($: EngineInterface, command: string, agentId: string | undefined) {
-  return dirOf(command) ?? (agentId === undefined ? await $.session.cwd() : null)
+  const named = namedDir(command)
+  if (named !== null) return named.startsWith('/') ? named : null
+  return agentId === undefined ? await $.session.cwd() : null
+}
+
+// Why dirFor knew no checkout, and the fix, for the note that says so.
+function unknownWhy(command: string) {
+  const named = namedDir(command)
+  const why = named === null
+    ? "the line names no checkout, and a subagent's shell may sit in a worktree no event reports"
+    : named.includes('$')
+      ? `it names the checkout through a shell variable (${named}), which the mod cannot read`
+      : `it names the checkout by a relative path (${named}), which needs the shell's own directory`
+  return `${why}. Name it with a literal absolute path: \`cd /abs/checkout && …\` or \`git -C /abs/checkout …\``
 }
 
 async function git($: EngineInterface, dir: string, ...args: string[]) {
@@ -150,6 +168,7 @@ function begin(co: Checkout, via: Run['via'], agent: string | null, startedAt: n
   const run: Run = {
     ...co, via, agent, startedAt, total,
     endedAt: null, stage: null, stages: [], exit: null, failedStage: null, reason: null, tail: '', logFile: null,
+    tests: null, testsBefore: null,
   }
   running.set(co.top, run)
   shown = run
@@ -166,6 +185,7 @@ async function finish($: EngineInterface, run: Run) {
   if (run.exit === 0) {
     await $.store.set(`armed:${run.repo}`, true)
     if (run.stages.length > 0) await $.store.set(`stages:${run.repo}`, run.stages.length)
+    if (run.tests !== null) await $.store.set(`tests:${run.repo}`, run.tests.total)
   }
   await ledger($, run)
   await showStatus($)
@@ -182,7 +202,7 @@ async function ledger($: EngineInterface, run: Run) {
     at: new Date(run.startedAt).toISOString(),
     repo: run.repo, checkout: run.top, branch: run.branch, sha: run.sha, isClean: run.isClean,
     via: run.via, agent: run.agent, exit: run.exit, failedStage: run.failedStage, reason: run.reason,
-    ms: (run.endedAt ?? run.startedAt) - run.startedAt, stages: run.stages,
+    ms: (run.endedAt ?? run.startedAt) - run.startedAt, stages: run.stages, tests: run.tests,
   })
   const path = `${home}/.claude/gate-runs.jsonl`
   await $.process.run(['sh', '-c', 'cat >> "$0"', path], { stdin: `${line}\n` }).catch(() => {
@@ -196,6 +216,8 @@ async function runGate($: EngineInterface, co: Checkout, via: Run['via'], agent:
   const cfg = await configOf($)
   const total = await $.store.get(`stages:${co.repo}`)
   const run = begin(co, via, agent, await $.clock.now(), typeof total === 'number' ? total : null)
+  const testsBefore = await $.store.get(`tests:${co.repo}`)
+  run.testsBefore = typeof testsBefore === 'number' ? testsBefore : null
   run.logFile = `${co.gitDir}/gate.log`
   const exitFile = `${co.gitDir}/gate.exit`
   await showStatus($)
@@ -251,6 +273,7 @@ async function runGate($: EngineInterface, co: Checkout, via: Run['via'], agent:
   }
   if (run.exit !== 0 && run.failedStage === null) run.failedStage = run.stage // ended mid-stage
   close(await $.clock.now())
+  run.tests = testsOf(log)
   if (run.exit !== 0) run.tail = tailOf(log, run.failedStage)
   await $.fs.write(run.logFile, log).catch(() => {
     run.logFile = null
@@ -262,6 +285,41 @@ async function runGate($: EngineInterface, co: Checkout, via: Run['via'], agent:
 function tailOf(log: string, stage: string | null) {
   const at = stage === null ? -1 : log.lastIndexOf(`== gate: ${stage}\n`)
   return (at < 0 ? log : log.slice(at)).trimEnd().split('\n').slice(-TAIL_LINES).join('\n')
+}
+
+// The summary lines, summed when a gate runs more than one suite:
+//   vitest  "      Tests  3 failed | 1625 passed | 6 skipped (1634)"
+//   jest    "Tests:       1 failed, 5 passed, 6 total"
+//   pytest  "===== 5 passed, 1 skipped in 0.12s ====="
+function testsOf(log: string): Tests | null {
+  const text = log.replace(/\x1b\[[0-9;]*m/g, '')
+  const found: Tests[] = []
+  for (const m of text.matchAll(/^\s*Tests\s+((?:\d+ [a-z]+(?: \| )?)+)\s*\((\d+)\)\s*$/gm)) found.push(countsOf(m[1] ?? '', Number(m[2])))
+  for (const m of text.matchAll(/^Tests:\s+(.*?)(\d+) total\s*$/gm)) found.push(countsOf(m[1] ?? '', Number(m[2])))
+  for (const m of text.matchAll(/^=+ ((?:\d+ [a-z]+,? ?)+) in [\d.]+s(?: \([^)]*\))? =+$/gm)) found.push(countsOf(m[1] ?? '', null))
+  if (found.length === 0) return null
+  return found.reduce((a, b) => ({
+    passed: a.passed + b.passed, failed: a.failed + b.failed, skipped: a.skipped + b.skipped, total: a.total + b.total,
+  }))
+}
+
+function countsOf(parts: string, total: number | null): Tests {
+  const sum = (words: string) => [...parts.matchAll(new RegExp(`(\\d+) (?:${words})\\b`, 'g'))].reduce((s, m) => s + Number(m[1]), 0)
+  const passed = sum('passed')
+  const failed = sum('failed|errors?')
+  const skipped = sum('skipped|todo|xfailed')
+  return { passed, failed, skipped, total: total ?? passed + failed + skipped }
+}
+
+// "1631 tests", "3 of 1631 tests failed", ", 6 skipped", and "(was 1640)" when the count fell
+// since the last green gate in this repo: tests deleted or skipped show here first.
+function testsLine(run: Run) {
+  const t = run.tests
+  if (t === null) return null
+  const count = t.failed > 0 ? `${t.failed} of ${t.total} tests failed` : `${t.total} tests`
+  const skipped = t.skipped > 0 ? `, ${t.skipped} skipped` : ''
+  const fell = run.testsBefore !== null && t.total < run.testsBefore ? ` (was ${run.testsBefore})` : ''
+  return `${count}${skipped}${fell}`
 }
 
 function headline(run: Run) {
@@ -279,11 +337,12 @@ function verdict(run: Run) {
   const tree = run.isClean ? 'tree clean' : 'with uncommitted changes'
   const at = `${run.branch} @ ${run.sha}, ${tree}`
   const n = run.stages.length
-  const head = run.exit === null
-    ? `exit=? · ${run.reason ?? 'no verdict'} · ${took} · ${at}`
+  const what = run.exit === null
+    ? `exit=? · ${run.reason ?? 'no verdict'}`
     : run.exit === 0
-      ? `exit=0 · ${n === 0 ? 'passed' : `${n} stages passed`} · ${took} · ${at}`
-      : `exit=${run.exit} · ${run.failedStage === null ? 'failed' : `failed at ${run.failedStage} (stage ${n} of ${run.total ?? '?'})`} · ${took} · ${at}`
+      ? `exit=0 · ${n === 0 ? 'passed' : `${n} stages passed`}`
+      : `exit=${run.exit} · ${run.failedStage === null ? 'failed' : `failed at ${run.failedStage} (stage ${n} of ${run.total ?? '?'})`}`
+  const head = [what, testsLine(run), took, at].filter(part => part !== null).join(' · ')
   const lines = [head]
   if (n > 0) lines.push(run.stages.map(s => `${s.name} ${span(s.ms)}`).join(' · '))
   if (run.logFile !== null) lines.push(`log: ${run.logFile}`)
@@ -378,9 +437,9 @@ export const register: Register = on => {
   on('command.run', { command: 'gate' }, async ($, e) => {
     const dir = e.args.trim() === '' ? await $.session.cwd() : e.args.trim()
     const co = await checkoutAt($, dir)
-    if (co === null) return { text: `gate: ${dir} is not a git checkout.` }
+    if (co === null) return { text: `${dir} is not a git checkout.` }
     const busy = running.get(co.top)
-    if (busy !== undefined) return { text: `gate: a gate already runs in ${co.top} (${busy.stage ?? 'starting'}).` }
+    if (busy !== undefined) return { text: `a gate already runs in ${co.top} (${busy.stage ?? 'starting'}).` }
     // The run outlives this answer (the API's own pattern for a child that runs on after its
     // hook): the person keeps the prompt, and the verdict reaches the model as a note.
     void (async () => {
@@ -389,7 +448,7 @@ export const register: Register = on => {
         .append({ message: { type: 'user', content: [{ type: 'text', text: `The gate the person ran with /gate has ended.\n${verdict(run)}` }] } })
         .catch(() => $.ui.log('gate: the verdict could not be added to the conversation', { to: 'debug' }))
     })()
-    return { text: `gate: started in ${co.top} @ ${co.sha}. The status line follows it; the verdict lands in the conversation when it ends.` }
+    return { text: `started in ${co.top} @ ${co.sha}. The status line follows it; the verdict lands in the conversation when it ends.` }
   })
 
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
@@ -410,7 +469,7 @@ export const register: Register = on => {
       const dir = await dirFor($, command, e.agentId)
       const co = dir === null ? null : await checkoutAt($, dir)
       if (co === null || dir === null) {
-        return withNote(await next(e), `gate: could not tell which checkout this gate ran in, so it is not recorded and the push guard will not count it. Start the command with \`cd <checkout> &&\`, or call ${TOOL}.`)
+        return withNote(await next(e), `gate: this gate is not recorded, so the push guard will not count it: ${unknownWhy(command)}; or call ${TOOL}.`)
       }
       if (running.has(co.top)) return { deny: `gate: a gate already runs in ${co.top}; wait for its verdict.` }
       const run = begin(co, 'bash', await agentLabel($, e.agentId), await $.clock.now(), null)
@@ -432,7 +491,7 @@ export const register: Register = on => {
     if (PUSH.test(runs) && !PUSH_EXEMPT.test(runs)) {
       const dir = await dirFor($, command, e.agentId)
       if (dir === null) {
-        return withNote(await next(e), 'gate: could not tell which checkout this push is from, so its gate was not checked. Start the command with `cd <checkout> &&` to have it checked.')
+        return withNote(await next(e), `gate: this push's gate was not checked: ${unknownWhy(command)}.`)
       }
       const co = await checkoutAt($, dir)
       // Only a repo that has passed a gate under this mod is guarded: one with no gate never is.
