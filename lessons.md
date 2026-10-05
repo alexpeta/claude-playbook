@@ -540,6 +540,15 @@ command lives in that project's `CLAUDE.md`.
   the release object), and keep a dispatch lever that takes an existing tag; the lever is what
   recovered it, by the approver's hand. *(2026-10-01, the fourth release of a night.)*
 
+- **A PR's green CI proves its tests passed under that run's load; read each new test's time
+  against its timeout.** A new exact-solver test passed on its PR inside the suite's 20 s default,
+  was merged, and timed out on the next push to main at 28.6 s. The shared runner was loaded: the
+  whole suite took 289 s there against 155 s on a quiet run, where the same test took 13.9 s. Main
+  stayed red across two merges and no release went out until a third push happened to land on a
+  quiet runner. At QC, list the tests the PR adds with their durations from the CI log, not only
+  its verdict. Any test above about a quarter of its timeout gets an explicit one sized from the
+  measurement and written beside it, or gets cheaper. *(2026-10-05.)*
+
 
 ## Parallel agents and worktrees
 
