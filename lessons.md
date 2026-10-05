@@ -691,6 +691,22 @@ command lives in that project's `CLAUDE.md`.
   (both sides kept, one constant renamed). Give each slice its own test file from the start, or make
   the shared table a folder of per-slice files the runner globs; a shared readers list or coverage
   set is fine because it is one line that changes, not a section.
+- **A builder whose shell is refused for lost isolation stops; it never calls the worktree-switching
+  tools to recover.** About 25 calls in, every Bash call in a worktree-isolated builder came back
+  refused with "the working-directory isolation context for this agent was lost". The builder
+  called `EnterWorktree(path=<its own worktree>)`, which reported success, but Bash stayed refused.
+  It stopped, and the harness removed its unchanged worktree. The switch had reached the **parent
+  session**: the chair was now "isolated" in the deleted directory, its primary working directory
+  had moved to the home folder, and every `git -C <main checkout>` was refused. The code-intelligence
+  server also lost the project. `ExitWorktree` with `keep`, run only on the approver's word since it
+  is the approver's session, put the chair back. Nothing was lost: the builder had already
+  written a handoff and committed nothing. The brief says "never call EnterWorktree or ExitWorktree;
+  if Bash refuses for lost isolation, stop and report". The handoff's verified facts made the
+  re-dispatch cheap, so a builder writes its handoff before it stops. **`ExitWorktree` didn't
+  clear it all:** the next builder dispatched from that session was refused on its first Bash
+  call. Only a restart of the parent session (`/exit`, then `claude --continue` from the repo)
+  made isolation work again. The plugin that had gone live meanwhile stayed enabled, so it
+  wasn't the cause. After a leak, restart before the next dispatch. *(2026-10-04.)*
 
 
 ## Environments and tooling
