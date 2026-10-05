@@ -691,6 +691,14 @@ command lives in that project's `CLAUDE.md`.
   ran: print `pwd` and `git rev-parse HEAD` in the same command as any push, push an explicit sha
   (`origin <sha>:<branch>`), lease on the sha you expect to replace, and never put a push in the
   same command as the gate whose result it depends on.
+- **Worktrees share their remote-tracking refs, so `origin/main` can move under a builder that
+  never fetched.** A builder squashed its rebased branch with `git reset --soft origin/main` and
+  then committed. Meanwhile the chair, in another worktree, had fetched after merging a PR, so
+  `origin/main` pointed one commit further on. The soft reset's index still held the old tree, and
+  the squash commit silently reverted the PR just merged. The builder caught it from the diff stat
+  before any gate or push. Squash, rebase and diff against the **sha** you based on
+  (`git reset --soft <base-sha>`), never against a remote-tracking name another session can
+  move. Read the diff stat before every gate (2026-10-05).
 - **A gate chained after a failing setup step runs in the wrong tree and reads green; assert the
   head before trusting the exit file.** A release preview gate reused a fixed worktree path that
   was still registered from an earlier run, so `git worktree add` failed; the `cd` after it was
