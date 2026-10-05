@@ -78,6 +78,14 @@ command lives in that project's `CLAUDE.md`.
   guarded, the design's number was not. Write each design constant once as a literal, with its
   source (`expect(FLY_S).toBe(5.2) // d_damsel D = 5.2`), and let the behavioural tests read it by
   name after that.
+- **A mutation harness's green covers only what the controls switch on.** A harness swapped every
+  adjacent pair of statements in the per-frame update and ran the replay controls. Four new
+  swaps came back green against all nine controls. Two of them sat behind feature switches that
+  the shipped app turned on by default, but that every control still ran off. Those statements
+  never executed in any control, so they "commuted" with everything, vacuously, while in the app
+  their order decides the journal's order and which toast shows. Before calling a green swap safe,
+  read the activity counts (how many frames each side actually ran). When a default flips, check
+  that the controls flip with it (2026-10-05).
 - **A mutation must go red at the guard it targets, not at a precondition in front of it.** A
   screenshot test checked the DOM (cards, count, seal) before each shot. As hard assertions, a
   mutation reds the check, the test stops, and the frame (the guard the mutation was for) is never
