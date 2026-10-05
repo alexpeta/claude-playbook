@@ -78,6 +78,16 @@ command lives in that project's `CLAUDE.md`.
   guarded, the design's number was not. Write each design constant once as a literal, with its
   source (`expect(FLY_S).toBe(5.2) // d_damsel D = 5.2`), and let the behavioural tests read it by
   name after that.
+- **On a GPU-rastered canvas, "0 px changed" is not a bar a performance fix can always meet,
+  and an in-page readback can't prove it.** A blur filter cost a frame budget, and the fix was to
+  clip the blurred draws to the sprite's box. The brief demanded 0 px. A clip that only "removes
+  empty space" still moves the filter layer's origin and size, and with them the float rounding
+  of transformed paths. On the GPU path it even shifted antialiased edges drawn *earlier* in
+  the same frame, far from the sprite. Only a canvas-sized clip was 0 px, and it saved nothing.
+  The canvas read back inside the page rastered identically whatever the path, so only captures
+  of the composited frame showed the real diff. Ask for the composited capture, and set the bar
+  as "no visible change, measured (pixel count and max level delta)". The approver then rules
+  on a named re-pin, here 2–7 levels of 255 for 60 fps against 39 (2026-10-05).
 - **A mutation harness's green covers only what the controls switch on.** A harness swapped every
   adjacent pair of statements in the per-frame update and ran the replay controls. Four new
   swaps came back green against all nine controls. Two of them sat behind feature switches that
