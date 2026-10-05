@@ -736,6 +736,15 @@ command lives in that project's `CLAUDE.md`.
 
 ## Environments and tooling
 
+- **A builder never launches the app on the approver's own data directory.** A builder wanted
+  only the renderer's dev server and ran the dev tool's "renderer only" mode. In that version it
+  also started the desktop app, on the approver's real dev data directory. The app loaded the
+  approver's pond, ran about 13 s, and saved once when the builder stopped it. Nothing was lost:
+  the store keeps its previous snapshot. But the approver's data moved without their say. Every
+  brief that launches the app names a fresh temporary data directory (`--user-data-dir` or the
+  app's own override), and the builder checks which directory a launched process actually opened
+  before it does anything else. A dev-tool flag that sounds like it won't launch the app is not
+  proof. Read the tool's docs, or watch the process list (2026-10-05).
 - **When a person's local tool shows a generic client error, ask for the server's log before
   forming a theory.** A notebook in a browser said only "Failed to send function request · Load
   failed" (Safari's words for any failed fetch). Three plausible causes went by in turn: a stale
