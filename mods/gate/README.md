@@ -53,6 +53,9 @@ A gate that prints `== gate: <stage>` lines (one per stage, then `<stage> failed
     a gate under the mod is guarded, so a repo with no gate never is. A green gate on an older
     commit lets the push through with a note naming both commits: builders rebase right before
     they push, and CI checks the difference.
+- **A command, not a mention.** The guards read the line the shell runs: a heredoc's body is
+  dropped, each quoted string is one word, and a gate or a push counts only where a command
+  starts. A commit message, an echo, a grep or a file written that names them is left alone.
 - **What it cannot see, it says.** A shell line names its checkout by `cd <abs>` or `git -C
   <abs>`; a subagent's line with neither may run in a worktree no event reports, so its push goes
   through with a note that it was not checked, and its gate is not recorded.
@@ -69,10 +72,11 @@ A gate that prints `== gate: <stage>` lines (one per stage, then `<stage> failed
 
     claude --plugin-dir mods/gate          # loads it for one session, reloads on save
     claude plugin validate mods/gate
-    claude plugin test mods/gate           # 11 tests
+    claude plugin test mods/gate           # 13 tests
     tsc -p mods/gate                       # once Claude Code has loaded it: it writes the tsconfig
 
-The tests were mutation-checked on 2026-10-05: nineteen deliberate breaks (the exit file's say,
-each guard, the push guard's arming, record, red, unread and moved-commit cases, the subagent
-note, the stage tail, the stage count, staleness, the live stage, the environment, the Bash
-record and the ledger) each turned a test red.
+The tests were mutation-checked on 2026-10-05: twenty-three deliberate breaks (the exit file's
+say, each guard, the push guard's arming, record, red, unread and moved-commit cases, the
+subagent note, the stage tail, the stage count, staleness, the live stage, the environment, the
+Bash record, the ledger, and each of the three rules that tell a command from a mention) each
+turned a test red.

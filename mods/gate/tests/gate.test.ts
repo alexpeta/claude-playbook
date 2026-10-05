@@ -98,7 +98,7 @@ function world(on: On, env: Record<string, string> = { HOME: '/h' }, store: Reco
   // Beneath every plugin, the tools themselves: Bash runs (a shell gate writes its exit file).
   on('tool.call', async (_$, e) => {
     if (e.tool === 'Bash') {
-      const named = /GATE_EXIT_FILE=(\S+)/.exec(e.command)?.[1]
+      const named = /GATE_EXIT_FILE=(\S+)/.exec(e.command)?.[1]?.replace(/^["']|["']$/g, '')
       if (named !== undefined && w.exitFile !== null) w.files.set(named, w.exitFile)
       return { result: { stdout: '', stderr: '', interrupted: false } }
     }
@@ -204,6 +204,32 @@ test('a gate run through Bash is recorded from its exit file, and arms the push 
   expect(w.status.at(-1)).toBe('gate ✓ b1 @ bbb2222 · 0s')
   expect((JSON.parse(w.ledger[0] ?? '{}') as { via?: string }).via).toBe('bash')
   expect(refused(await bash($, `cd ${MAIN} && git push`))).toBe(true)
+})
+
+test('a gate or a push the line only mentions is no command: a commit message, a heredoc, a grep', async ($, on) => {
+  const { w } = world(on)
+  await start($)
+  await gate($, MAIN) // arms the repo; TREE has no gate, so a real push from it is refused
+  for (const command of [
+    `cd ${TREE} && git commit -m "gate it with pnpm gate | tail, then git push"`,
+    `cd ${TREE} && cat > /s/notes.md <<'EOF'\nrun pnpm gate > /s/log 2>&1\ngit push\nEOF`,
+    `cd ${TREE} && grep -n 'pnpm gate' CLAUDE.md`,
+    // Each of these is saved by one rule alone: the quotes, then the command position.
+    `cd ${TREE} && git commit -m "wip; git push after && pnpm gate | tail"`,
+    `cd ${TREE} && echo remember pnpm gate then git push`,
+  ]) {
+    expect(refused(await bash($, command))).toBe(false)
+  }
+  expect(w.spawned.length).toBe(1)
+  expect(refused(await bash($, `cd ${TREE} && git add -A && git push`))).toBe(true)
+  expect(refused(await bash($, `cd ${TREE} && echo "done" && pnpm gate | tail`))).toBe(true)
+})
+
+test('a quoted exit file still names the verdict', async ($, on) => {
+  const { w } = world(on)
+  await start($)
+  await bash($, `cd ${TREE} && GATE_EXIT_FILE="/s/g.exit" pnpm gate > /s/g.log 2>&1; cat /s/g.exit`)
+  expect(w.status.at(-1)).toBe('gate ✓ b1 @ bbb2222 · 0s')
 })
 
 test('the push guard: an unarmed repo pushes; armed, it wants a green gate in that checkout', async ($, on) => {

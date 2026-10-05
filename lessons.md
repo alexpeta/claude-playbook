@@ -897,6 +897,15 @@ command lives in that project's `CLAUDE.md`.
   (`{ tool: /^mcp__<plugin>__<name>$/ }`), which types on any machine and which `claude plugin
   validate` still prints; a computed `new RegExp(...)` validates as `tool=?`. *(2026-10-05: a
   mod green on tsc, its tests and live failed `tsc -p` on the laid types, on the one matcher.)*
+- **A guard over a shell line matches what it runs, not what it mentions.** A pattern searched
+  anywhere in a Bash command also fires on a heredoc that writes docs naming the command, a
+  commit message, an echo, a grep. Drop heredoc bodies, collapse each quoted string to one word,
+  and match only where a command starts (line start, after `;` `&` `|` `(` `$(` or a newline,
+  past `VAR=value` assignments). Each rule needs a test input that it alone saves, or its
+  mutation stays green. *(2026-10-05: the gate mod's own guard refused a heredoc writing a
+  `CLAUDE.md` line that named the gate; a commit message saying "git push" would have been
+  push-checked. The first fix's tests were saved by two rules at once, and three of four
+  mutations stayed green until inputs saved by one rule each were added.)*
 
 ## Writing and briefing
 
