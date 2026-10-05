@@ -38,6 +38,13 @@ command lives in that project's `CLAUDE.md`.
   get the run. Say so on the PR, with both shas. *(2026-09-17: four stacked PRs, each
   `CONFLICTING` after the one before it merged; three rebases, all tree-identical; the one
   pushed before its retarget sat with no run until reopened.)*
+- **Read a PR's state right before pushing a follow-up commit to its branch.** An approver who
+  merges fast merges the head they saw; a commit pushed after that lands on a branch nobody
+  will merge again, and a PR comment announcing it reads as shipped. `gh pr view <n> --json
+  state` in the same breath as the push; if it says `MERGED`, the commit goes to a new PR from
+  `origin/main` (`git cherry-pick <sha>`), and the comment on the merged PR says so. *(2026-10-05:
+  a mod's guard fix was pushed and announced on its PR a few minutes after the PR had merged
+  with the first commit alone; the installed mod ran the unfixed guard until a second PR.)*
 - **Read the stack off `merge-base`, never off the PR body, and dry-run the second merge
   before landing the first.** A body that says "built on PR 1, merge after it" describes the
   branch as the author last saw it; `git merge-base --is-ancestor <PR-1 head> <PR-2 head>`
@@ -906,6 +913,15 @@ command lives in that project's `CLAUDE.md`.
   (`{ tool: /^mcp__<plugin>__<name>$/ }`), which types on any machine and which `claude plugin
   validate` still prints; a computed `new RegExp(...)` validates as `tool=?`. *(2026-10-05: a
   mod green on tsc, its tests and live failed `tsc -p` on the laid types, on the one matcher.)*
+- **A guard over a shell line matches what it runs, not what it mentions.** A pattern searched
+  anywhere in a Bash command also fires on a heredoc that writes docs naming the command, a
+  commit message, an echo, a grep. Drop heredoc bodies, collapse each quoted string to one word,
+  and match only where a command starts (line start, after `;` `&` `|` `(` `$(` or a newline,
+  past `VAR=value` assignments). Each rule needs a test input that it alone saves, or its
+  mutation stays green. *(2026-10-05: the gate mod's own guard refused a heredoc writing a
+  `CLAUDE.md` line that named the gate; a commit message saying "git push" would have been
+  push-checked. The first fix's tests were saved by two rules at once, and three of four
+  mutations stayed green until inputs saved by one rule each were added.)*
 
 ## Writing and briefing
 
