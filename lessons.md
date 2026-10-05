@@ -889,6 +889,14 @@ command lives in that project's `CLAUDE.md`.
   attempts to raise it again in the same session showed nothing. What loaded the mod into the
   same conversation, reloading on save: exit and start `claude --continue --plugin-dir <mod>`.
   *(2026-10-04: a band written and tested waited three turns and a restart to be seen.)*
+- **Type-check a mod against the declarations laid beside it on load, not only the bundled
+  ones.** The skill's bundled file leaves MCP tool names open (`mcp__${string}`); the
+  `.claude-plugin/types/` Claude Code lays on load closes them to the MCP tools connected on
+  that machine, so a `tool.call` matcher naming the mod's own registered tool type-checks
+  against one and fails against the other. Match it with a regex literal
+  (`{ tool: /^mcp__<plugin>__<name>$/ }`), which types on any machine and which `claude plugin
+  validate` still prints; a computed `new RegExp(...)` validates as `tool=?`. *(2026-10-05: a
+  mod green on tsc, its tests and live failed `tsc -p` on the laid types, on the one matcher.)*
 
 ## Writing and briefing
 

@@ -1,0 +1,6 @@
+{
+  "name": "gate",
+  "version": "0.1.0",
+  "description": "Runs the CI gate as a tool and a /gate command, its verdict read from the exit code and exit file; shows it in the status line; refuses piped gates, edits mid-gate and pushes without a green gate.",
+  "author": { "name": "Alex Peta" }
+}

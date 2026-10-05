@@ -70,10 +70,14 @@ repo root is their marketplace. Once per machine, after the clone:
 
     claude plugin marketplace add ~/Github/claude-playbook
     claude plugin install cockpit@claude-playbook
+    claude plugin install gate@claude-playbook
 
 - [`cockpit`](mods/cockpit/README.md): a band above the prompt with the context window, the
   rate limits, the cost, and each live subagent with its model and its calls against the
   builder cap.
+- [`gate`](mods/gate/README.md): the CI gate as a tool the model calls and a `/gate` command,
+  its verdict read from the exit code and the exit file, never the prose; its progress in the
+  status line; refuses a piped gate, edits while a gate runs, and a push without a green gate.
 
 ## Adopting it
 
