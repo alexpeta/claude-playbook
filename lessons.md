@@ -695,6 +695,15 @@ command lives in that project's `CLAUDE.md`.
 
 ## Environments and tooling
 
+- **When a person's local tool shows a generic client error, ask for the server's log before
+  forming a theory.** A notebook in a browser said only "Failed to send function request · Load
+  failed" (Safari's words for any failed fetch). Three plausible causes went by in turn: a stale
+  tab, slow compute, stale UI elements. Each was checked and wrong, and each cost the person a
+  round. The terminal running the server had the answer the whole time (`Virtual file not found:
+  ….arrow` → 404: every step of a slider drag freed the data files the browser was still
+  fetching; the fix was a debounce). The first question is "paste what the server's terminal
+  printed" (2026-10-04).
+
 - **An app that must keep working while minimized can't ask its page whether it is hidden.** With
   Electron's `backgroundThrottling: false`, needed so a hidden page's timers aren't throttled, the
   page's visibility API reports "visible" and its animation frames keep firing while minimized: it
