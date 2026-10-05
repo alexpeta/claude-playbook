@@ -52,6 +52,7 @@ Before anything else:
 ## Mods
 
 - [mods/cockpit](mods/cockpit/README.md): a band above the prompt — context, rate limits, cost, and each live subagent with its model and its calls against the builder cap. Installed from this repo as a marketplace (README → Mods).
+- [mods/gate](mods/gate/README.md): the CI gate as a tool (`mcp__gate__run`) and `/gate` — the verdict from the exit code and exit file, progress in the status line, a ledger line per run (`~/.claude/gate-runs.jsonl`); refuses piped gates, edits mid-gate and pushes without a green gate. Set per repo by `CLAUDE_GATE_COMMAND` / `CLAUDE_GATE_EXIT_VAR`.
 
 ## Optional
 

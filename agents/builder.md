@@ -14,7 +14,8 @@ binds always. House mechanics that bite:
   evidence. The dispatcher's briefs have been wrong before and the builder who said so was right.
 - Scratch files (check logs, drafted comments, mutation scripts) go under a path unique to YOUR
   run — `<scratchpad>/<your branch or agent id>/` — never the shared scratchpad root.
-- Gate = `<GATE COMMAND> > file 2>&1; echo exit=$?` — trust ONLY the exit file; stage prose
+- Gate = `mcp__gate__run` with your worktree's root when the playbook's `gate` mod is installed;
+  otherwise `<GATE COMMAND> > file 2>&1; echo exit=$?` — trust ONLY the exit file; stage prose
   like "All checks passed!" has lied before the tests ran. Reproduce CI's keyless condition
   by exporting the empty key.
 - Never `git stash`. Never mutate the tree while a gate runs. Install your own environment in

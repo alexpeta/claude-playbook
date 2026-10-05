@@ -52,7 +52,8 @@ LLM may decide; it may not write or compute. One-sided state must name itself.
 
 <!-- Fill in from the repo; delete anything not true of it. Examples: -->
 - **Capture exit codes directly.** `<gate> | tail` reports the pipe's status. Redirect to a
-  file, then read `$?`.
+  file, then read `$?`. With the playbook's `gate` mod installed, call `mcp__gate__run` with
+  the checkout's path instead: it reads the exit code and exit file itself.
 - **`<GATE COMMAND>` is the CI gate** — run it before pushing.
 - **Audit greps run on `origin/main`** (`git grep <pat> origin/main`); local checkouts park on
   stale branches.

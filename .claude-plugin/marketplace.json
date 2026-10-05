@@ -1,12 +1,19 @@
 {
   "name": "claude-playbook",
   "description": "Mods that go with the playbook: plugins of function hooks that run inside Claude Code.",
-  "owner": { "name": "Alex Peta" },
+  "owner": {
+    "name": "Alex Peta"
+  },
   "plugins": [
     {
       "name": "cockpit",
       "source": "./mods/cockpit",
       "description": "A band above the prompt: context, rate limits, cost, and each live subagent with its model and its calls against the builder cap."
+    },
+    {
+      "name": "gate",
+      "source": "./mods/gate",
+      "description": "Runs the CI gate as a tool and a /gate command, its verdict read from the exit code and exit file; shows it in the status line; refuses piped gates, edits mid-gate and pushes without a green gate."
     }
   ]
 }
