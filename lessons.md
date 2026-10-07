@@ -270,6 +270,15 @@ command lives in that project's `CLAUDE.md`.
   builders in one afternoon, on two different files, each lost its uncommitted fix to the restore
   of its first mutation and rebuilt it by hand; both said so in the PR body, both gates were then
   run on the rebuilt tree.)*
+- **A green gate carries over an amend only if the tree is the same; prove it with the tree
+  hash.** After amending a commit's message alone, `git rev-parse <gated>^{tree} <pushed>^{tree}`
+  printing one hash twice is the evidence that the gate ran on what was pushed. A push guard that
+  compares commit shas will flag the amend; the tree answers it. *(2026-10-07, an engine-fault
+  build.)*
+- **Before making a shared reporting path log "once", grep the tests for a pinned repeat.**
+  Another caller's test may pin the line's repetition (a recording's pause line was asserted on
+  every tick), so a once-only rule belongs on the new caller's own dependency, not on the shared
+  path. *(2026-10-07, the same build: the fault's save skip went on its own `faulted` input.)*
 - **Metrics inherit the blind spots of their instrumentation.** A 14-day "clean" clock read
   all-zero while a destructive write went through a path it never instrumented. Prefer
   outcome-shaped denominators (every audit row) over signal-shaped ones (the alarms you installed).
