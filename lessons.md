@@ -857,6 +857,16 @@ command lives in that project's `CLAUDE.md`.
   between setting the flag and its next read (the rest of the loop, the code after it) and decide
   each. *(2026-10-07: a reseed that faulted mid-drain still let the drain's later commands and the
   frame's update run, until the loop and the step both checked the flag.)*
+- **A search capped by a count of fixed-size steps is a hidden size cap.** It reaches only as far
+  as count × step, and nothing shows it until the space grows past that. Bound a geometric walk by
+  the geometry (the farthest point the walk can be inside), not by a count. *(2026-10-07: 500 steps
+  of a fixed stride capped a slide-to-the-edge walk at twice the short side, so in a world wider
+  than about 3.9:1 an item slid to a side stopped in the water.)*
+- **A closed form is not a refactor of a stepped search.** It moves every result by up to one
+  step. When results must stay identical, keep the walk, change only its bound, and prove the
+  bound never ends a walk first: a sweep comparing the float64 bits of every result before and
+  after. *(2026-10-07: the direct solve moved a 16:9 landing by 2.15 units; the bounded walk moved
+  none below 3.9:1.)*
 - **A property hung on an array is invisible to anything that walks arrays by index:** JSON, most
   save codecs, most structural hashes. A round-trip test then passes while the state differs. A
   codec that walks arrays by index should refuse own keys beside the indexes, as it refuses holes.
@@ -1167,6 +1177,14 @@ command lives in that project's `CLAUDE.md`.
   by the set moving is named as that, not as the change under test. *(2026-10-07: the chair
   re-pinned one frame for a merge while another builder's baseline run was reading the set; that
   run failed the frame and had to prove main rendered it the same before blaming nothing.)*
+- **A frame set that pins a state hash beside each frame moves with any change to the state, not
+  only with render changes.** "No render code changed" is not "frames: none expected": a brief
+  for a change that writes state asks for the frames, or the scheduled run finds it first. And
+  before attributing a red against a borrowed set, run the failing specs at the base without the
+  change and compare the actual outputs byte for byte. *(2026-10-07: the chair's brief for a
+  visitors fix said "frames: none expected"; it wrote visitor state, and main then moved 14 pinned
+  World hashes and one panel's memory toast. The next builder's run went red
+  against the set, and only the same specs on main without its change, byte-identical, cleared it.)*
 - **Spreading a DOM event copies nothing but `isTrusted`.** Its fields are getters on the
   prototype, so `{ ...event }` is `{ isTrusted }`. A function typed for a plain object that
   spreads its argument silently loses every field when a caller, or a test, hands it a real event.
