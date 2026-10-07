@@ -6,6 +6,11 @@ chair accepts it, with a percentage where it is a judgment; what the builder fou
 brief got wrong; found-not-fixed items and the tickets they became; what the merge order
 implies for neighbouring PRs.>
 
+**Filed:** <each found-not-fixed item → #ticket, or folded into #n, or its disposition with the
+reason; "none" only when the PR body has no such section>.
+**Playbook:** <each lesson the builder proposed → the lessons.md commit, or "not general" with the
+reason; "none proposed">.
+
 **Gates:**
 | leg | result |
 |---|---|

@@ -61,6 +61,15 @@ morning without a false green.
    (never the ticket): what was read, what was verified beyond the builder's tests, each gate
    leg with its numbers, the found-not-fixed items and the tickets they became. Then reruns the
    unit gate on the PR's exact head in the main tree. Re-gate on any new head, always.
+   **No finding is homeless at merge.** Every found-not-fixed item in the PR body gets a ticket
+   (scope-labelled, on the board, under its epic), a line folded into an existing ticket, or a
+   recorded disposition (ruled, harmless, won't fix, each with its reason) before the merge.
+   The QC comment names each one on a `Filed:` line. Every lesson the builder wrote for the
+   playbook either becomes a `lessons.md` commit the same day or is marked "not general" on a
+   `Playbook:` line. A PR body is a record, not a backlog: nobody triages it again. *(2026-10-07:
+   an audit of 208 PRs found 37 found-not-fixed items with no ticket and no disposition. They
+   were recovered into six tickets the same day. Of the 271 playbook candidates written in PR
+   bodies, most had never been weighed.)*
    QC checklist, minted 2026-09-07: any date, time or weekday a test derives — literal or
    live — must come from the clock AND the day function the code under test reads. A future
    literal that becomes past mid-day, or a weekday keyed on the UTC date while the code
@@ -68,7 +77,10 @@ morning without a false green.
 6. **Merge line.** A coordinator (`recipes/merge-coordinator.md`) merges one PR per release:
    greens first; a preview gate of the PR merged onto current main; merge; wait for the release
    tag AND the health endpoint to report it; then the next. Merges faster than the runner's drain
-   rate release nothing.
+   rate release nothing. **Before a release is cut,** a read-only findings audit runs over the PRs
+   merged since the last release: every found-not-fixed item has its `Filed:` home, and every
+   playbook candidate has its `Playbook:` line. Anything missing is filed before the release
+   merges.
 7. **Ledger.** One line per event in an append-only run ledger (memory), timestamps read off the
    clock. Heartbeats answer in one line from it. A morning digest reads from it.
 8. **Retro** at the end of a run (`templates/retro.md`): what worked, what did not, rules
@@ -171,8 +183,9 @@ whether to track builder memory):
   true of any repo goes to `lessons.md` the same day, with its incident; a mechanic of this repo's
   tooling that still bites (the gate's exit-file rule, a guard's refused shell shapes, a flag)
   goes into the builder agent file's short list, which is edited, never appended; a time-bound
-  item (found-not-fixed, a fixture that lied once, a brief that was wrong) lives on its ticket or
-  PR body and is kept nowhere. No `memory:` on the builder, no harvest PRs. *(Retired 2026-09-24:
+  item (found-not-fixed, a fixture that lied once, a brief that was wrong) lives on its ticket, and
+  the PR body is only its record (step 5: no finding is homeless at merge); it is kept nowhere
+  else. No `memory:` on the builder, no harvest PRs. *(Retired 2026-09-24:
   46 harvest PRs, 94 memory files (428 KB) and a 148 KB agent file loaded into every one of 86
   dispatches, ~37k tokens each, with the worth never measured — the approver: "we harvest rules,
   general not specific to the project, and … timebound action items … it has become a well of text
