@@ -1407,6 +1407,9 @@ command lives in that project's `CLAUDE.md`.
   the state the guard changes into its non-default value before the action, the after-assertion
   passes on the starting state. Assert the precondition before the action, then mutate.
   *(2026-10-07: a `ptr.on = false` mutation stayed green until the test set `ptr.on` true first.)*
+  The same holds for an input stream that sums to zero: a mutation that drops or doubles every
+  event leaves a back-and-forth stream where it started. A stream a mutation check depends on moves
+  the guarded quantity one way only. *(2026-10-07: a wheel-zoom test's flick.)*
 - **A count in a brief is computed with the code's own filter.** `47 files − 6 print masters
   = 41` forgot the three `.md` and the `.DS_Store` the suffix rule skips; the builder counted
   with `find` plus the rule and got 37. Never subtract from `ls | wc -l`; run the filter.
