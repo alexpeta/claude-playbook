@@ -1428,6 +1428,13 @@ command lives in that project's `CLAUDE.md`.
 
 ## Writing and briefing
 
+- **Before filing a finding, search the approver's rulings in its area.** A builder measures what
+  its harness runs, and a harness can run a setup the approver has ruled unsupported. That
+  measurement filed as a ticket asks for work against a ruling. Search the issue comments for the
+  area's rulings (`gh search issues "<area>"`, the approver's comments) before writing the ticket.
+  *(2026-10-07: a builder timed a slow snapshot with software rendering, which the baselines use
+  for pixel-stable frames. The chair filed it as a perf ticket the same day the approver had ruled
+  software rendering unsupported and untested, and the approver had to ask why.)*
 - **A fallback's brief names the cases it must leave alone, and each gets a test.** A rule stated
   from the one case it fixes ("fall back to the physical key when the key is not a Latin letter",
   written for Russian) can move cases nobody looked at (Dvorak's `;` on the Z key would have
