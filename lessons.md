@@ -804,6 +804,11 @@ command lives in that project's `CLAUDE.md`.
   Never print one that started late. *(2026-10-07: an e2e's first "words to entered" numbers
   came from an observer started after the words appeared. They were retracted, and on Windows
   the spec prints that the interval can't be timed.)*
+- **A mutation that swaps a synchronous write for an async one can stay green.** Node's thread pool
+  often finishes the queued write before a synchronous read on the next line, so "on disk when
+  the call returns" looks proven either way. Fill the pool first (a few `pbkdf2` tasks), then
+  read, and the async mutation turns red. *(2026-10-07: a log file's sync-write guard was green
+  under its async mutation until the pool was busied.)*
 
 
 ## Parallel agents and worktrees
@@ -1214,6 +1219,17 @@ command lives in that project's `CLAUDE.md`.
   (`webContents.send`), and count what the fake drops, so a renamed channel turns the spec red.
   *(2026-10-07: a held spec's pin on the window's shown state had to move into main after the
   page-side wrap failed silently.)*
+- **Electron and Windows-runner facts that cost a CI round each.**
+  - On Windows, Electron emits no `show` event for a window created visible (macOS emits one
+    about 60 ms later). Read `isVisible()` at creation.
+  - Electron 44's main process runs Node's `warn` mode for unhandled rejections, so
+    `uncaughtExceptionMonitor` never sees them. Listen for `unhandledRejection` too.
+  - A Playwright `Page` can't be used again after its renderer crashed, and a reload from main
+    doesn't hand one back. Prove the crash in one launch and read what it left in the next.
+  - On a Windows runner under `shell: bash`, `tar` is GNU tar, which reads `C:` in a path as a
+    remote host. Call `%SystemRoot%\System32\tar.exe` by path.
+
+  *(2026-10-07, one feature: a log file, crash dumps and a report archive.)*
 
 
 ## Writing and briefing
