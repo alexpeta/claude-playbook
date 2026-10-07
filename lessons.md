@@ -534,6 +534,13 @@ command lives in that project's `CLAUDE.md`.
   nothing is laid out. Pin the rule the layout depends on (`min-width`, `tabular-nums`) in the
   unit test and witness the pixels in a real browser; say which is which in the PR.
   *(2026-10-01, a HUD port.)*
+- **jsdom has no `inert` either, and Chromium's focus fixup is not synchronous.** Under jsdom a
+  button inside an `inert` root keeps the focus and takes a dispatched click, so a test there can
+  only pin the attribute; the guarantee (the focus leaves, the next Space reaches nothing) is
+  proved in the real browser. There, the focused element under a newly inert ancestor is blurred
+  at the next rendering update, not in the same task, so the test polls for it. *(2026-10-07:
+  the bug bash's probes for closed windows asserted a blur jsdom can never produce; the fix's
+  proof moved to an Electron spec.)*
 - **A background watcher started inside a scratch worktree dies when the worktree is removed.** Its
   cwd is gone, `git`/`gh` fail with "Unable to read current working directory", and the wait
   reports nothing. Start waits from the main checkout, or remove the worktree after the wait
