@@ -219,6 +219,12 @@ command lives in that project's `CLAUDE.md`.
   short, portable checks on every CPU, and to say in the data's README which CPU's ponds the
   committed samples are. The horizon decides: short runs round, long runs diverge. *(2026-10-01,
   the light-feeder sample; the chair retracted on the PR.)*
+- **When a long control's late pins are confined to one CPU, confine its late coverage checks
+  too.** "The run covers a level-up" rests on events near the end, so it drifts with that CPU's
+  floats just as the pins do. A behaviour change then fails CI on the drifting CPU alone, while
+  every pin it was asked to prove holds. *(2026-10-07: a fix moved a busy control's level-up from
+  step 11463 to 12203 on the pinned CPU; on x64, already drifting from about step 5500, it never
+  levelled up, and only CI could show it.)*
 - **Before promising "this hash will not move", grep the state for bookkeeping fields.** A brief
   said the whole-World hash and the platform sidecars would hold unless a listed row moved a field;
   the engine's change detection kept the JSON of the last snapshot on the World itself, so
