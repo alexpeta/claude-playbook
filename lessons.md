@@ -1358,6 +1358,14 @@ command lives in that project's `CLAUDE.md`.
   a reload" lived in a linked ticket the crash ticket named, and without it a crash while
   minimized reloads a page that believes it is shown. The builder read the ticket and built it.
   Quote each linked ticket's ask in the brief, or say it is out of scope. *(2026-10-07.)*
+- **Grep a name before a brief suggests minting it.** "A new command, e.g. `cancel`" named one
+  that already existed with the opposite meaning (a release with its effects); in a recorded
+  command format a collision silently changes what old replays do. The builder grepped and named
+  it `lost`. *(2026-10-07.)*
+- **A mutation that stays green may be the test's setup, not the guard.** If the test never puts
+  the state the guard changes into its non-default value before the action, the after-assertion
+  passes on the starting state. Assert the precondition before the action, then mutate.
+  *(2026-10-07: a `ptr.on = false` mutation stayed green until the test set `ptr.on` true first.)*
 - **A count in a brief is computed with the code's own filter.** `47 files − 6 print masters
   = 41` forgot the three `.md` and the `.DS_Store` the suffix rule skips; the builder counted
   with `find` plus the rule and got 37. Never subtract from `ls | wc -l`; run the filter.
