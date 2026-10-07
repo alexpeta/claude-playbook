@@ -700,7 +700,16 @@ command lives in that project's `CLAUDE.md`.
   path from the next step, so the diff spreads by design. Prove the first step with a variant that
   keeps the random stream, then re-pin with the reason named. *(2026-10-07: the chair's brief set
   the confined-diff condition for "Musume is never a friend"; it could not hold, and the builder
-  rightly stopped instead of re-pinning.)*
+  rightly stopped instead of re-pinning.)* The same holds for a screenshot a sim fix moves: the
+  spec with the fix reverted must go green, and a probe of the moved entity in both runs says why;
+  the diff image says only where. A compare run dispatched for a re-pin is read one failure at a
+  time: only its snapshot failures feed the pin, its `expected` must be byte-identical to the
+  committed pin, and every other red gets its own disposition. *(2026-10-07: a scripted panel that
+  drags a lantern was a pixel reproduction of the turtle bug being fixed.)*
+- **A tool's "was N" delta may compare against another checkout's run.** The gate mod's test-count
+  delta reads the previous line of its shared ledger, whichever checkout wrote it, so "2199 (was
+  2215)" can mean nothing was removed. Read the count; check the delta's source before acting on
+  it. *(2026-10-07.)*
 - **Making a per-frame term per-second: steady forces scale with `dt`, noise drawn every frame
   scales with `√dt`.** A zero-mean random kick scaled by `dt` leaves its spread rate-dependent by
   the square root of the rate ratio (measured: 0.66× at 144 Hz, 1.53× at 30 Hz). Write the factor
