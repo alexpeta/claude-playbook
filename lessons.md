@@ -1385,6 +1385,15 @@ command lives in that project's `CLAUDE.md`.
   that already existed with the opposite meaning (a release with its effects); in a recorded
   command format a collision silently changes what old replays do. The builder grepped and named
   it `lost`. *(2026-10-07.)*
+- **Compose a rounded constant with the threshold it feeds before writing it in a brief.** "Lines
+  × 33" reads harmless until it meets "one step per 100": 3 lines × 33 = 99 never reaches a step,
+  so the stated invariant ("a notch is one step") fails in the very unit the constant was for.
+  Work the brief's own example through its own numbers. *(2026-10-07: the chair's wheel brief; the
+  builder used 100/3 a line and the mutation proved 33 red.)*
+- **When an input's meaning moves from per-event to per-magnitude, grep the specs for synthetic
+  events with token magnitudes.** A frame spec wheeling with `deltaY: ±1` encoded "each event is a
+  step", and would have stopped turning under the new rule with no product change behind it.
+  *(2026-10-07, the same fix.)*
 - **A mutation that stays green may be the test's setup, not the guard.** If the test never puts
   the state the guard changes into its non-default value before the action, the after-assertion
   passes on the starting state. Assert the precondition before the action, then mutate.
