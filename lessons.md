@@ -768,6 +768,18 @@ command lives in that project's `CLAUDE.md`.
   deadlines, or rebases them, and a test saves mid-countdown and reloads. *(2026-10-07: a
   long-press deadline saved mid-press would have lifted a piece into edit mode partway through
   the next session.)*
+- **How a reproduction batches its commands is part of its setup.** Six commands queued for one
+  step and the same six spread over six steps can produce different worlds: the later ones see
+  the earlier ones' effects only when they're stepped apart. Write the reproduction the way the
+  probe that found it was written, and say which batching it uses. *(2026-10-07: six purchases
+  in one step and one per step laid different ponds. The bug reproduced at one seed in one
+  batching and not in the other.)*
+- **A guard that only matters once another change reads it is mutated together with that
+  change.** A reset added so a new check sees clean state is invisible until the check exists.
+  Mutated alone it stays green, which says nothing. Mutate it with the check in place, and say in
+  the PR which mutation needs which. *(2026-10-07: clearing the old pond's items before laying a
+  reseeded pond's pads mattered only once the pad placement read the items. Mutated with that
+  clause in place, it turned the reseed test red.)*
 
 
 ## Parallel agents and worktrees
