@@ -1390,6 +1390,15 @@ command lives in that project's `CLAUDE.md`.
   so the stated invariant ("a notch is one step") fails in the very unit the constant was for.
   Work the brief's own example through its own numbers. *(2026-10-07: the chair's wheel brief; the
   builder used 100/3 a line and the mutation proved 33 red.)*
+- **A review probe asserts the reviewer's fix sketch, not only the bug: treat it as one candidate
+  design.** A probe written to the fixed outcome encodes how its author would fix it; a better fix
+  can fail it. Turn the probe's *bug* half into the test, and design the fix half anew. *(2026-10-07:
+  a bug-bash probe asserted "gate the flag write" for a lost first-visit hint; that design lost the
+  hint for good, and the builder paused the toast schedule instead.)*
+- **Before deferring a once-ever beat to "next time", read what the next start does.** "It shows
+  at the next launch" was false: a later launch loads a saved pond, and a loaded pond skips the
+  first-visit beats by an earlier ruling. A beat deferred past its own session is lost. *(2026-10-07,
+  the same fix.)*
 - **When an input's meaning moves from per-event to per-magnitude, grep the specs for synthetic
   events with token magnitudes.** A frame spec wheeling with `deltaY: ±1` encoded "each event is a
   step", and would have stopped turning under the new rule with no product change behind it.
