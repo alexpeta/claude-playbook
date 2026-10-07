@@ -768,6 +768,15 @@ command lives in that project's `CLAUDE.md`.
   deadlines, or rebases them, and a test saves mid-countdown and reloads. *(2026-10-07: a
   long-press deadline saved mid-press would have lifted a piece into edit mode partway through
   the next session.)*
+- **A flag that only a session event clears is stuck for good once it is saved; put it down on
+  load.** If the event that ends a mode (an intro's timer, a gesture's release) never runs in a
+  loaded session, a save taken while the mode was on keeps it on in every later session. Fix it
+  where the save is read, not where it is written. Clearing on load frees the saves already on
+  players' disks; pausing the writer longer only narrows the window for new ones, costs a save,
+  and leaves the stuck ones stuck. Prove "no change for the unaffected case" with a cross-commit
+  hash of the loaded state, not by assertion. *(2026-10-07: an intro's quiet flag saved in the 7 s
+  between the saver resuming and the timer clearing it held a pond quiet forever: no departure,
+  no arrival, no toast.)*
 - **How a reproduction batches its commands is part of its setup.** Six commands queued for one
   step and the same six spread over six steps can produce different worlds: the later ones see
   the earlier ones' effects only when they're stepped apart. Write the reproduction the way the

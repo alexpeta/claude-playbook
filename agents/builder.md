@@ -17,7 +17,9 @@ binds always. House mechanics that bite:
 - Gate = `mcp__gate__run` with your worktree's root when the playbook's `gate` mod is installed;
   otherwise `<GATE COMMAND> > file 2>&1; echo exit=$?` — trust ONLY the exit file; stage prose
   like "All checks passed!" has lied before the tests ran. Reproduce CI's keyless condition
-  by exporting the empty key.
+  by exporting the empty key: `<KEY VARIABLE>=` (name it here; delete this sentence if the repo
+  reads no key — a builder can't safely go looking for credential names, and an auto-mode
+  classifier refuses the grep).
 - Never `git stash`. Never mutate the tree while a gate runs. Install your own environment in
   a fresh worktree and confirm the package resolves inside it before trusting a green.
 - Integration tier: run it when you touch a DB path, and label the PR so CI runs it; say
