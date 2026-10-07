@@ -853,6 +853,17 @@ command lives in that project's `CLAUDE.md`.
   write, and not where it comes mid-command. Check each caller, not the function. *(2026-10-07:
   four refusals turned into returned lines; three changed nothing, and the pad push's callers
   each finished their command for the first time.)*
+- **A stop flag set inside a loop stops only what reads it afterwards.** List everything that runs
+  between setting the flag and its next read (the rest of the loop, the code after it) and decide
+  each. *(2026-10-07: a reseed that faulted mid-drain still let the drain's later commands and the
+  frame's update run, until the loop and the step both checked the flag.)*
+- **A property hung on an array is invisible to anything that walks arrays by index:** JSON, most
+  save codecs, most structural hashes. A round-trip test then passes while the state differs. A
+  codec that walks arrays by index should refuse own keys beside the indexes, as it refuses holes.
+  When such a value moves from the container onto its elements, check the elements live as long
+  as the container did: elements filtered out take it with them, so write it on every live element
+  when it is first set. *(2026-10-07: the dragonflies' exit side, lost by every save since the
+  port.)*
 - **When the shared test stub can't see the bug, model the spec in the test, not in the stub.**
   A canvas stub with no state stack can't show a leaked `save()`. Install a small model of the
   spec's behaviour on the one object under test, beneath the code's own wrapper, and leave the
@@ -1150,6 +1161,12 @@ command lives in that project's `CLAUDE.md`.
   git.** A shared set read in place through a symlink shows as untracked and a `git add -A`
   commits the link. Remove the link before staging, or write the pattern without the slash.
   *(2026-10-07: a baseline set symlinked into a builder's worktree.)*
+- **A shared set that parallel runs read in place changes under them when it is re-pinned.** The
+  chair re-pins only when no builder's run is reading the set, or tells the running builders, and
+  a run fingerprints the set (a hash of its listing and bytes) before and after, so a failure caused
+  by the set moving is named as that, not as the change under test. *(2026-10-07: the chair
+  re-pinned one frame for a merge while another builder's baseline run was reading the set; that
+  run failed the frame and had to prove main rendered it the same before blaming nothing.)*
 - **Spreading a DOM event copies nothing but `isTrusted`.** Its fields are getters on the
   prototype, so `{ ...event }` is `{ isTrusted }`. A function typed for a plain object that
   spreads its argument silently loses every field when a caller, or a test, hands it a real event.
