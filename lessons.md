@@ -826,6 +826,12 @@ command lives in that project's `CLAUDE.md`.
   relax only one and the action is accepted and undone in the same step. *(2026-10-07: letting
   the camera find a koi on its farewell needed the same `!leaving` dropped from the camera's
   update, or the find was taken and cancelled at once.)*
+- **Turning a deep throw into a return lets each caller's tail run; prove "changes nothing" per
+  path.** A throw cut its caller short; a return doesn't, so the emit, the journal line or the
+  drop after it now happens. "The World is unchanged" holds where the refusal comes before any
+  write, and not where it comes mid-command. Check each caller, not the function. *(2026-10-07:
+  four refusals turned into returned lines; three changed nothing, and the pad push's callers
+  each finished their command for the first time.)*
 - **When the shared test stub can't see the bug, model the spec in the test, not in the stub.**
   A canvas stub with no state stack can't show a leaked `save()`. Install a small model of the
   spec's behaviour on the one object under test, beneath the code's own wrapper, and leave the
