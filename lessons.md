@@ -607,6 +607,156 @@ command lives in that project's `CLAUDE.md`.
   frames always differed by 8 or 13 px at up to 5 LSB. A threshold of 0.02 absorbed them and
   also took a one-LSB colour mutation from 72 px to 0. The allowances, 13 at most, left the
   known regressions of 72, 394 and 579 px red.)*
+- **A codemod that rewrites names checks its own output with a scope analysis, before
+  formatting.** Turning closure variables into fields (`x` → `w.x`) is silently wrong wherever an
+  inner scope already binds the target's name: the rewritten reads bind to the inner one and
+  nothing throws. Check each rewrite, by the offsets it wrote, against the scope it lands in, and
+  rename or refuse on a capture; once the formatter has moved the offsets, a check can only count
+  references, and a count cannot tell a shadowed read from a real one. Derive the names a move
+  shares from the references too, never from a hand list. *(2026-09-30: 35 inner bindings of the
+  target's name would have captured 338 rewritten references. 2026-10-03: a brief's hand list of
+  a move's shared names was both short and long.)*
+- **A move-proof checker is code under test; mutate it, and know what its normalisation erases.**
+  An "all equal" on the first try can be a checker comparing a thing with itself: plant one
+  DIFFER per stage and see each fire, and route every comparison through the reader the self-test
+  mutates, or the mutations of the untouched files are invisible to it. A transpile before the
+  AST compare erases types, so a types-only file compares equal under any type edit, and a move
+  may add `!` and `as` freely: compare such files with the type-aware printer, and cover the casts
+  with boundary tests. When the move deletes the file, read the pre-move side from git by ref
+  (`git show <ref>:path`), so the proof reruns from any later commit. *(2026-10-01: three
+  `types.ts` files would have compared equal through `transpileModule` whatever their types said.)*
+- **A canonical serializer chosen for a hash erases what it canonicalises: key order and object
+  identity.** A sorted-keys serializer makes "moved, not retyped" blind to a reordered table that
+  the code iterates in key order; one that writes a shared object at every place it is reached
+  makes a round-trip hash blind to references hydrated as copies. Decide which orders and
+  identities are behaviour before choosing the serializer, and pair a round-trip hash with a
+  continuation run (the hydrated state stepped beside the live one): the mutation "references
+  hydrated as copies" passes the round trip and must red the continuation. *(2026-09-30, a
+  constant-tables move; 2026-10-01, the save and hydrate.)*
+- **Before moving code out of a file, find the tests that read that file as text.** A test that
+  compiles a function out of the source (`?raw` plus a regex), slices it at a marker, or pins one
+  of its import lines is coupled to the file's bytes, not its behaviour: a byte-identical move
+  turns it red, and a grep for the moved symbol's importers never finds it. `git grep` the tests
+  for `?raw`, `readFileSync` and the moved names before cutting, and repoint each at the moved
+  export (pin the module that owns an import, not the line). *(2026-10-01: a byte-identical move
+  went three red in its first gate, all in one test that regex-compiled a predicate from the
+  legacy source; a marker slice on 2026-09-30 and an import-line pin on 2026-10-03 broke the
+  same way.)*
+- **A default is an input to every recording made under it.** Find what relies on a default by
+  flipping it with every test unchanged: what goes red is the list (prose about which tests "use"
+  a default was wrong twice in one brief). When a slice flips a default, pin the old value at each
+  recorded control's input, with a comment, instead of re-recording; when a control must be
+  re-recorded, pin the recorder's settings to the recording's and diff old against new step by
+  step: the first difference must sit past the change's first effect. A save carries the state,
+  not the settings or the scripted player that drove it, so a replay from a save pins the switches
+  it mounts at, and comparing two builds on a saved state keeps the player in the loop.
+  *(2026-10-06: an unpinned re-record took in two switches turned on since the first recording and
+  differed from step 1.)*
+- **New state moves every whole-state pin; prove the re-pin by mapping back, and shape the state
+  so the old pins hold.** A control that hashes every key, a snapshot that maps a whole table and
+  the per-platform sidecars all move when a field or a table key is added, even one that never
+  changes in any recording. Prove it with a scratch probe that drops the new keys (or maps the new
+  shape back through a module mock around the serializer) and lands on the old pins byte for
+  byte; only then re-pin, and check the sidecars were identical across platforms before deriving
+  one from another. Better, keep the pins: leave a session-local field absent until it is set, put
+  a new record map beside one that is copied whole, and let an old fixture pre-empt a newcomer's
+  draw from a shared stream. An old pin at 0 px is a stronger proof than a re-pin with a reason.
+  *(2026-10-01 to 2026-10-05: eight slices added state; one brief's "controls unchanged" for a
+  saved field could not hold.)*
+- **A seeded run is deterministic only when every input is pinned, and a shared stream counts
+  draws, not picks.** A filter that shortens a candidate list shifts every later draw when each
+  candidate draws, even if the pick comes out the same; two streams split from one seed and seeded
+  alike replay each other draw for draw (fork one); "same seed, same screenshot" needs the frame
+  clock pinned too, since real `requestAnimationFrame` timing moves sprites by sub-pixels. To find
+  where a change first acts, wrap its predicate (off = the old answers) and record the first true
+  answer, or hook the write site for one scratch run, rather than diff the whole state every step.
+  *(2026-10-06: a new seat rule skipped one pad at step 675 of a 60 s replay; the same pad was
+  chosen, two fewer offset draws were made, and the stream diverged from there.)*
+- **A pinned frame witnesses the state it reached and the parts it shows, nothing else.** A step
+  count sized by a guess shot frames named for a phase they had not reached; a frame rendered once
+  after N steps shows an ease's first step, not its rest; a frame appended to a sequential spec
+  inherits the earlier frames' eases and whatever their close left on the canvas; a still pose hid
+  a drawn part under the body; an overlay drawn only mid-gesture is in no frame. Assert the reached
+  state in the spec, step to rest, check that some frame draws the thing before calling a change a
+  re-pin, mutate each drawn part against the frames, and give surfaces no frame shows a source
+  check. *(2026-10-01: 60 steps left the first "summer-day" frame reading "Summer · Night", 180
+  reached it. 2026-10-04: a beetle's wake showed only in an added tap frame.)*
+- **A screenshot comparator's pixel count is not an exact count.** Playwright's `toMatchSnapshot`
+  at `threshold: 0, maxDiffPixels: 0` still skips the pixels its pixelmatch classifies as
+  antialiased: "8 pixels are different" was 6,982 in an exact per-pixel count (up to 28 levels),
+  and another pair logged 8 where the exact count was 9. Count exactly before calling a re-pin
+  trivial, and compare the actual PNGs with each other before calling two failures "the same
+  variant". *(2026-10-04 and 2026-10-05.)*
+- **A test that waits on time races a second clock; wait on the state.** Freezing `Date` also
+  freezes every UI timer keyed on `Date.now()`, so a wait on a class that a timer clears never
+  ends; a hint or toast on wall-clock timers makes a screenshot depend on how long the spec took;
+  a clock that advances in ticks, read after a fixed wait, lines up with the tick phase on one
+  machine and not on another. Expose the stage in the DOM and wait until it reads done, wait on the
+  end state itself, and read a ticking clock at a tick. *(2026-10-04: a fixed 500 ms wait landed
+  near a 250 ms tick on the developer's Mac and between ticks on the Windows runner, which alone
+  went red.)*
+- **A float accumulator that meets a threshold can be one step off its nominal count.**
+  `t += dt/k` until `t ≥ 1` can run `k/dt + 1` steps, and a timer paused by shifting its absolute
+  stamp by `dt` drifts in the last bits, so a duration that is a whole number of frames lands on a
+  boundary the drift can cross. Test the boundary frame, not the nominal duration; when a pause
+  shifts a stamp, also guard whatever ends the timer and pin that guard with its own unit test,
+  since a test of the shift alone stays green without it. *(2026-10-05, a particle's lifetime;
+  2026-10-07, a 13.6 s timer paused while the window was hidden.)*
+- **Write a state at the moment it becomes true, not when it is scheduled, delayed or
+  initialised.** Four shapes of one bug in three days: a "shown once ever" flag written when a hint
+  was scheduled would have marked it seen when a quit came inside the delay; a mute applied by a
+  60 ms `setTimeout` could land over the next toggle and invert it; a ported "cancel all timers"
+  list also held a full-screen veil's fade, so a fast input would strand the veil; an audio init
+  that hard-coded its starting gain would have played through a restored mute. Write the flag when
+  the thing shows, apply a toggle at once or cancel the pending write, check each entry of a shared
+  cancel list for a state it would leave with no way out, and have every subsystem's init read the
+  restored value. *(2026-10-05 to 2026-10-07.)*
+- **A type guards only the files the typechecker reads.** With `checkJs` off, a typed port or a
+  newly required field checks the TypeScript callers and none of the JavaScript ones: a new JS
+  emitter of a sound name the port does not know, and JS constructors missing a required field,
+  both typechecked clean. In a mixed repo, list the JS callers by grep, pin each with a test that
+  goes red without the field (or a source grep for the names), and mutation-check both sides.
+  *(2026-10-01, a typed audio port; 2026-10-03, a required event field.)*
+- **An exact-shape validator makes every new field a schema version.** A validator that refuses a
+  file missing any key, and writes the defaults in its place, turns "add a key" into "reset every
+  user's settings": bump the version and write an upgrade that fills only the new keys, at their
+  defaults, where absent. The same validator is a fact a brief must read: a payload typed
+  `unknown` at a bridge can hide an exact-key check behind it, so grep the consumer's validator,
+  not only its type, before promising a new field. *(2026-10-05: adding keys under the shipped
+  version would have refused every player's file and reset their sound settings and hint flags.
+  2026-10-01: a field a brief asked for was impossible under the bridge's exact-key check.)*
+- **A test suite outside the gate is not a guard.** A second-language suite that no CI job ran (a
+  notebook's pytest) went red on main when an unrelated PR regenerated a fixture it pins, and
+  stayed red until the next builder to run it by hand noticed. Every suite gets a CI job, or a
+  line where the gate is defined saying why not. *(2026-10-04: an assertion of 92 had read 90
+  since a sibling PR added a plant to the generated tables.)*
+- **Measure through time, and measure what is written.** A save-size experiment that grew ponds
+  through the real engine found a particle leak that was 80 % of the save and a state machine that
+  froze the pond; a pond built by calling the hatch 500 times has neither. Give such a run a stall
+  guard (40 game days without progress refuses) so a stuck run stops instead of spinning to its
+  limit. Measure a trim by serializing the trimmed graph, not by sizing the field: a serializer
+  that writes a shared object once, where it first meets it, may store it under another path. And
+  measure a store's growth over many copies of the rows: one run's difference is a few 4 KiB pages
+  and read about 20 % low. *(2026-10-05; the page reading 2026-10-03.)*
+- **Size a detector and a safety margin from classified normal runs.** A no-progress detector that
+  measured raw displacement fired on every slow start and perturbed 6 of 7 normal journeys; gated
+  on contact with the obstacle it unsticks from, 1 of 7. The longest "real" journeys, taken as the
+  max for "longest × a margin", were the second bug itself and would have set a 30-minute safety.
+  Classify the tail before taking its max, and measure a detector's footprint on normal runs before
+  and after it. *(2026-10-05.)*
+- **Bootstrapping release-please at 0.x takes two settings the workflow file cannot carry.** It
+  reads a manifest version of `0.0.0` as no release and falls back to `initial-version`, which
+  defaults to `1.0.0`, after which the pre-major bump rules no longer apply: set `initial-version`
+  (here `0.1.0`) in its config. On `GITHUB_TOKEN` it can open its release PR only once the repo's
+  "Allow GitHub Actions to create and approve pull requests" toggle is on, which the workflow's
+  `permissions:` block cannot grant, so the first run waits on the approver. *(2026-09-30, read
+  from the tool's source before the first run.)*
+- **A reusable workflow's `concurrency` group is computed in the caller's context.** A called
+  workflow sees the caller's `github` context, so a group keyed on `github.ref` alone put a release
+  build from the default branch in the same group as the workflow's own scheduled run and a manual
+  dispatch there, and `cancel-in-progress` let either cancel the other. Key the group on the event
+  as well (`<name>-${{ github.event_name }}-${{ github.ref }}`). *(2026-10-03: caught while wiring
+  the release to call the packaging workflow.)*
 
 
 ## Parallel agents and worktrees
@@ -965,6 +1115,37 @@ command lives in that project's `CLAUDE.md`.
   `--outputFile` pointed at scratch, read that file, and run one unmutated control through the
   same script before trusting any red or green it reports. *(2026-10-07: a builder's first
   mutation run misread vitest's JSON. The config sent it to a directory inside the checkout.)*
+- **A status or existence check is an answer only if nothing but the thing itself can set it.** A
+  desktop runtime's GPU feature status reads "software" at app `ready`, and before the first
+  window, on every machine, GPU or not; it turns true at the GPU process's first report, about
+  45 ms later. Read at `ready` it would have turned a feature off for every player, and an
+  assertion copied from a spec that read it before the first window was vacuous. A brief's "a save
+  exists if the file exists and isn't empty" would have said yes on nearly every start: the app
+  opens, and so creates, its database before the window and writes a session row in its first
+  transaction. Measure when a status becomes true and read it after the producer's first report;
+  ask existence of what the consumer reads (the row the load returns), not of a file the app makes
+  itself. *(2026-10-04, 2026-10-05 and 2026-10-07.)*
+- **Load average predicts neither a slowdown nor a frame rate.** A test that went red inside its
+  suite with a second suite running slowed 3.4–3.5× beside a CPU burner at a similar load average,
+  against 4.7–5.8× in the suite, and stayed green; on a shared machine a browser's GPU process held
+  60–80 % of the GPU and moved a measured frame rate by 10 % with the load average quiet; software
+  rendering at a device pixel ratio of 2 hid a feature's cost entirely. Reproduce load in the shape
+  that failed, sample the GPU's own utilisation before each run, pin the device pixel ratio in a
+  performance spec, and count missed vsyncs (intervals over 1.5 vsyncs), not frames over 16.7 ms:
+  `requestAnimationFrame` timestamps jitter about ±2 ms, so at a steady 60 fps half the intervals
+  read over. *(2026-10-05.)*
+- **An event handler for a state change takes the state the event names; it never re-reads the
+  getter.** Platforms disagree on whether the event fires before or after the change: Electron on
+  Windows notifies from inside the setter, before the state lands, and macOS after it, so a
+  full-screen handler that re-read the getter saved the old state on Windows only. A test fake that
+  changes the state and then emits models one platform; give it both orders. *(2026-10-06: the
+  re-read put back reddened the three Windows-order tests, and the over-correction,
+  `!isFullScreen()`, reddened the two macOS ones.)*
+- **A WAL-mode SQLite database is a set of files.** Copying or renaming the main file alone drops
+  the commits still in `-wal`, or leaves a stale `-wal` beside the next file of that name to
+  replay. Move or copy the set together, and read the copy back to prove it. *(2026-10-03: a
+  refused save's copy read `user_version` 2 while the store had refused the file at 3; copying the
+  `-wal` beside it closed the gap.)*
 
 
 ## Writing and briefing
@@ -1103,3 +1284,13 @@ command lives in that project's `CLAUDE.md`.
   `gh issue create … ; gh api -X POST repos/<r>/issues/<epic>/sub_issues -F sub_issue_id=<database id>`
   — the database `id`, not the number. Retro tickets closed against their PRs repair the count, and
   cost more than doing it first.
+- **A design's prose drifts from its own source; before a brief quotes a line, read the binding
+  and every other mention.** Five times in one week the design's words were not its contract: a
+  newest-first change log kept a rule a later entry had made obsolete; a lab's prose spec and its
+  running code disagreed on two behaviours; a doc's derived formula disagreed with the table it
+  summarised; a lab page named functions it did not contain, its engine loaded from a runtime that
+  was never handed over; a spec said one thing about a mechanism in one paragraph and the opposite
+  in another. Read the template binding or the table, `git grep` the lab for the functions its log
+  names, grep the doc for the mechanism's other mentions, then quote both sides and say in the PR
+  which one the change follows. *(2026-09-30 to 2026-10-06; the last brief, written from one
+  quoted line, was right about the symptom and wrong about the cure.)*
