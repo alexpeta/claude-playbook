@@ -598,6 +598,15 @@ command lives in that project's `CLAUDE.md`.
   departing creature steered itself to the exit and a separate cull removed it after 60 s.
   On return the sequence would have jumped to its end. The builder measured it before
   freezing that one creature.)*
+- **Absorb a runner's rendering noise with a per-frame pixel allowance measured from its
+  actuals, never a colour threshold.** A threshold big enough for the noise's few LSB also
+  swallows a real one-step colour change. Count the noisy frames' differing pixels across every
+  artifact you can still download; they repeat at fixed counts. Allow exactly those frames
+  exactly those counts, on that platform only, and keep 0 px everywhere else. Then prove the
+  known regressions still exceed the largest allowance. *(2026-10-07: 43 artifact pairs. Four
+  frames always differed by 8 or 13 px at up to 5 LSB. A threshold of 0.02 absorbed them and
+  also took a one-LSB colour mutation from 72 px to 0. The allowances, 13 at most, left the
+  known regressions of 72, 394 and 579 px red.)*
 
 
 ## Parallel agents and worktrees
