@@ -780,6 +780,13 @@ command lives in that project's `CLAUDE.md`.
   the PR which mutation needs which. *(2026-10-07: clearing the old pond's items before laying a
   reseeded pond's pads mattered only once the pad placement read the items. Mutated with that
   clause in place, it turned the reseed test red.)*
+- **When a re-pin is proven benign, look for every literal that pins the same cause, not only the
+  hash files.** A test that asserts the hash first and a count (unread clock reads, overruns) after
+  stops at the first red, so the count stays hidden until the hash is re-pinned. Before calling a
+  re-pin done, run the test to its end and grep for the counts it asserts. Prove each new value is
+  exact (reads per step × steps × presses), so it still catches any other drift. *(2026-10-07: a
+  fix that removed a pending state moved three replay hashes. Two `unread {clock: 0}` assertions
+  behind them surfaced only after the re-pin, at 48 and 12, both exact.)*
 
 
 ## Parallel agents and worktrees
