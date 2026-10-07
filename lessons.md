@@ -690,7 +690,17 @@ command lives in that project's `CLAUDE.md`.
   where a change first acts, wrap its predicate (off = the old answers) and record the first true
   answer, or hook the write site for one scratch run, rather than diff the whole state every step.
   *(2026-10-06: a new seat rule skipped one pad at step 675 of a 60 s replay; the same pad was
-  chosen, two fewer offset draws were made, and the stream diverged from there.)*
+  chosen, two fewer offset draws were made, and the stream diverged from there.)* A sort with a
+  random comparator (`sort(() => rng() - 0.5)`) is such a list: it draws once per comparison, so
+  a guard that removes one candidate shifts the stream in that same step. *(2026-10-07: a friend
+  pool lost one koi and a replay moved 282 values at the pairing's step.)*
+- **A replay re-pin condition for a behaviour fix is "the reverted fix reproduces every pin, and
+  the first diverging step differs only in the fixed field", never "the whole diff is confined to
+  the fixed field".** Removing a link an entity steers by (a friend, a follow, a target) moves its
+  path from the next step, so the diff spreads by design. Prove the first step with a variant that
+  keeps the random stream, then re-pin with the reason named. *(2026-10-07: the chair's brief set
+  the confined-diff condition for "Musume is never a friend"; it could not hold, and the builder
+  rightly stopped instead of re-pinning.)*
 - **A pinned frame witnesses the state it reached and the parts it shows, nothing else.** A step
   count sized by a guess shot frames named for a phase they had not reached; a frame rendered once
   after N steps shows an ease's first step, not its rest; a frame appended to a sequential spec
