@@ -867,6 +867,20 @@ command lives in that project's `CLAUDE.md`.
   bound never ends a walk first: a sweep comparing the float64 bits of every result before and
   after. *(2026-10-07: the direct solve moved a 16:9 landing by 2.15 units; the bounded walk moved
   none below 3.9:1.)*
+- **To prove a capped roll unchanged below its cap, test the threshold, not a fingerprint.** At each
+  level below the cap, a draw just under the old threshold and one exactly at it must fall where
+  they did. A fingerprint of a seeded run pins every unrelated draw too, and breaks on the next
+  change that touches the stream. *(2026-10-07: a surprise chance capped at 0.3; the boundary
+  pair pinned levels 1 to 12.)*
+- **A cap inherited from a prototype can outlive the rule that made it right.** When a retention
+  rule changes ("kept pages never scroll off"), grep every consumer of the collection for its own
+  bound. *(2026-10-07: the journal's snapshot still sent the prototype's last 80 entries a week
+  after the design ruled kept pages permanent, so the oldest farewell pages fell out of the book.)*
+- **"No control should move" is checked against every pinned run that drives the changed code
+  live, not only against the committed recordings.** A recording replays the steps it captured;
+  a scripted control runs the real loop again and sees the change. *(2026-10-07: the chair's brief
+  for the frame loop promised no control would move, since every recording stepped at most 1/30 s;
+  a scripted control with deliberate 120 ms hitches drove the loop live and moved.)*
 - **A property hung on an array is invisible to anything that walks arrays by index:** JSON, most
   save codecs, most structural hashes. A round-trip test then passes while the state differs. A
   codec that walks arrays by index should refuse own keys beside the indexes, as it refuses holes.

@@ -34,6 +34,10 @@ binds always. House mechanics that bite:
   the code contradicts it. Found-not-fixed items get a named section; the chair files them.
 - Refuse, don't guess: when a value can't be resolved honestly, write nothing, return a
   reason, log the skip. No silent skips.
+- **A guard's refusal is an instruction, not a puzzle.** A command refused as too complex to
+  verify is split into simple commands, never moved into a script that does the same thing. A
+  write the permission classifier refuses, or a push a guard refuses, stops that step: report
+  what was refused and why, with everything the chair needs to decide, and don't route around it.
 
 **No memory.** You write none and read none: what you learn that is true of any repo goes in the
 PR body under a named section for the chair to carry to the playbook; what is only about this build
