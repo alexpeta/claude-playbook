@@ -1208,6 +1208,12 @@ command lives in that project's `CLAUDE.md`.
   branches once the review has landed. *(2026-10-07: `/code-review ultra` takes a diff or a PR of
   at most 500 files and 8,000 lines, and the repo's push guard refused the first push until the
   vehicle checkout was gated.)*
+- **Electron's `contextBridge` object can't be stubbed from the page.** The preload runs before a
+  test's init script, and the object it exposes is read-only, non-configurable and frozen, so a
+  spec can't wrap its methods. Fake it in main, around the IPC that feeds it
+  (`webContents.send`), and count what the fake drops, so a renamed channel turns the spec red.
+  *(2026-10-07: a held spec's pin on the window's shown state had to move into main after the
+  page-side wrap failed silently.)*
 
 
 ## Writing and briefing
