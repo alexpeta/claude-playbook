@@ -708,7 +708,19 @@ command lives in that project's `CLAUDE.md`.
   `x * dt * 60` is one bit off `x` for about 7.5 % of values, so "identical at 60 Hz" is quietly
   false. To check that bit for bit, compare the increment, not the accumulated sum, since a
   one-bit error in a small increment rounds away in a larger total. *(2026-10-07: a lily pad's
-  spin; the first bit-exact test compared the sum and could not fail.)*
+  spin; the first bit-exact test compared the sum and could not fail.)* Three more from the next
+  pass over the same kind of term:
+  - **"Identical at the reference rate" does not cover `dt = 0`.** `dt·60` and `√(dt·60)` are 0
+    there, where the per-frame term acted in full, and dividing by `√(dt·60)` is 0 / 0. Look for
+    what steps at zero (a test mount's first `step(0)`, a loop whose dt clamps at 0) before
+    promising "no pin moves".
+  - **A rate test that holds things in place each frame must zero their speed too**, or the pushes
+    they gather move them within the step by speed·dt, farther the coarser the step, and the test
+    itself becomes rate-dependent.
+  - **To check a random kick bit for bit, wrap the stream's `next()`** to keep the frame's draws,
+    zero the accumulator, and assert that one draw reproduces the increment through the old line.
+    The sim runs unstubbed. *(2026-10-07: the pointer's, koi's and drift's spin terms; the zero
+    step moved a first-pond pin no brief had named.)*
 - **A pinned frame witnesses the state it reached and the parts it shows, nothing else.** A step
   count sized by a guess shot frames named for a phase they had not reached; a frame rendered once
   after N steps shows an ease's first step, not its rest; a frame appended to a sequential spec
