@@ -787,6 +787,23 @@ command lives in that project's `CLAUDE.md`.
   exact (reads per step × steps × presses), so it still catches any other drift. *(2026-10-07: a
   fix that removed a pending state moved three replay hashes. Two `unread {clock: 0}` assertions
   behind them surfaced only after the re-pin, at 48 and 12, both exact.)*
+- **A test that works around the app's behaviour is a bug report nobody filed.** When a spec has
+  to slow its input, retry, or wait out something a player would also hit, file what it works
+  around before merging it. Grep the specs' comments for "work around", "pace", "retry" and
+  "flaky" when a player reports the same symptom. *(2026-10-07: a packaged-build spec had clicked
+  every 4 s since an early CI run, because faster clicks kept the intro from ever finishing. The
+  approver met it on Windows as "it felt stuck before the logo".)*
+- **Mutation-check end-to-end guards too: a driver that waits for each action can make a guard
+  vacuous.** An awaited click lets the app settle between presses, so a race the guard exists for
+  never happens. Send the burst raw (trusted input events, unawaited), and prove the guard turns
+  red with the protection removed. *(2026-10-07: with the refusal note's `disabled` guard
+  removed, awaited clicks still started one engine. Ten raw trusted clicks started seven.)*
+- **Start a timer before the event it times.** A watch started by a poll, or after the first
+  render, measures from the poll and reports a duration that's too short and looks like good
+  news. Register the observer before launch, or say on the line that a number can't be measured.
+  Never print one that started late. *(2026-10-07: an e2e's first "words to entered" numbers
+  came from an observer started after the words appeared. They were retracted, and on Windows
+  the spec prints that the interval can't be timed.)*
 
 
 ## Parallel agents and worktrees
