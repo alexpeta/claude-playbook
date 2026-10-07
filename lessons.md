@@ -701,6 +701,14 @@ command lives in that project's `CLAUDE.md`.
   keeps the random stream, then re-pin with the reason named. *(2026-10-07: the chair's brief set
   the confined-diff condition for "Musume is never a friend"; it could not hold, and the builder
   rightly stopped instead of re-pinning.)*
+- **Making a per-frame term per-second: steady forces scale with `dt`, noise drawn every frame
+  scales with `√dt`.** A zero-mean random kick scaled by `dt` leaves its spread rate-dependent by
+  the square root of the rate ratio (measured: 0.66× at 144 Hz, 1.53× at 30 Hz). Write the factor
+  that is exactly 1 at the reference rate in parentheses, `x * (dt * 60)`: at `dt = 1/60`,
+  `x * dt * 60` is one bit off `x` for about 7.5 % of values, so "identical at 60 Hz" is quietly
+  false. To check that bit for bit, compare the increment, not the accumulated sum, since a
+  one-bit error in a small increment rounds away in a larger total. *(2026-10-07: a lily pad's
+  spin; the first bit-exact test compared the sum and could not fail.)*
 - **A pinned frame witnesses the state it reached and the parts it shows, nothing else.** A step
   count sized by a guess shot frames named for a phase they had not reached; a frame rendered once
   after N steps shows an ease's first step, not its rest; a frame appended to a sequential spec
