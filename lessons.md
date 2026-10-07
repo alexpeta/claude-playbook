@@ -1339,6 +1339,10 @@ command lives in that project's `CLAUDE.md`.
   `save: 2 ms` and `save: skipped, the intro is playing`, so a spec's precondition passed with
   nothing on disk; only a mutation run caught it, by chance. Match the success form (`save: \d+
   ms`), and give every skip line a form no success line has. *(2026-10-07: a crash-reload spec.)*
+- **When a new guard logs, run the whole suite once with output on and count its lines by test.**
+  A runner that hides a passing test's console also hides a guard firing inside a passing test,
+  so a green gate can't say where it fired. Counting turns "no alarms" into "fired only where
+  expected". *(2026-10-07: a NaN guard on the koi; every line came from its own test file.)*
 - **The chair briefs from the ticket's own text, not from its memory of the ticket.** A ticket's
   body can carry a requirement the brief's summary drops; here "the shown state must be resent on
   a reload" lived in a linked ticket the crash ticket named, and without it a crash while
