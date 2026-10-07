@@ -757,6 +757,17 @@ command lives in that project's `CLAUDE.md`.
   dispatch there, and `cancel-in-progress` let either cancel the other. Key the group on the event
   as well (`<name>-${{ github.event_name }}-${{ github.ref }}`). *(2026-10-03: caught while wiring
   the release to call the packaging workflow.)*
+- **To prove a deleted branch changed nothing, make it throw first.** "The controls hash
+  identical" after deleting dead code proves nothing if no control reaches it. Make the branch
+  throw, run the controls, and note which go red. Those, and only those, are the evidence that
+  their unchanged hashes mean the deletion is safe. *(2026-10-07: a disabled loop inside a
+  burst. One of eight controls reached the burst, and it hashed to its pin with the loop gone.)*
+- **A deadline stored on a per-session clock is wrong after a relaunch.** A timestamp read from
+  a clock that restarts each session (`performance.now()`, a monotonic counter) and kept in saved
+  state fires at the wrong moment, or at once, in the next session. A load clears such
+  deadlines, or rebases them, and a test saves mid-countdown and reloads. *(2026-10-07: a
+  long-press deadline saved mid-press would have lifted a piece into edit mode partway through
+  the next session.)*
 
 
 ## Parallel agents and worktrees
@@ -1294,3 +1305,8 @@ command lives in that project's `CLAUDE.md`.
   names, grep the doc for the mechanism's other mentions, then quote both sides and say in the PR
   which one the change follows. *(2026-09-30 to 2026-10-06; the last brief, written from one
   quoted line, was right about the symptom and wrong about the cure.)*
+- **A grep hit in a comment can be recording a field's removal.** Read the whole sentence, and
+  grep for a reader on the main branch, before building to a field a comment names.
+  *(2026-10-07: a brief sent a builder to change a HUD count. The comment it cited said the field
+  had left the snapshot two weeks earlier, and the pill showing it had been removed from the
+  design.)*
