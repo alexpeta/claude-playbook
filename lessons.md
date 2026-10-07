@@ -540,7 +540,10 @@ command lives in that project's `CLAUDE.md`.
   proved in the real browser. There, the focused element under a newly inert ancestor is blurred
   at the next rendering update, not in the same task, so the test polls for it. *(2026-10-07:
   the bug bash's probes for closed windows asserted a blur jsdom can never produce; the fix's
-  proof moved to an Electron spec.)*
+  proof moved to an Electron spec.)* Likewise, under Vitest's jsdom environment a `DOMException`
+  is not `instanceof Error` (Chromium's is), so an `instanceof Error` narrow on a stubbed browser
+  rejection takes a branch the app never takes; check it once against the real browser.
+  *(2026-10-07, a font-load refusal.)*
 - **A background watcher started inside a scratch worktree dies when the worktree is removed.** Its
   cwd is gone, `git`/`gh` fail with "Unable to read current working directory", and the wait
   reports nothing. Start waits from the main checkout, or remove the worktree after the wait
@@ -1025,6 +1028,13 @@ command lives in that project's `CLAUDE.md`.
 
 ## Environments and tooling
 
+- **Trigger the real failure on the real platform before building a guard for it.** A refusal
+  keyed on one signal (an empty result) never sees the failure it names when the platform reports
+  that failure another way (a rejection). A throwaway script on the real runtime, with the real
+  fault (the file deleted), costs a few calls and settles which signal arrives. *(2026-10-07: the
+  issue, its review and the brief all assumed a missing font file reached the "fonts did not
+  load" refusal; Chromium rejected the load with a `NetworkError` instead, so the planned fix
+  would have left the dark screen.)*
 - **A builder never launches the app on the approver's own data directory.** A builder wanted
   only the renderer's dev server and ran the dev tool's "renderer only" mode. In that version it
   also started the desktop app, on the approver's real dev data directory. The app loaded the
