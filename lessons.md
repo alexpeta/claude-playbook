@@ -1104,6 +1104,16 @@ command lives in that project's `CLAUDE.md`.
   bind the outer window unless `useContentSize` is set, so the page a minimum leaves differs by
   the platform's frame (32 px on a Mac, 65 px on an unpackaged Windows build with its menu bar).
   *(2026-10-07.)*
+- **A debounce hides a flush-on-quit from an end-to-end test.** If the quit takes longer than the
+  debounce (a held close of ~390 ms against a 250 ms timer), the timer writes first and removing
+  the flush leaves the test green. Prove the flush with the delay made longer than the quit
+  (a test-only seam, or one throwaway build), then guard it. *(2026-10-07: a settings file's
+  write-on-quit.)*
+- **graceful-fs's rename retry won't save a rename over an existing file.** It is async-only and
+  retries only while the destination is absent, so a synchronous write-then-rename over a file an
+  antivirus holds (Windows EPERM, EBUSY, EACCES) needs its own short retry: graceful-fs's codes and
+  10 ms steps, synchronously. On Electron's main thread `Atomics.wait` blocks for the backoff.
+  *(2026-10-07, the same build.)*
 - **A `.gitignore` pattern ending in `/` matches directories only, and a symlink is a file to
   git.** A shared set read in place through a symlink shows as untracked and a `git add -A`
   commits the link. Remove the link before staging, or write the pattern without the slash.
