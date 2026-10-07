@@ -821,6 +821,11 @@ command lives in that project's `CLAUDE.md`.
   name before choosing what it does. *(2026-10-07: the chair's brief asked for `ctx.reset()` in an
   error handler that also guards the step, the drain and the snapshot emit; three of its four
   callers were not frames, and a faulted pond would have gone blank under its error line.)*
+- **To relax a guard, grep its condition, not the function's name.** The same check often lives
+  in more than one place (the entry that refuses, and the update that ends what was started);
+  relax only one and the action is accepted and undone in the same step. *(2026-10-07: letting
+  the camera find a koi on its farewell needed the same `!leaving` dropped from the camera's
+  update, or the find was taken and cancelled at once.)*
 - **When the shared test stub can't see the bug, model the spec in the test, not in the stub.**
   A canvas stub with no state stack can't show a leaked `save()`. Install a small model of the
   spec's behaviour on the one object under test, beneath the code's own wrapper, and leave the
