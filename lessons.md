@@ -788,6 +788,16 @@ command lives in that project's `CLAUDE.md`.
   the random stream must end where the twin's does. Mutate the fix to touch a near miss, and to
   draw once, to prove both comparisons can go red. *(2026-10-07: a breath's pads pushed from
   under items.)*
+- **Re-run the previous fix's mutations after yours.** A new guard can remove the state an older
+  test relied on; the older test then holds nothing and still passes, and only its mutation shows
+  it. Re-run the neighbouring fix's recorded mutations, and repair or retire each that went from
+  red to green. *(2026-10-07: an intro guard turned two of the previous intro fix's mutations
+  green; one was re-armed with a new test, one could no longer be reached and was reported.)*
+- **A guard that drops input until something starts makes every path where it never starts a
+  dead end.** List the paths on which the input surface is up and the start never comes (a throw
+  before it, a refused load) before shipping the guard, and give each a way out. *(2026-10-07:
+  clicks before the intro's start are dropped, so an unexpected throw at mount now leaves an
+  overlay nothing passes.)*
 - **A deadline stored on a per-session clock is wrong after a relaunch.** A timestamp read from
   a clock that restarts each session (`performance.now()`, a monotonic counter) and kept in saved
   state fires at the wrong moment, or at once, in the next session. A load clears such
