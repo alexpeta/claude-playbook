@@ -798,6 +798,20 @@ command lives in that project's `CLAUDE.md`.
   before it, a refused load) before shipping the guard, and give each a way out. *(2026-10-07:
   clicks before the intro's start are dropped, so an unexpected throw at mount now leaves an
   overlay nothing passes.)*
+- **Before giving a shared handler a side effect, list its callers.** A cleanup chosen for one
+  caller ("the frame failed, so clear the canvas") runs for all of them. `git grep` the handler's
+  name before choosing what it does. *(2026-10-07: the chair's brief asked for `ctx.reset()` in an
+  error handler that also guards the step, the drain and the snapshot emit; three of its four
+  callers were not frames, and a faulted pond would have gone blank under its error line.)*
+- **When the shared test stub can't see the bug, model the spec in the test, not in the stub.**
+  A canvas stub with no state stack can't show a leaked `save()`. Install a small model of the
+  spec's behaviour on the one object under test, beneath the code's own wrapper, and leave the
+  stub every other test uses as it was. *(2026-10-07, the same fix.)*
+- **Deduping log lines by message is unbounded when messages carry numbers.** Replacing a cap
+  with "each distinct line once" turns a per-frame error whose message names a changing value into
+  one new line per frame. Wherever a dedup replaces a cap, mask the numbers in the key or keep a
+  rate bound behind it, and say which. *(2026-10-07, the same fix; the bound went to the log
+  file's write path.)*
 - **A deadline stored on a per-session clock is wrong after a relaunch.** A timestamp read from
   a clock that restarts each session (`performance.now()`, a monotonic counter) and kept in saved
   state fires at the wrong moment, or at once, in the next session. A load clears such
