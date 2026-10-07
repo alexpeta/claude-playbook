@@ -969,6 +969,13 @@ command lives in that project's `CLAUDE.md`.
   PR, and prune merged worktrees and closed tickets' scratch as part of each merge. *(2026-10-07:
   the disk reached 122 MiB free mid-run. Most of it was an unrelated build cache, but one
   builder's two Retina PNG screencasts, about 300 MB, tipped it over.)*
+- **Reviewers who cannot see each other's slices give you a confidence measure for free.** When
+  two or more of them reach the same bug from different directions, record "found ×N" on the
+  ticket. It outranks any single reviewer's percentage. When a reviewer raises a question about
+  the code on the other side of its boundary, send it to the live reviewer who owns that code
+  rather than answering it from the chair's memory. *(2026-10-07 whole-repo review, 13
+  reviewers: the one S1 that could cost a player their pond was found independently by four of
+  them, and four of the five questions passed between reviewers came back as findings.)*
 
 
 ## Environments and tooling
@@ -1169,6 +1176,14 @@ command lives in that project's `CLAUDE.md`.
   replay. Move or copy the set together, and read the copy back to prove it. *(2026-10-03: a
   refused save's copy read `user_version` 2 while the store had refused the file at 3; copying the
   `-wal` beside it closed the gap.)*
+- **A reviewer that reads only diffs can read a whole slice through a vehicle PR.** Make a base
+  branch that is main with the slice deleted, and a head branch on top of it that restores the
+  slice. The PR's diff is then the slice exactly as it stands, within the reviewer's size cap. Put
+  `[skip ci]` on both commits so no workflow runs. The head's tree is identical to main's, so the
+  gate a push guard demands is an honest one. Never merge it: close the PR and delete both
+  branches once the review has landed. *(2026-10-07: `/code-review ultra` takes a diff or a PR of
+  at most 500 files and 8,000 lines, and the repo's push guard refused the first push until the
+  vehicle checkout was gated.)*
 
 
 ## Writing and briefing
@@ -1322,3 +1337,8 @@ command lives in that project's `CLAUDE.md`.
   *(2026-10-07: a brief sent a builder to change a HUD count. The comment it cited said the field
   had left the snapshot two weeks earlier, and the pill showing it had been removed from the
   design.)*
+- **A brief that asks for a probe says which outcome the probe asserts.** Ask for the fixed
+  behaviour: the probe then fails until the fix lands, and drops into the fix's PR as its red
+  test. Left open, reviewers split, every ticket has to say which kind it carries, and a combined
+  run reads half red by design. *(2026-10-07 whole-repo review: of 13 reviewers, 5 wrote probes
+  asserting the fix and 8 wrote probes asserting the bug, across 81 probes.)*
