@@ -781,6 +781,13 @@ command lives in that project's `CLAUDE.md`.
   throw, run the controls, and note which go red. Those, and only those, are the evidence that
   their unchanged hashes mean the deletion is safe. *(2026-10-07: a disabled loop inside a
   burst. One of eight controls reached the burst, and it hashed to its pin with the loop gone.)*
+- **A fix's "moves nothing else" oracle can be a twin with only the fix's input set aside.** Run
+  the same seeded world twice in one step: once as is, once with the one input the fix reads
+  emptied (here the edge items the new pass pushes against). The twin's result is what the code
+  laid before the fix, so every element the fix should not touch must match it to the bit, and
+  the random stream must end where the twin's does. Mutate the fix to touch a near miss, and to
+  draw once, to prove both comparisons can go red. *(2026-10-07: a breath's pads pushed from
+  under items.)*
 - **A deadline stored on a per-session clock is wrong after a relaunch.** A timestamp read from
   a clock that restarts each session (`performance.now()`, a monotonic counter) and kept in saved
   state fires at the wrong moment, or at once, in the next session. A load clears such
