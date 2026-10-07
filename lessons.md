@@ -582,6 +582,22 @@ command lives in that project's `CLAUDE.md`.
   quiet runner. At QC, list the tests the PR adds with their durations from the CI log, not only
   its verdict. Any test above about a quarter of its timeout gets an explicit one sized from the
   measurement and written beside it, or gets cheaper. *(2026-10-05.)*
+- **To prove a new guard in front of a seeded draw leaves the draw unchanged, first prove the
+  controls reach it.** A replay control that stays green after a guard is added before
+  `rng.next()` proves nothing if no control ever arrives at that line. Mutate the guard so it
+  consumes one extra draw exactly where it sits. The controls that go red are the ones that
+  pass through it, and only their unmutated green is evidence that the draw is unchanged when
+  the guard doesn't trip. *(2026-10-07: a hold placed before a 4 % arrival draw. The
+  extra-draw mutation turned three replay controls and the lab's spec rows red, which is what
+  made their green worth something.)*
+- **A pause in a loop that keeps stepping must stop whatever carries the story, not only its
+  clocks.** Freezing a sequence's timers leaves every other writer that can end it still
+  running. `git grep` the sequence's state and every removal path (culls, exits, despawns),
+  not just its update function, and prove the pause by stepping long enough for the side door
+  to fire. *(2026-10-07: a goodbye's clocks were frozen while the window was hidden, but its
+  departing creature steered itself to the exit and a separate cull removed it after 60 s.
+  On return the sequence would have jumped to its end. The builder measured it before
+  freezing that one creature.)*
 
 
 ## Parallel agents and worktrees
@@ -758,6 +774,19 @@ command lives in that project's `CLAUDE.md`.
   call. Only a restart of the parent session (`/exit`, then `claude --continue` from the repo)
   made isolation work again. The plugin that had gone live meanwhile stayed enabled, so it
   wasn't the cause. After a leak, restart before the next dispatch. *(2026-10-04.)*
+- **A checkout someone runs a dev server from is theirs.** An agent never checks out,
+  pulls or merges in it; agents work in their own worktrees. A dev server hot-reloads whatever
+  the tree becomes: a stale local `main` booted for an instant and refused the newer save, then
+  two days of changes replayed as a flood of hot updates. Before an agent touches the main
+  checkout, it checks for a running dev server and asks. *(2026-10-07: a session switched the
+  approver's checkout off a feature branch onto a two-day-stale `main` and fast-forwarded it,
+  while the approver's dev server ran from it.)*
+- **Check free disk before a parallel dispatch that captures frames or regenerates data.** A
+  full disk fails every tool with `ENOSPC`, including the background watch that was going to
+  report it. Capture frames as JPEG or small PNG, delete a run's artifacts once they're in the
+  PR, and prune merged worktrees and closed tickets' scratch as part of each merge. *(2026-10-07:
+  the disk reached 122 MiB free mid-run. Most of it was an unrelated build cache, but one
+  builder's two Retina PNG screencasts, about 300 MB, tipped it over.)*
 
 
 ## Environments and tooling
@@ -922,6 +951,12 @@ command lives in that project's `CLAUDE.md`.
   `CLAUDE.md` line that named the gate; a commit message saying "git push" would have been
   push-checked. The first fix's tests were saved by two rules at once, and three of four
   mutations stayed green until inputs saved by one rule each were added.)*
+- **A test runner's JSON reporter can write to the config's `outputFile`, not stdout.** A
+  mutation script that parses stdout then reads nothing, or a stale file, and miscounts. Pass
+  `--outputFile` pointed at scratch, read that file, and run one unmutated control through the
+  same script before trusting any red or green it reports. *(2026-10-07: a builder's first
+  mutation run misread vitest's JSON. The config sent it to a directory inside the checkout.)*
+
 
 ## Writing and briefing
 
