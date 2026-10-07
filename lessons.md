@@ -1035,6 +1035,25 @@ command lives in that project's `CLAUDE.md`.
   issue, its review and the brief all assumed a missing font file reached the "fonts did not
   load" refusal; Chromium rejected the load with a `NetworkError` instead, so the planned fix
   would have left the dark screen.)*
+- **A timing or layout guard's bound is measured in the real app, on every platform, under
+  load, and given slack.** A probe in jsdom can be off by an order of magnitude (9.9 s there, 1.1 s
+  in the renderer), a quiet machine reads a third of a loaded one, and a CI runner reads more still
+  (18 ms, 56 ms, 93.5 ms against a proposed 100 ms bound). A layout bound with no pixel to spare
+  fails on the platform that draws one pixel taller. *(2026-10-07: a window-minimum guard.)*
+- **Electron: drive the page's size with `setContentSize`, not `setSize`.** On macOS a `setSize`
+  height below the title bar leaves a 0 px content area that Chromium never lays out, so the page
+  keeps its old size and the guard passes or fails for the wrong reason. `minWidth`/`minHeight`
+  bind the outer window unless `useContentSize` is set, so the page a minimum leaves differs by
+  the platform's frame (32 px on a Mac, 65 px on an unpackaged Windows build with its menu bar).
+  *(2026-10-07.)*
+- **A `.gitignore` pattern ending in `/` matches directories only, and a symlink is a file to
+  git.** A shared set read in place through a symlink shows as untracked and a `git add -A`
+  commits the link. Remove the link before staging, or write the pattern without the slash.
+  *(2026-10-07: a baseline set symlinked into a builder's worktree.)*
+- **Spreading a DOM event copies nothing but `isTrusted`.** Its fields are getters on the
+  prototype, so `{ ...event }` is `{ isTrusted }`. A function typed for a plain object that
+  spreads its argument silently loses every field when a caller, or a test, hands it a real event.
+  Name the fields. *(2026-10-07: a keyboard map's input rebuilt from a real `KeyboardEvent`.)*
 - **A builder never launches the app on the approver's own data directory.** A builder wanted
   only the renderer's dev server and ran the dev tool's "renderer only" mode. In that version it
   also started the desktop app, on the approver's real dev data directory. The app loaded the
@@ -1260,6 +1279,12 @@ command lives in that project's `CLAUDE.md`.
 
 ## Writing and briefing
 
+- **A fallback's brief names the cases it must leave alone, and each gets a test.** A rule stated
+  from the one case it fixes ("fall back to the physical key when the key is not a Latin letter",
+  written for Russian) can move cases nobody looked at (Dvorak's `;` on the Z key would have
+  toggled zen). The tests that matter most for a fallback are the ones already green at main.
+  *(2026-10-07: a keyboard layout fallback; the builder narrowed the brief's rule and pinned
+  AZERTY, Dvorak and Turkish.)*
 - **A count in a brief is computed with the code's own filter.** `47 files − 6 print masters
   = 41` forgot the three `.md` and the `.DS_Store` the suffix rule skips; the builder counted
   with `find` plus the rule and got 37. Never subtract from `ls | wc -l`; run the filter.
