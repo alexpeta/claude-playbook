@@ -1285,6 +1285,16 @@ command lives in that project's `CLAUDE.md`.
   toggled zen). The tests that matter most for a fallback are the ones already green at main.
   *(2026-10-07: a keyboard layout fallback; the builder narrowed the brief's rule and pinned
   AZERTY, Dvorak and Turkish.)*
+- **"At scale 1" is a claim about the fixture; read the fixture's size and assert the identity.**
+  A test kit's default mount can sit just off the identity (1280 × 800 drawn at 800/768), and a
+  test whose comment says "scale 1" then pins the scale bug as its expected values. The brief, the
+  review finding and the test's own header all repeated the claim. When a fix is about a scale or
+  a transform, the test asserts the identity before relying on it. *(2026-10-07: a piece fan
+  placed in world units; three expectations were the bug at s ≈ 1.04.)*
+- **When a read changes units, grep its readers in the tests too, and ask which pass by
+  tolerance.** Two tests fed a canvas-px read back as a world point and passed before and after
+  the fix, because a 27-unit hit radius absorbed an 11-unit error. A green test near a tolerance
+  edge proves the tolerance, not the mapping. *(2026-10-07, the same fix.)*
 - **A count in a brief is computed with the code's own filter.** `47 files − 6 print masters
   = 41` forgot the three `.md` and the `.DS_Store` the suffix rule skips; the builder counted
   with `find` plus the rule and got 37. Never subtract from `ls | wc -l`; run the filter.
