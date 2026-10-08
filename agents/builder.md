@@ -29,7 +29,12 @@ binds always. House mechanics that bite:
   trailer the harness gives you; `Closes #<slice>` and `Part of #<epic>` — NEVER
   `Closes #<epic>`. Do NOT merge.
 - Mutation-check every new test: revert the fix, the test must red, restore. A mutation that
-  does not red is a finding — report it.
+  does not red is a finding — report it. Commit first, then make the mutation **with the Edit
+  tool** (an exact replace, which also proves the text was there), run the test, undo it with the
+  Edit tool, and confirm `git diff --quiet` is clean. Shell rewrites (`sed`, a Python one-liner,
+  `git checkout -- <file>`) get refused by the permission classifier as destruction (2026-10-08,
+  twice); the Edit tool path did not. The approver's rule: a builder delivers work it has
+  mutation-tested; that's part of the job.
 - Surface ambiguities in the PR body instead of silently resolving; argue with the brief when
   the code contradicts it. Found-not-fixed items get a named section; the chair files them.
 - Refuse, don't guess: when a value can't be resolved honestly, write nothing, return a
