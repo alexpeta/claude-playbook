@@ -133,6 +133,14 @@ command lives in that project's `CLAUDE.md`.
   rule generalises: anything that converges, saturates or clamps hides its rate at the end; the
   evidence is the trajectory. Mutation-check a witness with a rate bug, not only a value bug.
   *(2026-10-01, moving state writes out of draw: eight writers, the timer found the gap.)*
+- **The permission classifier can refuse a builder's mutation check as destruction.** Seen so far:
+  an edit that deletes a line from a tracked file, and a checkout over uncommitted work. The builder
+  stops that step and reports it. The chair doesn't run the refused mutation on the builder's
+  behalf, because that would launder the refusal. The approver decides whether the chair's own QC
+  mutations stand as the proof, or whether a standing permission rule covers asserted replaces in
+  builder worktrees. Until that ruling, the PR waits. *(2026-10-08: two builders in one night; one
+  committed first and its mutations then ran, the other's asserted replace on a committed tree was
+  refused outright.)*
 - **Two mechanisms that each produce the outcome alone make an outcome test blind to either's
   mutation.** Drop one, and the other still produces the result, so the probe stays green. Give
   each mechanism its own test that reads its own effect, and mutate each against that test.
