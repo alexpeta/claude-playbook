@@ -5,6 +5,14 @@ command lives in that project's `CLAUDE.md`.
 
 ## Gates and CI
 
+- **Pin every workflow action to a full commit SHA, with the version in a comment, and fail the
+  gate on a tag pin.** A moving tag lets whoever moves it run code in the job that builds your
+  release. Each job log already records "Download action repository '<action>@<ref>' (SHA: …)",
+  which is a free audit of what a tag actually ran. Resolve an annotated tag to its commit (one
+  more `git/tags` read). A checksum of the built files beside the release proves only that they
+  arrived intact, not that the build step was clean; the pins are the real fix. *(2026-10-08: every
+  action was tag-pinned, including two third-party ones in the release path, the shape of the
+  tj-actions incident of March 2025.)*
 - **Capture exit codes directly.** `check | tail` reports the pipe's status. Redirect to a
   file, then read `$?`; trust only the exit file — stage prose ("All checks passed!") has
   printed before the tests ran. *(A builder read "passed" twice while the chain exited 1.)*
