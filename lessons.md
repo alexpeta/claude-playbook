@@ -907,6 +907,16 @@ command lives in that project's `CLAUDE.md`.
   at a size where rounding and truncating agree passes with the fix reverted. The mutation check
   finds it, but only at the inputs the test uses. *(2026-10-07: a 117×77 slot rounded and
   truncated alike at 1.25, so reverting the rounding failed only at 1.75; 118×78 separates both.)*
+- **Check that every alternative in a guard's pattern can match a name its generator actually
+  writes.** A completeness test whose pattern includes a branch for a shape its own walk never
+  produces looks thorough and catches nothing there. *(2026-10-07: a test's walk named array
+  elements `path[]` with no index, so its `[][0|1]` branch for points held in tuples could never
+  match; an unshifted tuple point went through green until the walk wrote the index.)*
+- **A clamp that restores an invariant clamps no further in than the item already stood.** Use
+  the item's own distance from the edge before the move, capped at its radius. Items placed across
+  the boundary on purpose then stay where they were put. *(2026-10-07: clamping every stepping
+  stone to its radius pulled each path's first stone, laid on purpose within its radius of the
+  bank, off the bank on every resize; an existing test caught it.)*
 - **Deduping log lines by message is unbounded when messages carry numbers.** Replacing a cap
   with "each distinct line once" turns a per-frame error whose message names a changing value into
   one new line per frame. Wherever a dedup replaces a cap, mask the numbers in the key or keep a
