@@ -701,6 +701,22 @@ command lives in that project's `CLAUDE.md`.
   draw from a shared stream. An old pin at 0 px is a stronger proof than a re-pin with a reason.
   *(2026-10-01 to 2026-10-05: eight slices added state; one brief's "controls unchanged" for a
   saved field could not hold.)*
+- **A field a save stops storing is still decoded from an old save, then dropped.** A format may
+  write a shared object where it is first reached and reference it after that. An old save may
+  have made the dropped field that object's home, so skipping the field orphans every later
+  reference and refuses the save.
+  - Decode in the writer's own key order, keep what the reader stores, drop the rest, and name the
+    drop in one line.
+  - Prove it on a real old save checked in as a fixture.
+
+  *(2026-10-08: 28 session-only fields moved out of a save. A lantern held in a pointer field was
+  the home of the lantern's later references.)*
+- **Once some state is deliberately left out of the save, a whole-state round trip compares only
+  what the save keeps.** A relaunch test that hashes everything before the quit and after the load
+  goes red on the fields a load gives fresh values. Skip them by the same named list the codec
+  reads; don't drop the test. Find every such test by grepping for the hash's callers before the
+  first run. *(2026-10-08: the third relaunch spec turned up only when its baseline run went red,
+  because the search for the hash's users had been cut short.)*
 - **A seeded run is deterministic only when every input is pinned, and a shared stream counts
   draws, not picks.** A filter that shortens a candidate list shifts every later draw when each
   candidate draws, even if the pick comes out the same; two streams split from one seed and seeded
