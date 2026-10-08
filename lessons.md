@@ -1326,6 +1326,12 @@ command lives in that project's `CLAUDE.md`.
   app's own override), and the builder checks which directory a launched process actually opened
   before it does anything else. A dev-tool flag that sounds like it won't launch the app is not
   proof. Read the tool's docs, or watch the process list (2026-10-05).
+- **An element sliding by a layout property is still at its old place when its class changes.**
+  - With a CSS transition on `right`, `left`, `top` or `width`, `offsetLeft` and the layout box keep the start value through the class change and the next frame. They reach the new place only as the transition runs, and finally at its `transitionend`.
+  - Code that measures "when the state ends" measures the old place.
+  - Measure at the transition's end, filtered to that element and that property. Or move the element by a `transform`, so its layout box stays where it rests.
+
+  *(2026-10-08: re-measuring a HUD button's keep-out when zen ended would have measured its zen spot. It was 1226 px at the class change and one frame later, and its rest, 1178, only at the `right` transitionend half a second on.)*
 - **On macOS, setting `HOME` doesn't move an Electron app's data folder.**
   - CoreFoundation resolves the user's home from `CFFIXED_USER_HOME` first, then the account record, and `HOME` last. So a launch "on a temporary home" by `HOME=<tmp>` alone can open the real `~/Library/Application Support`.
   - The check "the real folder's marker is untouched" can then pass whatever the code did.
