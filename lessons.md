@@ -133,6 +133,12 @@ command lives in that project's `CLAUDE.md`.
   rule generalises: anything that converges, saturates or clamps hides its rate at the end; the
   evidence is the trajectory. Mutation-check a witness with a rate bug, not only a value bug.
   *(2026-10-01, moving state writes out of draw: eight writers, the timer found the gap.)*
+- **Two mechanisms that each produce the outcome alone make an outcome test blind to either's
+  mutation.** Drop one, and the other still produces the result, so the probe stays green. Give
+  each mechanism its own test that reads its own effect, and mutate each against that test.
+  *(2026-10-08: an insect's absence between visits came from both "the wait holds at the cap" and
+  "a departure redraws the wait"; the outcome probe went red on neither mutation for a cap-one
+  insect, and each half needed a test of its own.)*
 - **A two-sided witness is blind to a fault both sides share; check each value against its
   inputs too, and mutation-check every call site on its own.** A witness that compared a world
   stepped with rendering against one stepped without stayed green when one of three call sites of a
