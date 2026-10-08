@@ -898,6 +898,15 @@ command lives in that project's `CLAUDE.md`.
   A canvas stub with no state stack can't show a leaked `save()`. Install a small model of the
   spec's behaviour on the one object under test, beneath the code's own wrapper, and leave the
   stub every other test uses as it was. *(2026-10-07, the same fix.)*
+- **Writing a canvas's size resets its context, so a fix that stops a repeated size write also
+  stops that reset.** Check what the reset was quietly fixing before you remove it. *(2026-10-07: a
+  portrait canvas resized itself every frame at a fractional pixel ratio, a waste; rounding the
+  size stopped it, and with it the per-frame reset that had been closing a save a throw left open.
+  The two fixes had to land together.)*
+- **Pick test inputs where the old and the new code give different answers.** A rounding fix tested
+  at a size where rounding and truncating agree passes with the fix reverted. The mutation check
+  finds it, but only at the inputs the test uses. *(2026-10-07: a 117×77 slot rounded and
+  truncated alike at 1.25, so reverting the rounding failed only at 1.75; 118×78 separates both.)*
 - **Deduping log lines by message is unbounded when messages carry numbers.** Replacing a cap
   with "each distinct line once" turns a per-frame error whose message names a changing value into
   one new line per frame. Wherever a dedup replaces a cap, mask the numbers in the key or keep a
