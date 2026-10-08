@@ -715,6 +715,14 @@ command lives in that project's `CLAUDE.md`.
   draw from a shared stream. An old pin at 0 px is a stronger proof than a re-pin with a reason.
   *(2026-10-01 to 2026-10-05: eight slices added state; one brief's "controls unchanged" for a
   saved field could not hold.)*
+- **A unit change in a stored measure moves whole-state pins even when no decision flips.** A
+  control that hashes the whole state sees a field's new value (a travel distance now in screen
+  pixels, not world units) though every judgment it feeds is the same. A re-pin rule phrased as
+  "only if a judgment flips" can't pass for such a fix. State it as: the run differs in nothing but
+  the changed field and the judgments it feeds. Prove it by shadowing the old measure beside the
+  new at every input and hashing with the old value put back: every pin must hold. *(2026-10-08: a
+  tap's travel moved from world to screen units; 137 presses, none judged differently, 4 drags'
+  stored travel different, and with the old measure put back the run hit all 29 pinned lines.)*
 - **A field a save stops storing is still decoded from an old save, then dropped.** A format may
   write a shared object where it is first reached and reference it after that. An old save may
   have made the dropped field that object's home, so skipping the field orphans every later
