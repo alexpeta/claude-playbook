@@ -1326,6 +1326,14 @@ command lives in that project's `CLAUDE.md`.
   app's own override), and the builder checks which directory a launched process actually opened
   before it does anything else. A dev-tool flag that sounds like it won't launch the app is not
   proof. Read the tool's docs, or watch the process list (2026-10-05).
+- **On macOS, setting `HOME` doesn't move an Electron app's data folder.**
+  - CoreFoundation resolves the user's home from `CFFIXED_USER_HOME` first, then the account record, and `HOME` last. So a launch "on a temporary home" by `HOME=<tmp>` alone can open the real `~/Library/Application Support`.
+  - The check "the real folder's marker is untouched" can then pass whatever the code did.
+  - Before a launch meant to be isolated, run a read-only probe that prints `app.getPath('home')`, `appData` and `userData` and exits before ready.
+  - Prefer the app's own data-dir override where there is one.
+  - Make the launch check fail once against a deliberately broken build, so it's known to see the bug.
+
+  *(2026-10-08: a brief prescribed `HOME=<tmp>` for a real launch of a dev tool that had been writing into the approver's dev pond. The worktree guard refused `HOME`, as it changes git's config path. The builder probed, found `CFFIXED_USER_HOME` is what moves Electron's folders, launched with it, and proved the check could fail. The approver's folder was untouched, verified by its timestamps.)*
 - **When a person's local tool shows a generic client error, ask for the server's log before
   forming a theory.** A notebook in a browser said only "Failed to send function request · Load
   failed" (Safari's words for any failed fetch). Three plausible causes went by in turn: a stale
