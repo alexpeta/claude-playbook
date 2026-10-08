@@ -928,6 +928,12 @@ command lives in that project's `CLAUDE.md`.
   deadlines, or rebases them, and a test saves mid-countdown and reloads. *(2026-10-07: a
   long-press deadline saved mid-press would have lifted a piece into edit mode partway through
   the next session.)*
+- **A "something new" badge compares what only a new item can change, never a list's length.**
+  The same write that adds an item can prune others, so the count falls and the badge stays off.
+  Compare the newest item's identity, and read every writer of the list for what makes that
+  identity unique, dev tools that reset a dedupe guard included. *(2026-10-07: a journal's dot
+  compared the entry count; a new memory pruned week-old ones in the same call, 80 became 71, and
+  the dot never lit. Two dev replays could write a key twice, so key plus count identifies it.)*
 - **A flag that only a session event clears is stuck for good once it is saved; put it down on
   load.** If the event that ends a mode (an intro's timer, a gesture's release) never runs in a
   loaded session, a save taken while the mode was on keeps it on in every later session. Fix it
