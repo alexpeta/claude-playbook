@@ -949,6 +949,11 @@ command lives in that project's `CLAUDE.md`.
   the boundary on purpose then stay where they were put. *(2026-10-07: clamping every stepping
   stone to its radius pulled each path's first stone, laid on purpose within its radius of the
   bank, off the bank on every resize; an existing test caught it.)*
+- **Clamping an animation's start and end covers only the frames that animate between them.** In
+  a staggered animation, an item still waiting its turn is drawn at its own place, which neither
+  end covers. Check the waiting frames separately. *(2026-10-08: clamping a glide's start beside
+  its end kept every gliding pad inside a narrowed world; a pad waiting its 0.14 s turn sat 263
+  units past the edge for up to 1.6 s.)*
 - **Deduping log lines by message is unbounded when messages carry numbers.** Replacing a cap
   with "each distinct line once" turns a per-frame error whose message names a changing value into
   one new line per frame. Wherever a dedup replaces a cap, mask the numbers in the key or keep a
