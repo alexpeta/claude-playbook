@@ -1475,6 +1475,16 @@ command lives in that project's `CLAUDE.md`.
 
 ## Writing and briefing
 
+- **Before a brief promises "identical to main" and "equal to the reference" together, measure
+  whether main already equals the reference.** If it doesn't, the two promises conflict, and the
+  builder has to pick one. *(2026-10-08: a brief asked that every perch on a wilting plant equal the
+  drawn point at every decay and stay bit-identical to main at decay 0; main's lush perches sat 4 to
+  13 px beside the drawn tip, inherited from the prototype. The builder kept identity and filed the
+  offset.)*
+- **A probe that changes state and then reads a derived field steps once in between.** Many derived
+  fields (an obstacle, a cache, a perch point) are only refreshed by the step; a step with dt 0 does
+  it without moving time. *(2026-10-08: a bug-bash probe set a plant's decay and read its lights at
+  once, so it couldn't have gone green whatever the fix.)*
 - **Before filing a finding, search the approver's rulings in its area.** A builder measures what
   its harness runs, and a harness can run a setup the approver has ruled unsupported. That
   measurement filed as a ticket asks for work against a ruling. Search the issue comments for the
