@@ -1600,6 +1600,12 @@ command lives in that project's `CLAUDE.md`.
 - **Brief from the repo at dispatch time, not from a summary.** Eight wrong briefs in one day
   shared that cause; the builder who argued with the brief was right every time. Every brief
   lists what to verify first and asks for a "Where the brief was wrong" section.
+- **Read the ticket's newest comments at dispatch; "waiting on the approver" is a fact that goes
+  stale.** The approver may rule in another session, on the ticket itself, while the chair's
+  pending list still says waiting. A brief that writes "not yet ruled" quotes the ticket's last
+  comment as of dispatch. *(2026-10-08: a brief kept a field out of a fix as "waiting on a
+  ruling"; the ruling had been recorded on the ticket 25 minutes before dispatch, by a session
+  the approver was talking to in parallel. The running builder was corrected by message.)*
 - **Say done after done.** Two claims made before the action; both retracted the same day.
 - **Timestamps come from the clock.** Three ledger lines were stamped thirty minutes ahead of
   reality and had to be corrected.
