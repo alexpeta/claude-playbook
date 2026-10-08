@@ -907,6 +907,16 @@ command lives in that project's `CLAUDE.md`.
   as the container did: elements filtered out take it with them, so write it on every live element
   when it is first set. *(2026-10-07: the dragonflies' exit side, lost by every save since the
   port.)*
+- **A writer that must refuse what its reader refuses reuses the reader's predicate.** List the
+  reader's refusals from its code, not from the ticket, and call the same check on both sides so
+  they can't drift. *(2026-10-08: the brief listed two classes of value the save's reader refused;
+  the reader had four, and the writer had been committing autosaves the next launch refused.)*
+- **A test file's folder can choose its tsconfig, and Vitest doesn't typecheck.** A test placed in a
+  project without the DOM lib ran green in Vitest and failed the gate's typecheck once its import
+  reached renderer code. Split a cross-tier test by tier, or run the typecheck stage before trusting
+  a Vitest green. *(2026-10-08.)*
+- **React's StrictMode runs effects twice outside production.** A test that counts a boot effect's
+  log lines sees each one twice; assert one per call, not a fixed total. *(2026-10-08.)*
 - **When the shared test stub can't see the bug, model the spec in the test, not in the stub.**
   A canvas stub with no state stack can't show a leaked `save()`. Install a small model of the
   spec's behaviour on the one object under test, beneath the code's own wrapper, and leave the
