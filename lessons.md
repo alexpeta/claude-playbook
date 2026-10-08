@@ -915,6 +915,15 @@ command lives in that project's `CLAUDE.md`.
   project without the DOM lib ran green in Vitest and failed the gate's typecheck once its import
   reached renderer code. Split a cross-tier test by tier, or run the typecheck stage before trusting
   a Vitest green. *(2026-10-08.)*
+- **Prove "one constant, both readers" by mocking the constant to another value.** Each reader then
+  goes red on its own if it still holds the old literal; a test at the real value can't tell a
+  shared constant from two equal copies. *(2026-10-08: a net's hoop radius typed twice, in the
+  catch and in the drawing.)*
+- **Separate a reference's design values from its mechanics that contradict its own intent.** "Keep
+  what the prototype does" covers a colour or a timing it chose; a cache that re-applies a tint the
+  same code means to apply once is an accident, and fixing it keeps the prototype's intent. Say
+  which in the PR, with the line. *(2026-10-08: the prototype's own `v:agedV(f)` read once per frame,
+  but its cache tinted a koi twice across a stage change.)*
 - **React's StrictMode runs effects twice outside production.** A test that counts a boot effect's
   log lines sees each one twice; assert one per call, not a fixed total. *(2026-10-08.)*
 - **When the shared test stub can't see the bug, model the spec in the test, not in the stub.**
