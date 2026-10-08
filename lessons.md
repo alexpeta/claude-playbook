@@ -1488,6 +1488,12 @@ command lives in that project's `CLAUDE.md`.
 
 ## Writing and briefing
 
+- **Before sweeping a timing theory, run the control without the suspected trigger, and read
+  whether the failing path even reads the suspected input.** One control launch can settle what a
+  long sweep can only fail to find. *(2026-10-08: a ticket blamed stale HUD rects after a resize for
+  a lantern placed under the HUD. Booted straight at the size with no resize, the lantern landed on
+  the exact reported spot, and the lantern's placement turned out never to read those rects. The
+  40-try resize sweep found nothing, as it had to.)*
 - **Before a brief promises "identical to main" and "equal to the reference" together, measure
   whether main already equals the reference.** If it doesn't, the two promises conflict, and the
   builder has to pick one. *(2026-10-08: a brief asked that every perch on a wilting plant equal the
