@@ -1337,8 +1337,10 @@ command lives in that project's `CLAUDE.md`.
 - **A change that adds a log line is checked against every test that classifies log lines,
   including the ones only the release runs.**
   - A packaged-app spec counted any `"evt":"….refused"` line as an error. A security change began logging a routine refusal of a permission check, one Chromium makes itself on every session.
-  - The PR's CI never ran that spec, so the failure surfaced in the release job and the release built no installers.
+  - The spec runs nightly and on PRs touching packaging paths, and this PR touched none. It merged between two nightly runs, so the release job was the first to see it, and the release built no installers.
   - When QC'ing a new structured line, grep the tests for the patterns that classify lines (`refused|failed|error`), and know which workflows run them.
+  - A check that runs only on a schedule, or on other paths, can't guard a merge that lands between its runs. Dispatch that workflow on the PR branch before merging.
+  - An allow-list for browser permissions keeps checks apart from requests: the engine makes checks on its own, and a check opens no device.
 
   *(2026-10-08: the chair gated, mutation-checked and merged the change, and the release found it.)*
 - **An element sliding by a layout property is still at its old place when its class changes.**
