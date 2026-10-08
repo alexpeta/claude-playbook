@@ -1334,6 +1334,13 @@ command lives in that project's `CLAUDE.md`.
   app's own override), and the builder checks which directory a launched process actually opened
   before it does anything else. A dev-tool flag that sounds like it won't launch the app is not
   proof. Read the tool's docs, or watch the process list (2026-10-05).
+- **A change that adds a log line is checked against every test that classifies log lines,
+  including the ones only the release runs.**
+  - A packaged-app spec counted any `"evt":"….refused"` line as an error. A security change began logging a routine refusal of a permission check, one Chromium makes itself on every session.
+  - The PR's CI never ran that spec, so the failure surfaced in the release job and the release built no installers.
+  - When QC'ing a new structured line, grep the tests for the patterns that classify lines (`refused|failed|error`), and know which workflows run them.
+
+  *(2026-10-08: the chair gated, mutation-checked and merged the change, and the release found it.)*
 - **An element sliding by a layout property is still at its old place when its class changes.**
   - With a CSS transition on `right`, `left`, `top` or `width`, `offsetLeft` and the layout box keep the start value through the class change and the next frame. They reach the new place only as the transition runs, and finally at its `transitionend`.
   - Code that measures "when the state ends" measures the old place.
