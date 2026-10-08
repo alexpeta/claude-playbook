@@ -157,6 +157,11 @@ command lives in that project's `CLAUDE.md`.
   which located the cause. The ruling was to accept (the read-back was the accident), but the
   measurement is what made it a ruling and not a guess. Related: `git checkout -- <file>` to undo
   a mutation also discards uncommitted work in that file; commit a WIP before mutation checks.
+- **Prove a mutation applied before you read its green.** Show a non-empty `git diff`, or assert the
+  old text was found in the script that replaces it. A replacement that matched nothing leaves the
+  tree untouched, and the green then means nothing. *(2026-10-08: a GNU-only `sed` address form
+  did nothing on macOS, and a pin check read "2 passed" on an unmutated tree; redone with an
+  asserted replace, it went red naming the line.)*
   *(2026-10-01, algae coverage off the canvas.)*
 - **Look up which class owns an event in the vendor's typings before wiring it; a typed emitter
   still accepts any string.** A ticket said to handle Windows' logout on the app object; in the
