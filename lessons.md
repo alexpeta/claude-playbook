@@ -1200,7 +1200,17 @@ command lives in that project's `CLAUDE.md`.
   debounce (a held close of ~390 ms against a 250 ms timer), the timer writes first and removing
   the flush leaves the test green. Prove the flush with the delay made longer than the quit
   (a test-only seam, or one throwaway build), then guard it. *(2026-10-07: a settings file's
-  write-on-quit.)*
+  write-on-quit.)* Assert "not written yet" before the exit, too: that assertion is the seam's own
+  mutation check. *(2026-10-07, the test that followed.)*
+- **Raise the OS's own event on the runner, not only an in-process emit.** Emitting the event in
+  your own process tests your listeners. Only the OS's message tests what the runtime does around
+  them. *(2026-10-07: emitting `session-end` in Electron's main stayed green; sending Windows' real
+  `WM_ENDSESSION` to the window's HWND, a few lines of PowerShell, showed that the process exits
+  about 25 ms later, before the async final save the docs promised could run.)*
+- **To make one SQLite statement throw in a test without touching the code under test,** open a
+  second connection and add a `BEFORE UPDATE` trigger that does `RAISE(ABORT, '<msg>')`. Keep that
+  connection open and idle while the code under test runs. *(2026-10-07: the store's close was
+  proven to reach `db.close()` after its `UPDATE` failed.)*
 - **graceful-fs's rename retry won't save a rename over an existing file.** It is async-only and
   retries only while the destination is absent, so a synchronous write-then-rename over a file an
   antivirus holds (Windows EPERM, EBUSY, EACCES) needs its own short retry: graceful-fs's codes and
