@@ -1211,6 +1211,12 @@ command lives in that project's `CLAUDE.md`.
   second connection and add a `BEFORE UPDATE` trigger that does `RAISE(ABORT, '<msg>')`. Keep that
   connection open and idle while the code under test runs. *(2026-10-07: the store's close was
   proven to reach `db.close()` after its `UPDATE` failed.)*
+- **Playwright's Electron launcher disables Chromium's hang monitor** (`--disable-hang-monitor`), so a
+  page busy-looping under Playwright is never reported `unresponsive`. Busy-loop the page for real
+  and raise `unresponsive` from main. **A hung Electron renderer is recovered by ending it and
+  reloading at its own `render-process-gone`.** A plain `reload()` of a busy page never loads, and a
+  `reload()` right after `forcefullyCrashRenderer()` didn't either. *(2026-10-08, a not-responding
+  box's Reload; both measured.)*
 - **graceful-fs's rename retry won't save a rename over an existing file.** It is async-only and
   retries only while the destination is absent, so a synchronous write-then-rename over a file an
   antivirus holds (Windows EPERM, EBUSY, EACCES) needs its own short retry: graceful-fs's codes and
